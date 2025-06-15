@@ -29,31 +29,34 @@ if [[ ! -f "$LIST_FILE" ]]; then
   exit 1
 fi
 
-mapfile -t PROGRAMS < "$LIST_FILE"
+mapfile -t RAW_LIST < "$LIST_FILE"
 
-# === Nur installierte Programme filtern ===
+# === Nur installierte Programme + Sortierung ===
 INSTALLED=()
-for pkg in "${PROGRAMS[@]}"; do
+for pkg in "${RAW_LIST[@]}"; do
   if dpkg -l "$pkg" 2>/dev/null | grep -q "^ii"; then
     INSTALLED+=("$pkg")
   fi
 done
 
+# Alphabetisch sortieren
+IFS=$'\n' INSTALLED=($(sort <<<"${INSTALLED[*]}"))
+unset IFS
+
 # === Falls nichts installiert ===
 if [[ ${#INSTALLED[@]} -eq 0 ]]; then
   whiptail --title "Remover Info" --msgbox "None of the listed tools are currently installed." 10 50
 else
-  # === Menü generieren ===
-  MENU_ITEMS=()
-  for i in "${!INSTALLED[@]}"; do
-    pkg="${INSTALLED[$i]}"
-    desc=$(apt show "$pkg" 2>/dev/null | awk -F': ' '/^Description: / {print $2; exit}')
-    MENU_ITEMS+=("$i" "$pkg - $desc")
-  done
-
   while true; do
+    MENU_ITEMS=()
+    for i in "${!INSTALLED[@]}"; do
+      pkg="${INSTALLED[$i]}"
+      desc=$(apt show "$pkg" 2>/dev/null | awk -F': ' '/^Description: / {print $2; exit}')
+      MENU_ITEMS+=("$i" "$pkg - $desc")
+    done
+
     CHOICE=$(whiptail --title "Remove Installed Tools ($VERSION)" --menu \
-      "Select software to remove:" 20 70 10 "${MENU_ITEMS[@]}" "q" "Quit" \
+      "Select software to remove:" 20 70 12 "${MENU_ITEMS[@]}" "q" "Quit" \
       3>&1 1>&2 2>&3)
 
     if [[ "$CHOICE" == "q" || -z "$CHOICE" ]]; then
@@ -69,17 +72,12 @@ else
       sudo apt remove --purge -y "$SELECTED_PKG" && sudo apt autoremove -y
       whiptail --title "Removed" --msgbox "$SELECTED_PKG has been removed." 10 50
 
-      # Nach Entfernung Menü aktualisieren
       unset 'INSTALLED[CHOICE]'
-      INSTALLED=("${INSTALLED[@]}")  # Re-index
-      MENU_ITEMS=()
-      for i in "${!INSTALLED[@]}"; do
-        pkg="${INSTALLED[$i]}"
-        desc=$(apt show "$pkg" 2>/dev/null | awk -F': ' '/^Description: / {print $2; exit}')
-        MENU_ITEMS+=("$i" "$pkg - $desc")
-      done
+      INSTALLED=("${INSTALLED[@]}")
 
-      # Wenn keine installierten mehr übrig
+      IFS=$'\n' INSTALLED=($(sort <<<"${INSTALLED[*]}"))
+      unset IFS
+
       if [[ ${#INSTALLED[@]} -eq 0 ]]; then
         whiptail --msgbox "No more listed tools are installed." 10 50
         break
