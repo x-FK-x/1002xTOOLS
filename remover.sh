@@ -1,0 +1,114 @@
+#!/bin/bash
+
+# === Versionserkennung ===
+SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
+if [[ "$SCRIPT_DIR" == *"/godos"* ]]; then
+  VERSION="godos"
+elif [[ "$SCRIPT_DIR" == *"/modos"* ]]; then
+  VERSION="modos"
+elif [[ "$SCRIPT_DIR" == *"/sodos"* ]]; then
+  VERSION="sodos"
+elif [[ "$SCRIPT_DIR" == *"/wodos"* ]]; then
+  VERSION="wodos"
+else
+  whiptail --title "Remover Error" --msgbox "No valid version directory detected. Exiting." 10 50
+  exit 1
+fi
+
+# === Check whiptail ===
+if ! command -v whiptail &> /dev/null; then
+  echo "Installing whiptail..."
+  sudo apt update && sudo apt install -y whiptail
+fi
+
+# === Liste einlesen ===
+LIST_FILE="$SCRIPT_DIR/list.txt"
+
+if [[ ! -f "$LIST_FILE" ]]; then
+  whiptail --title "Remover Error" --msgbox "Missing list.txt in tools directory!" 10 50
+  exit 1
+fi
+
+mapfile -t PROGRAMS < "$LIST_FILE"
+
+# === Nur installierte Programme filtern ===
+INSTALLED=()
+for pkg in "${PROGRAMS[@]}"; do
+  if dpkg -l "$pkg" 2>/dev/null | grep -q "^ii"; then
+    INSTALLED+=("$pkg")
+  fi
+done
+
+# === Falls nichts installiert ===
+if [[ ${#INSTALLED[@]} -eq 0 ]]; then
+  whiptail --title "Remover Info" --msgbox "None of the listed tools are currently installed." 10 50
+else
+  # === Menü generieren ===
+  MENU_ITEMS=()
+  for i in "${!INSTALLED[@]}"; do
+    pkg="${INSTALLED[$i]}"
+    desc=$(apt show "$pkg" 2>/dev/null | awk -F': ' '/^Description: / {print $2; exit}')
+    MENU_ITEMS+=("$i" "$pkg - $desc")
+  done
+
+  while true; do
+    CHOICE=$(whiptail --title "Remove Installed Tools ($VERSION)" --menu \
+      "Select software to remove:" 20 70 10 "${MENU_ITEMS[@]}" "q" "Quit" \
+      3>&1 1>&2 2>&3)
+
+    if [[ "$CHOICE" == "q" || -z "$CHOICE" ]]; then
+      break
+    fi
+
+    SELECTED_PKG="${INSTALLED[$CHOICE]}"
+    whiptail --title "Remove $SELECTED_PKG" --yesno \
+      "Are you sure you want to remove $SELECTED_PKG?" 10 50
+    RESPONSE=$?
+
+    if [[ $RESPONSE -eq 0 ]]; then
+      sudo apt remove --purge -y "$SELECTED_PKG" && sudo apt autoremove -y
+      whiptail --title "Removed" --msgbox "$SELECTED_PKG has been removed." 10 50
+
+      # Nach Entfernung Menü aktualisieren
+      unset 'INSTALLED[CHOICE]'
+      INSTALLED=("${INSTALLED[@]}")  # Re-index
+      MENU_ITEMS=()
+      for i in "${!INSTALLED[@]}"; do
+        pkg="${INSTALLED[$i]}"
+        desc=$(apt show "$pkg" 2>/dev/null | awk -F': ' '/^Description: / {print $2; exit}')
+        MENU_ITEMS+=("$i" "$pkg - $desc")
+      done
+
+      # Wenn keine installierten mehr übrig
+      if [[ ${#INSTALLED[@]} -eq 0 ]]; then
+        whiptail --msgbox "No more listed tools are installed." 10 50
+        break
+      fi
+    fi
+  done
+fi
+
+# === Rückkehrmenü ===
+while true; do
+  ACTION=$(whiptail --title "Remover finished" --menu "What do you want to do now?" 10 50 2 \
+    "1" "Return to main menu" \
+    "2" "Exit XDOStools" 3>&1 1>&2 2>&3)
+
+  case "$ACTION" in
+    "1")
+      PARENT_DIR=$(dirname "$SCRIPT_DIR")
+      if [[ -x "$PARENT_DIR/debui.sh" ]]; then
+        exec "$PARENT_DIR/debui.sh"
+      else
+        whiptail --msgbox "Main menu script debui.sh not found or not executable!" 10 50
+        exit 1
+      fi
+      ;;
+    "2")
+      exit 0
+      ;;
+    *)
+      whiptail --msgbox "Invalid option. Please choose again." 8 40
+      ;;
+  esac
+done
