@@ -1,0 +1,4 @@
+firefox-esr
+vlc
+steam
+wine
