@@ -15,63 +15,85 @@ else
   exit 1
 fi
 
-# === Programme zum Installieren (einfach erweitern) ===
-PROGRAMS=(
-  "vlc"
-  "steam"
-  "wine"
-  "firefox-esr"
-)
-
-# Prüfe, ob whiptail installiert ist
+# === Check whiptail ===
 if ! command -v whiptail &> /dev/null; then
-  echo "Whiptail is not installed. Installing..."
+  echo "Installing whiptail..."
   sudo apt update && sudo apt install -y whiptail
-  if ! command -v whiptail &> /dev/null; then
-    echo "Failed to install whiptail. Exiting."
-    exit 1
-  fi
 fi
 
-# Funktion: Hole Paketbeschreibung aus apt
-get_description() {
-  local pkg="$1"
-  apt show "$pkg" 2>/dev/null | awk -F': ' '/^Description: / {print $2; exit}'
-}
+# === Liste einlesen ===
+LIST_FILE="$SCRIPT_DIR/list.txt"
 
-# Build menu items: ID + Beschreibung
-MENU_ITEMS=()
-for i in "${!PROGRAMS[@]}"; do
-  pkg="${PROGRAMS[$i]}"
-  desc=$(get_description "$pkg")
-  MENU_ITEMS+=("$i" "$pkg - $desc")
-done
+if [[ ! -f "$LIST_FILE" ]]; then
+  whiptail --title "Installer Error" --msgbox "Missing list.txt in tools directory!" 10 50
+  exit 1
+fi
 
-# Hauptmenü
-while true; do
-  CHOICE=$(whiptail --title "Installer Menu ($VERSION)" --menu "Select software to install:" 20 70 10 "${MENU_ITEMS[@]}" "q" "Quit" 3>&1 1>&2 2>&3)
-  if [[ "$CHOICE" == "q" || -z "$CHOICE" ]]; then
-    break
-  fi
+mapfile -t RAW_LIST < "$LIST_FILE"
 
-  SELECTED_PKG="${PROGRAMS[$CHOICE]}"
-  whiptail --title "Installer" --infobox "Installing $SELECTED_PKG ..." 8 50
-
-  sudo apt update
-  if sudo apt install -y "$SELECTED_PKG"; then
-    whiptail --title "Installer" --msgbox "$SELECTED_PKG installed successfully." 10 50
-  else
-    whiptail --title "Installer" --msgbox "Failed to install $SELECTED_PKG." 10 50
+# === Nur nicht installierte Programme + Sortierung ===
+TO_INSTALL=()
+for pkg in "${RAW_LIST[@]}"; do
+  if ! dpkg -l "$pkg" 2>/dev/null | grep -q "^ii"; then
+    TO_INSTALL+=("$pkg")
   fi
 done
 
-# Exit Menü: Hauptmenü oder XDOStools beenden
+# Alphabetisch sortieren
+IFS=$'\n' TO_INSTALL=($(sort <<<"${TO_INSTALL[*]}"))
+unset IFS
+
+# === Falls alles bereits installiert ===
+if [[ ${#TO_INSTALL[@]} -eq 0 ]]; then
+  whiptail --title "Installer Info" --msgbox "All listed tools are already installed." 10 50
+else
+  while true; do
+    MENU_ITEMS=()
+    for i in "${!TO_INSTALL[@]}"; do
+      pkg="${TO_INSTALL[$i]}"
+      desc=$(apt show "$pkg" 2>/dev/null | awk -F': ' '/^Description: / {print $2; exit}')
+      MENU_ITEMS+=("$i" "$pkg - $desc")
+    done
+
+    CHOICE=$(whiptail --title "Install Available Tools ($VERSION)" --menu \
+      "Select software to install:" 20 70 12 "${MENU_ITEMS[@]}" "q" "Quit" \
+      3>&1 1>&2 2>&3)
+
+    if [[ "$CHOICE" == "q" || -z "$CHOICE" ]]; then
+      break
+    fi
+
+    SELECTED_PKG="${TO_INSTALL[$CHOICE]}"
+    whiptail --title "Install $SELECTED_PKG" --yesno \
+      "Do you want to install $SELECTED_PKG?" 10 50
+    RESPONSE=$?
+
+    if [[ $RESPONSE -eq 0 ]]; then
+      sudo apt update
+      sudo apt install -y "$SELECTED_PKG"
+      whiptail --title "Installed" --msgbox "$SELECTED_PKG has been installed." 10 50
+
+      unset 'TO_INSTALL[CHOICE]'
+      TO_INSTALL=("${TO_INSTALL[@]}")
+
+      IFS=$'\n' TO_INSTALL=($(sort <<<"${TO_INSTALL[*]}"))
+      unset IFS
+
+      if [[ ${#TO_INSTALL[@]} -eq 0 ]]; then
+        whiptail --msgbox "All listed tools are now installed." 10 50
+        break
+      fi
+    fi
+  done
+fi
+
+# === Rückkehrmenü ===
 while true; do
   ACTION=$(whiptail --title "Installer finished" --menu "What do you want to do now?" 10 50 2 \
     "1" "Return to main menu" \
     "2" "Exit XDOStools" 3>&1 1>&2 2>&3)
 
-  case $ACTION in
+  case "$ACTION" in
     "1")
       PARENT_DIR=$(dirname "$SCRIPT_DIR")
       if [[ -x "$PARENT_DIR/debui.sh" ]]; then
@@ -85,7 +107,7 @@ while true; do
       exit 0
       ;;
     *)
-      whiptail --msgbox "Invalid option, please choose again." 8 40
+      whiptail --msgbox "Invalid option. Please choose again." 8 40
       ;;
   esac
 done
