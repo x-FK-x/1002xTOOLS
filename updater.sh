@@ -19,19 +19,10 @@ REPO="x-FK-x/XDOStools"
 BRANCH="$VERSION"
 TARGET_DIR="$SCRIPT_DIR/../tools"
 TMP_DIR="$HOME/.xdostools_temp"
-DEV_FILE="$SCRIPT_DIR/../dev.txt"  # Pfad zur Datei mit Versionsinfo
+LOCAL_DEV_FILE="$SCRIPT_DIR/../dev.txt"
 
 mkdir -p "$TMP_DIR"
 mkdir -p "$TARGET_DIR"
-
-# Prüfen ob dev.txt existiert und ob Version schon aktuell ist
-if [[ -f "$DEV_FILE" ]]; then
-  INSTALLED_VERSION=$(head -n1 "$DEV_FILE")
-  if [[ "$INSTALLED_VERSION" == "$VERSION" ]]; then
-    whiptail --title "XDOStools Updater" --msgbox "Tools are already up to date for version '$VERSION'." 10 50
-    exit 0
-  fi
-fi
 
 whiptail --title "XDOStools Updater" --infobox "Downloading $BRANCH.zip archive..." 8 50
 
@@ -61,38 +52,38 @@ if [[ ! -d "$EXTRACTED_DIR" ]]; then
   exit 1
 fi
 
-whiptail --title "XDOStools Updater" --infobox "Copying files to $TARGET_DIR ..." 8 50
+# Versionen vergleichen
+LOCAL_VERSION=""
+REPO_VERSION=""
 
-# Liste der kopierten/überschriebenen Dateien für Reporting
-UPDATED_FILES=()
-
-# Kopieren, aber "Licence" ausschließen
-while IFS= read -r -d '' file; do
-  rel_path="${file#$EXTRACTED_DIR/}"
-  if [[ "$rel_path" == "Licence" || "$rel_path" == "Licence" ]]; then
-    continue
-  fi
-  dest="$TARGET_DIR/$rel_path"
-  dest_dir=$(dirname "$dest")
-  mkdir -p "$dest_dir"
-  cp -f "$file" "$dest"
-  UPDATED_FILES+=("$rel_path")
-done < <(find "$EXTRACTED_DIR" -type f -print0)
-
-# dev.txt aktualisieren
-echo "$VERSION" > "$DEV_FILE"
-
-# Reporting
-if [ ${#UPDATED_FILES[@]} -eq 0 ]; then
-  MESSAGE="No files updated."
-else
-  MESSAGE="Updated files:\n"
-  for f in "${UPDATED_FILES[@]}"; do
-    MESSAGE+="$f\n"
-  done
+if [[ -f "$LOCAL_DEV_FILE" ]]; then
+  LOCAL_VERSION=$(head -n1 "$LOCAL_DEV_FILE")
 fi
 
-whiptail --title "XDOStools Updater" --msgbox "$MESSAGE" 15 60
+if [[ -f "$EXTRACTED_DIR/dev.txt" ]]; then
+  REPO_VERSION=$(head -n1 "$EXTRACTED_DIR/dev.txt")
+else
+  whiptail --title "XDOStools Updater" --msgbox "No dev.txt found in repo. Cannot verify version. Aborting." 10 50
+  rm -rf "$TMP_DIR"
+  exit 1
+fi
+
+if [[ "$LOCAL_VERSION" == "$REPO_VERSION" ]]; then
+  whiptail --title "XDOStools Updater" --msgbox "Tools are already up to date (version $LOCAL_VERSION)." 10 50
+  rm -rf "$TMP_DIR"
+  exit 0
+fi
+
+whiptail --title "XDOStools Updater" --infobox "Copying files to $TARGET_DIR ..." 8 50
+cp -r "$EXTRACTED_DIR/"* "$TARGET_DIR/"
+
+# Entferne alle "Licence" Dateien im Zielordner
+find "$TARGET_DIR" -type f -iname "Licence" -exec rm -f {} +
+
+# Aktualisierte Version speichern
+echo "$REPO_VERSION" > "$LOCAL_DEV_FILE"
+
+whiptail --title "XDOStools Updater" --msgbox "Update completed successfully to version $REPO_VERSION." 10 50
 
 rm -rf "$TMP_DIR"
 exit 0
