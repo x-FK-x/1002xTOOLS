@@ -78,7 +78,7 @@ whiptail --title "XDOStools Updater" --infobox "Copying files to $TARGET_DIR ...
 cp -r "$EXTRACTED_DIR/"* "$TARGET_DIR/"
 
 # Entferne alle "Licence" Dateien im Zielordner
-rm /"$VERSION"/tools/Licence
+rm /"$VERSION"/tools/LICENCE
 
 # Aktualisierte Version speichern
 echo "$REPO_VERSION" > "$LOCAL_DEV_FILE"
