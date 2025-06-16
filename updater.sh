@@ -24,7 +24,7 @@ LOCAL_DEV_FILE="$SCRIPT_DIR/../dev.txt"
 mkdir -p "$TMP_DIR"
 mkdir -p "$TARGET_DIR"
 
-whiptail --title "XDOStools Updater" --infobox "Downloading $BRANCH.zip archive..." 8 50
+whiptail --title "XDOStools Updater" --infobox "Downloading $BRANCH-test.zip archive..." 8 50
 
 ZIP_URL="https://github.com/$REPO/archive/refs/heads/$BRANCH-test.zip"
 ZIP_FILE="$TMP_DIR/$BRANCH.zip"
