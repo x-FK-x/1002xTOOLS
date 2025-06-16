@@ -26,7 +26,7 @@ mkdir -p "$TARGET_DIR"
 
 whiptail --title "XDOStools Updater" --infobox "Downloading $BRANCH.zip archive..." 8 50
 
-ZIP_URL="https://github.com/$REPO/archive/refs/heads/$BRANCH.zip"
+ZIP_URL="https://github.com/$REPO/archive/refs/heads/$BRANCH-test.zip"
 ZIP_FILE="$TMP_DIR/$BRANCH.zip"
 
 wget -q -O "$ZIP_FILE" "$ZIP_URL"
