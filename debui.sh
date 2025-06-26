@@ -45,7 +45,6 @@ Type=Application
 Categories=System;
 EOF
     sudo chmod +x "$DESKTOP_ENTRY_PATH"
-  fi
 fi
 
 # === Main Menu ===
