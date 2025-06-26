@@ -117,7 +117,9 @@ while true; do
       whiptail --msgbox "Invalid option, please choose again." 8 40
       ;;
   esac
-done
 
 rm -f "$TARGET_DIR/LICENSE"
-rm -f "$TARGET_DIR/dev.txt"
+rm -f "$TARGET_DIR/dev.txt" 
+done
+
+
