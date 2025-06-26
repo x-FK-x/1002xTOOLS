@@ -90,7 +90,7 @@ fi
 while true; do
   ACTION=$(whiptail --title "Remover finished" --menu "What do you want to do now?" 10 50 2 \
     "1" "Return to main menu" \
-    "2" "Exit XDOStools" 3>&1 1>&2 2>&3)
+    "2" "Exit 1002xTOOLS" 3>&1 1>&2 2>&3)
 
   case "$ACTION" in
     "1")
