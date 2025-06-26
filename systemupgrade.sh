@@ -20,12 +20,15 @@ function run_cmd() {
 
 echo "Starting system update..."
 
-run_cmd rm /etc/apt/sources.list.d/mx.list >/dev/null
+# Entferne MX Linux Repo nur, wenn vorhanden
+if [[ -f /etc/apt/sources.list.d/mx.list ]]; then
+  run_cmd rm /etc/apt/sources.list.d/mx.list
+fi
+
 run_cmd apt update
 run_cmd apt upgrade -y
 run_cmd apt autoremove -y
 run_cmd apt autoclean
-
 
 # === Rückkehrmenü ===
 while true; do
