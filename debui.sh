@@ -64,6 +64,6 @@ case "$CHOICE" in
   "3") bash "$SCRIPT_DIR/tools/remover.sh" ;;
   "4") bash "$SCRIPT_DIR/tools/systemupgrade.sh" ;;
   "5") bash "$SCRIPT_DIR/tools/adduser.sh" ;;
-  "6") bash "$SCRIPT_DIR/tools/1002xSHELL-installer.sh" ;;  # ← korrekter Dateiname
+  "6") sudo bash "$SCRIPT_DIR/tools/1002xSHELL-installer.sh" ;;  # ← korrekter Dateiname
   "7"|*) clear; exit ;;
 esac
