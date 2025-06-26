@@ -19,7 +19,7 @@ REPO="x-FK-x/1002xTOOLS"
 BRANCH="$VERSION"
 TARGET_DIR="$SCRIPT_DIR/../tools"
 TMP_DIR="$HOME/.1002xTOOLS_temp"
-LOCAL_DEV_FILE="$TARGET_DIR/dev.txt"
+LOCAL_DEV_FILE="$TARGET_DIR/../dev.txt"
 
 mkdir -p "$TMP_DIR"
 mkdir -p "$TARGET_DIR"
