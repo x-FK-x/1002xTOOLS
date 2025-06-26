@@ -35,8 +35,7 @@ chmod -R 777 "$SCRIPT_DIR"/tools/*.sh 2>/dev/null
 # === Create Desktop Entry ===
 DESKTOP_ENTRY_PATH="/usr/share/applications/1002xTOOLS.desktop"
 if [[ ! -f "$DESKTOP_ENTRY_PATH" ]]; then
-  if whiptail --title "Create Desktop Entry" --yesno "Do you want to create a desktop entry for 1002xTOOLS?" 10 50; then
-    sudo tee "$DESKTOP_ENTRY_PATH" > /dev/null <<EOF
+   sudo tee "$DESKTOP_ENTRY_PATH" > /dev/null <<EOF
 [Desktop Entry]
 Name=1002xTOOLS ($VERSION)
 Exec=$SCRIPT_DIR/debui.sh
