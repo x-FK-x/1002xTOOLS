@@ -14,6 +14,7 @@ if id "$USERNAME" &>/dev/null; then
   whiptail --title "User Config" --msgbox "User '$USERNAME' already exists." 10 50
 else
   sudo adduser "$USERNAME"
+  sudo usermod -aG sudo "$USERNAME"
 fi
 
 # === Autologin fragen ===
@@ -48,13 +49,5 @@ else
   sudo rm -f /etc/sddm.conf.d/10-autologin.conf
 fi
 
-# === Alten Default-User entfernen ===
-if id "user" &>/dev/null; then
-  whiptail --title "Remove default user?" --yesno "Do you want to remove the default 'user' account?" 10 60
-  if [[ $? -eq 0 ]]; then
-    sudo deluser --remove-home user
-  fi
-fi
-
 # === Abschlussmeldung ===
-whiptail --title "User Config" --msgbox "Configuration complete.\nUser: $USERNAME\nAutologin: $AUTOLOGIN" 10 50
+whiptail --title "User Config" --msgbox "Configuration complete.\nUser: $USERNAME\nAutologin: $AUTOLOGIN\nSudo: Granted" 10 50
