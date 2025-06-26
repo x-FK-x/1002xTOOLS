@@ -77,21 +77,26 @@ fi
 whiptail --title "1002xTOOLS Updater" --infobox "Copying files to $TARGET_DIR ..." 8 50
 cp -r "$EXTRACTED_DIR/"* "$TARGET_DIR/"
 
-# Entferne alle "Licence" Dateien im Zielordner
-rm /"$VERSION"/tools/LICENSE
-rm /"$VERSION"/dev.txt
+# Copy updated debui.sh into SCRIPT_DIR (overwrite old one)
+if [[ -f "$EXTRACTED_DIR/debui.sh" ]]; then
+  cp "$EXTRACTED_DIR/debui.sh" "$SCRIPT_DIR/debui.sh"
+  chmod +x "$SCRIPT_DIR/debui.sh"
+fi
 
-# Aktualisierte Version speichern
+# Remove LICENSE and dev.txt from tools folder if exist
+rm -f "$TARGET_DIR/LICENSE"
+rm -f "$TARGET_DIR/dev.txt"
+
+# Save updated version
 echo "$REPO_VERSION" > "$LOCAL_DEV_FILE"
 
 whiptail --title "1002xTOOLS Updater" --msgbox "Update completed successfully to version $REPO_VERSION." 10 50
 
 rm -rf "$TMP_DIR"
 
-
-# Exit Menü: Hauptmenü oder 1002xTOOLS beenden
+# Exit menu: main menu or exit 1002xTOOLS
 while true; do
-  ACTION=$(whiptail --title "Installer finished" --menu "What do you want to do now?" 10 50 2 \
+  ACTION=$(whiptail --title "Updater finished" --menu "What do you want to do now?" 10 50 2 \
     "1" "Return to main menu" \
     "2" "Exit 1002xTOOLS" 3>&1 1>&2 2>&3)
 
