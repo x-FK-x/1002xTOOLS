@@ -18,7 +18,7 @@ fi
 REPO="x-FK-x/1002xTOOLS"
 BRANCH="$VERSION"
 TARGET_DIR="$SCRIPT_DIR/../tools"
-TMP_DIR="$HOME/.tools_temp"
+TMP_DIR="$HOME/.1002xTOOLS_temp"
 LOCAL_DEV_FILE="$SCRIPT_DIR/../dev.txt"
 
 mkdir -p "$TMP_DIR"
@@ -26,7 +26,7 @@ mkdir -p "$TARGET_DIR"
 
 whiptail --title "1002xTOOLS Updater" --infobox "Downloading $BRANCH.zip archive..." 8 50
 
-ZIP_URL="https://github.com/$REPO/archive/refs/heads/$BRANCH-test.zip"
+ZIP_URL="https://github.com/$REPO/archive/refs/heads/$BRANCH.zip"
 ZIP_FILE="$TMP_DIR/$BRANCH.zip"
 
 wget -q -O "$ZIP_FILE" "$ZIP_URL"
@@ -44,7 +44,7 @@ if [[ $? -ne 0 ]]; then
   exit 1
 fi
 
-EXTRACTED_DIR="$TMP_DIR/Tools-$BRANCH"
+EXTRACTED_DIR="$TMP_DIR/1002xTOOLS-$BRANCH"
 
 if [[ ! -d "$EXTRACTED_DIR" ]]; then
   whiptail --title "1002xTOOLS Updater" --msgbox "Extracted folder not found." 10 50
