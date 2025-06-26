@@ -1,2 +1,4 @@
 firefox-esr
 vlc
+refractainstaller-base
+refractainstaller-gui
