@@ -62,7 +62,7 @@ case "$CHOICE" in
   "1") bash "$SCRIPT_DIR/tools/updater.sh" ;;
   "2") bash "$SCRIPT_DIR/tools/installer.sh" ;;
   "3") bash "$SCRIPT_DIR/tools/remover.sh" ;;
-  "4") bash "$SCRIPT_DIR/tools/debian_upgrade.sh" ;;
+  "4") bash "$SCRIPT_DIR/tools/systemupgrade.sh" ;;
   "5") bash "$SCRIPT_DIR/tools/adduser.sh" ;;
   "6"|*) clear; exit ;;
 esac
