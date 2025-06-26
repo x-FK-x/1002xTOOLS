@@ -74,7 +74,7 @@ cp -r "$EXTRACTED_DIR/tools/"* "$TARGET_DIR/"
 
 # === Verschiebe debui.sh ===
 if [[ -f "$EXTRACTED_DIR/tools/debui.sh" ]]; then
-  mv -v "$EXTRACTED_DIR/tools/debui.sh" "$SCRIPT_DIR/debui.sh"
+  mv -v "$EXTRACTED_DIR/tools/debui.sh" "$SCRIPT_DIR/../debui.sh"
   chmod 755 "$SCRIPT_DIR/debui.sh"
 else
   echo "debui.sh not found in tools/!"
