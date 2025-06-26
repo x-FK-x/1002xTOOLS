@@ -1,14 +1,10 @@
 #!/bin/bash
 
 # === Variablen ===
-TMP_DIR="/tmp/1002xSHELL_install_tmp"
-ZIP_URL="https://github.com/x-FK-x/1002xSHELL/releases/download/v0.2/1002xSHELL-0.2.zip"
-ZIP_FILE="$TMP_DIR/1002xSHELL-0.2.zip"
 
-# === Vorbereiten ===
-echo "[*] Creating temporary folder: $TMP_DIR"
-rm -rf "$TMP_DIR"
-mkdir -p "$TMP_DIR"
+ZIP_URL="https://github.com/x-FK-x/1002xSHELL/releases/download/v0.2/1002xSHELL-0.2.zip"
+ZIP_FILE="1002xSHELL-0.2.zip"
+
 
 # === Herunterladen ===
 echo "[*] Downloading 1002xSHELL..."
@@ -21,15 +17,11 @@ fi
 
 # === Entpacken ===
 echo "[*] Extracting archive..."
-unzip -q "$ZIP_FILE" -d "$TMP_DIR"
+sudo mkdir /temp
+unzip -q "$ZIP_FILE" -d /temp
 
-EXTRACTED_DIR=$(find "$TMP_DIR" -maxdepth 1 -type d -name "1002xSHELL*" | head -n 1)
+EXTRACTED_DIR=$(find /temp -maxdepth 1 -type d -name "1002xSHELL*" | head -n 1)
 
-if [[ ! -f "$EXTRACTED_DIR/installer.sh" ]]; then
-  echo "[!] installer.sh not found in extracted folder."
-  rm -rf "$TMP_DIR"
-  exit 1
-fi
 
 # === Ausführen ===
 echo "[*] Running installer..."
@@ -38,6 +30,6 @@ bash "$EXTRACTED_DIR/installer.sh"
 
 # === Aufräumen ===
 echo "[*] Cleaning up..."
-rm -rf "$TMP_DIR"
+sudo rm -rf /temp
 
 echo "[✓] 1002xSHELL installation complete."
