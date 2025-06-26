@@ -18,15 +18,15 @@ fi
 # === Entpacken ===
 echo "[*] Extracting archive..."
 sudo mkdir /temp
-unzip -q "$ZIP_FILE" -d /temp
+sudo unzip -q "$ZIP_FILE" -d /temp
 
 EXTRACTED_DIR=$(find /temp -maxdepth 1 -type d -name "1002xSHELL*" | head -n 1)
 
 
 # === Ausführen ===
 echo "[*] Running installer..."
-chmod +x "$EXTRACTED_DIR/installer.sh"
-bash "$EXTRACTED_DIR/installer.sh"
+sudo chmod +x "$EXTRACTED_DIR/installer.sh"
+sudo bash "$EXTRACTED_DIR/installer.sh"
 
 # === Aufräumen ===
 echo "[*] Cleaning up..."
