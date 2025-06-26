@@ -1,6 +1,3 @@
-Verstanden, du willst das explizit mit `chmod +x` — kein Problem! Hier das komplette Skript mit `chmod +x` auf alle `.sh`-Dateien im Zielordner und `chmod 777` auf `debui.sh` nach dem Verschieben:
-
-```bash
 #!/bin/bash
 
 # Version erkennen
@@ -22,7 +19,7 @@ REPO="x-FK-x/1002xTOOLS"
 BRANCH="$VERSION-test"
 TARGET_DIR="$SCRIPT_DIR/../tools"
 TMP_DIR="$HOME/.1002xtools_temp"
-LOCAL_DEV_FILE="$SCRIPT_DIR/dev.txt"
+LOCAL_DEV_FILE="$SCRIPT_DIR/../dev.txt"
 
 mkdir -p "$TMP_DIR"
 mkdir -p "$TARGET_DIR"
@@ -47,7 +44,11 @@ if [[ $? -ne 0 ]]; then
   exit 1
 fi
 
-EXTRACTED_DIR="$TMP_DIR/1002xTOOLS-$BRANCH"
+# Debug: Zeige Inhalt des Temp-Ordners
+echo "Contents of $TMP_DIR:"
+ls -l "$TMP_DIR"
+
+EXTRACTED_DIR=$(find "$TMP_DIR" -maxdepth 1 -type d -name "1002xTOOLS*" | head -n 1)
 
 if [[ ! -d "$EXTRACTED_DIR" ]]; then
   whiptail --title "1002xTOOLS Updater" --msgbox "Extracted folder not found." 10 50
@@ -78,23 +79,26 @@ if [[ "$LOCAL_VERSION" == "$REPO_VERSION" ]]; then
 fi
 
 whiptail --title "1002xTOOLS Updater" --infobox "Copying files to $TARGET_DIR ..." 8 50
+
+# Alte .sh Dateien löschen im Zielordner (optional, aber sicher)
+find "$TARGET_DIR" -type f -name "*.sh" -exec rm -f {} +
+
+# Kopiere den kompletten Inhalt aus dem entpackten Ordner (das entspricht dem tools-Ordner im Repo)
 cp -r "$EXTRACTED_DIR/"* "$TARGET_DIR/"
 
-# Alle .sh im Zielordner mit chmod +x ausführbar machen
+# Verschiebe debui.sh nach $SCRIPT_DIR/../ und setze Rechte
+if [[ -f "$TARGET_DIR/debui.sh" ]]; then
+  mv "$TARGET_DIR/debui.sh" "$SCRIPT_DIR/../debui.sh"
+  chmod 777 "$SCRIPT_DIR/../debui.sh"
+else
+  whiptail --title "1002xTOOLS Updater" --msgbox "debui.sh not found in tools folder after copy." 10 50
+fi
+
+# Alle .sh im Zielordner ausführbar machen
 find "$TARGET_DIR" -type f -name "*.sh" -exec chmod +x {} +
 
-# Entferne alle "Licence" Dateien im Zielordner
-find "$TARGET_DIR" -type f -iname "Licence" -exec rm -f {} +
-
-# debui.sh aus tools nach $SCRIPT_DIR verschieben und Rechte auf 777 setzen
-if [[ -f "$TARGET_DIR/debui.sh" ]]; then
-  mv -f "$TARGET_DIR/debui.sh" "$SCRIPT_DIR/debui.sh"
-  chmod 777 "$SCRIPT_DIR/debui.sh"
-else
-  whiptail --title "1002xTOOLS Updater" --msgbox "debui.sh not found in extracted files." 10 50
-  rm -rf "$TMP_DIR"
-  exit 1
-fi
+# Entferne "Licence" und dev.txt aus Zielordner falls vorhanden
+find "$TARGET_DIR" -type f \( -iname "Licence" -o -iname "dev.txt" \) -exec rm -f {} +
 
 # Aktualisierte Version speichern
 echo "$REPO_VERSION" > "$LOCAL_DEV_FILE"
@@ -102,7 +106,7 @@ echo "$REPO_VERSION" > "$LOCAL_DEV_FILE"
 whiptail --title "1002xTOOLS Updater" --msgbox "Update completed successfully to version $REPO_VERSION." 10 50
 
 rm -rf "$TMP_DIR"
-exit 0
+
 
 # Exit Menü: Hauptmenü oder 1002xTOOLS beenden
 while true; do
@@ -128,6 +132,3 @@ while true; do
       ;;
   esac
 done
-```
-
-Falls du noch mehr willst, sag Bescheid!
