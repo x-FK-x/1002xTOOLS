@@ -81,11 +81,11 @@ cp -r "$EXTRACTED_DIR/"* "$TARGET_DIR/"
 if [[ -f "$EXTRACTED_DIR/debui.sh" ]]; then
   cp "$EXTRACTED_DIR/debui.sh" "$SCRIPT_DIR/debui.sh"
   chmod +x "$SCRIPT_DIR/debui.sh"
+  chmod 777 "$SCRIPT_DIR/debui.sh
 fi
 
 # Remove LICENSE and dev.txt from tools folder if exist
-rm -f "$TARGET_DIR/LICENSE"
-rm -f "$TARGET_DIR/dev.txt"
+
 
 # Save updated version
 echo "$REPO_VERSION" > "$LOCAL_DEV_FILE"
@@ -118,3 +118,6 @@ while true; do
       ;;
   esac
 done
+
+rm -f "$TARGET_DIR/LICENSE"
+rm -f "$TARGET_DIR/dev.txt"
