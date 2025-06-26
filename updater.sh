@@ -106,6 +106,7 @@ echo "$REPO_VERSION" > "$LOCAL_DEV_FILE"
 whiptail --title "1002xTOOLS Updater" --msgbox "Update completed successfully to version $REPO_VERSION." 10 50
 
 rm -rf "$TMP_DIR"
+rm "$SCRIPT_DIR/LICENSE"
 
 
 # Exit Menü: Hauptmenü oder 1002xTOOLS beenden
