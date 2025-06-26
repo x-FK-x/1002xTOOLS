@@ -1,7 +1,8 @@
 #!/bin/bash
 
-# Detect version
+# === Version erkennen ===
 SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
+
 if [[ "$SCRIPT_DIR" == *"/godos"* ]]; then
   VERSION="godos"
 elif [[ "$SCRIPT_DIR" == *"/modos"* ]]; then
@@ -15,89 +16,92 @@ else
   exit 1
 fi
 
+echo "Detected version: $VERSION"
+echo "Script path: $SCRIPT_DIR"
+
+# === Pfade definieren ===
 REPO="x-FK-x/1002xTOOLS"
 BRANCH="$VERSION"
-TARGET_DIR="$SCRIPT_DIR/../tools"
+TARGET_DIR="$SCRIPT_DIR/tools"
 TMP_DIR="$HOME/.1002xTOOLS_temp"
-LOCAL_DEV_FILE="$TARGET_DIR/../dev.txt"
+LOCAL_DEV_FILE="$SCRIPT_DIR/dev.txt"
 
 mkdir -p "$TMP_DIR"
 mkdir -p "$TARGET_DIR"
 
 whiptail --title "1002xTOOLS Updater" --infobox "Downloading $BRANCH.zip archive..." 8 50
-
 ZIP_URL="https://github.com/$REPO/archive/refs/heads/$BRANCH.zip"
 ZIP_FILE="$TMP_DIR/$BRANCH.zip"
 
-wget -q -O "$ZIP_FILE" "$ZIP_URL"
+echo "Downloading from: $ZIP_URL"
+wget -O "$ZIP_FILE" "$ZIP_URL"
 if [[ $? -ne 0 ]]; then
-  whiptail --title "1002xTOOLS Updater" --msgbox "Failed to download $ZIP_URL" 10 50
+  whiptail --title "Updater Error" --msgbox "Download failed." 10 50
   rm -rf "$TMP_DIR"
   exit 1
 fi
 
+# === Entpacken ===
 whiptail --title "1002xTOOLS Updater" --infobox "Extracting archive..." 8 50
 unzip -q -o "$ZIP_FILE" -d "$TMP_DIR"
 if [[ $? -ne 0 ]]; then
-  whiptail --title "1002xTOOLS Updater" --msgbox "Failed to extract archive." 10 50
+  whiptail --title "Updater Error" --msgbox "Extraction failed." 10 50
   rm -rf "$TMP_DIR"
   exit 1
 fi
 
 EXTRACTED_DIR="$TMP_DIR/1002xTOOLS-$BRANCH"
-if [[ ! -d "$EXTRACTED_DIR" ]]; then
-  whiptail --title "1002xTOOLS Updater" --msgbox "Extracted folder not found." 10 50
-  rm -rf "$TMP_DIR"
-  exit 1
-fi
+echo "Extracted to: $EXTRACTED_DIR"
 
-# Compare versions
-LOCAL_VERSION=""
-REPO_VERSION=""
-
-if [[ -f "$LOCAL_DEV_FILE" ]]; then
-  LOCAL_VERSION=$(head -n1 "$LOCAL_DEV_FILE")
-fi
-
-if [[ -f "$EXTRACTED_DIR/tools/dev.txt" ]]; then
-  REPO_VERSION=$(head -n1 "$EXTRACTED_DIR/tools/dev.txt")
+# === Version vergleichen ===
+if [[ -f "$SCRIPT_DIR/dev.txt" ]]; then
+  LOCAL_VERSION=$(head -n1 "$SCRIPT_DIR/dev.txt")
 else
-  whiptail --title "1002xTOOLS Updater" --msgbox "No dev.txt found in repo. Cannot verify version." 10 50
+  LOCAL_VERSION="none"
+fi
+
+if [[ -f "$EXTRACTED_DIR/dev.txt" ]]; then
+  REPO_VERSION=$(head -n1 "$EXTRACTED_DIR/dev.txt")
+else
+  whiptail --title "Updater Error" --msgbox "dev.txt missing in repo." 10 50
   rm -rf "$TMP_DIR"
   exit 1
 fi
+
+echo "Local version: $LOCAL_VERSION"
+echo "Repo  version: $REPO_VERSION"
 
 if [[ "$LOCAL_VERSION" == "$REPO_VERSION" ]]; then
-  whiptail --title "1002xTOOLS Updater" --msgbox "Already up to date (version $LOCAL_VERSION)." 10 50
+  whiptail --title "1002xTOOLS Updater" --msgbox "Already up to date (v$LOCAL_VERSION)." 10 50
   rm -rf "$TMP_DIR"
   exit 0
 fi
 
-whiptail --title "1002xTOOLS Updater" --infobox "Updating files..." 8 50
+# === Dateien kopieren ===
+whiptail --title "1002xTOOLS Updater" --infobox "Copying tools to $TARGET_DIR ..." 8 50
+cp -rv "$EXTRACTED_DIR/tools/"* "$TARGET_DIR/"
 
-# Copy debui.sh back to the version folder (SCRIPT_DIR)
-mv "$TARGET_DIR/debui.sh" "$SCRIPT_DIR/debui.sh"
-chmod 755 "$SCRIPT_DIR/debui.sh"
+# === debui.sh in den Hauptordner verschieben ===
+if [[ -f "$EXTRACTED_DIR/debui.sh" ]]; then
+  echo "Copying debui.sh to $SCRIPT_DIR"
+  mv -v "$EXTRACTED_DIR/debui.sh" "$SCRIPT_DIR/debui.sh"
+  chmod 755 "$SCRIPT_DIR/debui.sh"
+else
+  echo "debui.sh not found in repo!"
+fi
 
+# === dev.txt aktualisieren ===
+echo "$REPO_VERSION" > "$SCRIPT_DIR/dev.txt"
 
-# Copy tools content
-cp -r "$EXTRACTED_DIR/tools/"* "$TARGET_DIR/"
+# === Tools ausführbar machen ===
+chmod +x "$SCRIPT_DIR/tools/"*.sh 2>/dev/null
 
-# Make all tools executable
-chmod -R +x "$TARGET_DIR"
-chmod +x "$VERSION"/debui.sh
+whiptail --title "1002xTOOLS Updater" --msgbox "Update to version $REPO_VERSION completed." 10 50
 
-# Remove LICENSE and dev.txt from tools (if any)
-rm /"$VERSION"/tools/LICENSE
-rm /"$VERSION"/dev.txt
-
-# Save updated version
-echo "$REPO_VERSION" > "$LOCAL_DEV_FILE"
-
-whiptail --title "1002xTOOLS Updater" --msgbox "Update successful to version $REPO_VERSION." 10 50
+# === tmp aufräumen ===
 rm -rf "$TMP_DIR"
 
-# Final action menu
+# === Menü nach Update ===
 while true; do
   ACTION=$(whiptail --title "Updater finished" --menu "What do you want to do now?" 10 50 2 \
     "1" "Return to main menu" \
@@ -116,7 +120,7 @@ while true; do
       exit 0
       ;;
     *)
-      whiptail --msgbox "Invalid option, please choose again." 8 40
+      whiptail --msgbox "Invalid option." 8 40
       ;;
   esac
 done
