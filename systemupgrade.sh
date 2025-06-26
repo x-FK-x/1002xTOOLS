@@ -11,6 +11,7 @@ function run_cmd() {
   CMD=$*
   echo "Running: $SUDO $CMD"
   $SUDO $CMD
+  sudo rm /etc/apt/sources.list.d/mx.list > 2>/dev/null
   local STATUS=$?
   if [[ $STATUS -ne 0 ]]; then
     echo "Error: Command failed: $CMD with exit code $STATUS"
