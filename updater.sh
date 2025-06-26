@@ -87,9 +87,8 @@ chmod -R +x "$TARGET_DIR"
 chmod +x "$SCRIPT_DIR"/debui.sh
 
 # Remove LICENSE and dev.txt from tools (if any)
-rm -f "$SCRIPT_DIR/LICENSE"
-rm -f "$SCRIPT_DIR/dev.txt"
-
+rm /"$VERSION"/tools/LICENSE
+rm /"$VERSION"/dev.txt
 
 # Save updated version
 echo "$REPO_VERSION" > "$LOCAL_DEV_FILE"
