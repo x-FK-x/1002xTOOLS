@@ -1,3 +1,6 @@
+mx-snapshot
 firefox-esr
 vlc
 libreoffice
+refractainstaller-base
+refractainstaller-gui
