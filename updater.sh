@@ -1,12 +1,15 @@
+Verstanden, du willst das explizit mit `chmod +x` — kein Problem! Hier das komplette Skript mit `chmod +x` auf alle `.sh`-Dateien im Zielordner und `chmod 777` auf `debui.sh` nach dem Verschieben:
+
+```bash
 #!/bin/bash
 
-# === Detect version ===
+# Version erkennen
 SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
 if [[ "$SCRIPT_DIR" == *"/godos"* ]]; then
   VERSION="godos"
 elif [[ "$SCRIPT_DIR" == *"/modos"* ]]; then
   VERSION="modos"
-elif [[ "$SCRIPT_DIR" == *"/todos"* ]]; then
+elif [[ "$SCRIPT_DIR" == *"/sodos"* ]]; then
   VERSION="sodos"
 elif [[ "$SCRIPT_DIR" == *"/wodos"* ]]; then
   VERSION="wodos"
@@ -16,10 +19,10 @@ else
 fi
 
 REPO="x-FK-x/1002xTOOLS"
-BRANCH="$VERSION"
+BRANCH="$VERSION-test"
 TARGET_DIR="$SCRIPT_DIR/../tools"
-TMP_DIR="$HOME/.1002xTOOLS_temp"
-LOCAL_DEV_FILE="$SCRIPT_DIR/../dev.txt"
+TMP_DIR="$HOME/.1002xtools_temp"
+LOCAL_DEV_FILE="$SCRIPT_DIR/dev.txt"
 
 mkdir -p "$TMP_DIR"
 mkdir -p "$TARGET_DIR"
@@ -52,7 +55,7 @@ if [[ ! -d "$EXTRACTED_DIR" ]]; then
   exit 1
 fi
 
-# === Compare versions ===
+# Versionen vergleichen
 LOCAL_VERSION=""
 REPO_VERSION=""
 
@@ -74,60 +77,34 @@ if [[ "$LOCAL_VERSION" == "$REPO_VERSION" ]]; then
   exit 0
 fi
 
-whiptail --title "1002xTOOLS Updater" --infobox "Updating updater.sh script..." 8 50
+whiptail --title "1002xTOOLS Updater" --infobox "Copying files to $TARGET_DIR ..." 8 50
+cp -r "$EXTRACTED_DIR/"* "$TARGET_DIR/"
 
-# 1) Update updater.sh itself
-UPDATER_OLD_HASH=""
-UPDATER_NEW_HASH=""
+# Alle .sh im Zielordner mit chmod +x ausführbar machen
+find "$TARGET_DIR" -type f -name "*.sh" -exec chmod +x {} +
 
-if [[ -f "$SCRIPT_DIR/updater.sh" ]]; then
-  UPDATER_OLD_HASH=$(sha256sum "$SCRIPT_DIR/updater.sh" | cut -d' ' -f1)
-fi
+# Entferne alle "Licence" Dateien im Zielordner
+find "$TARGET_DIR" -type f -iname "Licence" -exec rm -f {} +
 
-if [[ -f "$EXTRACTED_DIR/tools/updater.sh" ]]; then
-  cp "$EXTRACTED_DIR/tools/updater.sh" "$SCRIPT_DIR/updater.sh"
-  chmod 777 "$SCRIPT_DIR/updater.sh"
-else
-  whiptail --title "1002xTOOLS Updater" --msgbox "updater.sh not found in ZIP tools folder!" 10 50
-fi
-
-UPDATER_NEW_HASH=$(sha256sum "$SCRIPT_DIR/updater.sh" | cut -d' ' -f1)
-
-# Falls updater.sh sich geändert hat, Skript neu starten und beenden
-if [[ "$UPDATER_OLD_HASH" != "$UPDATER_NEW_HASH" ]]; then
-  whiptail --title "1002xTOOLS Updater" --msgbox "updater.sh wurde aktualisiert. Starte neu..." 8 50
-  exec "$SCRIPT_DIR/updater.sh"
-  exit 0
-fi
-
-whiptail --title "1002xTOOLS Updater" --infobox "Updating debui.sh..." 8 50
-
-# 2) Update debui.sh in main version directory, chmod 777
-if [[ -f "$EXTRACTED_DIR/debui.sh" ]]; then
-  cp "$EXTRACTED_DIR/debui.sh" "$SCRIPT_DIR/debui.sh"
+# debui.sh aus tools nach $SCRIPT_DIR verschieben und Rechte auf 777 setzen
+if [[ -f "$TARGET_DIR/debui.sh" ]]; then
+  mv -f "$TARGET_DIR/debui.sh" "$SCRIPT_DIR/debui.sh"
   chmod 777 "$SCRIPT_DIR/debui.sh"
 else
-  whiptail --title "1002xTOOLS Updater" --msgbox "debui.sh not found in ZIP root folder!" 10 50
+  whiptail --title "1002xTOOLS Updater" --msgbox "debui.sh not found in extracted files." 10 50
+  rm -rf "$TMP_DIR"
+  exit 1
 fi
 
-whiptail --title "1002xTOOLS Updater" --infobox "Copying other tools..." 8 50
-
-# 3) Copy all other tool scripts, chmod 777
-cp -r "$EXTRACTED_DIR/tools/"* "$TARGET_DIR/"
-chmod 777 "$TARGET_DIR"/*.sh
-
-# Clean up unwanted files from tools
-rm -f "$TARGET_DIR/LICENSE"
-rm -f "$TARGET_DIR/dev.txt"
-
-# Update local dev.txt version file
+# Aktualisierte Version speichern
 echo "$REPO_VERSION" > "$LOCAL_DEV_FILE"
 
 whiptail --title "1002xTOOLS Updater" --msgbox "Update completed successfully to version $REPO_VERSION." 10 50
 
 rm -rf "$TMP_DIR"
+exit 0
 
-# Exit menu
+# Exit Menü: Hauptmenü oder 1002xTOOLS beenden
 while true; do
   ACTION=$(whiptail --title "Updater finished" --menu "What do you want to do now?" 10 50 2 \
     "1" "Return to main menu" \
@@ -135,8 +112,9 @@ while true; do
 
   case $ACTION in
     "1")
-      if [[ -x "$SCRIPT_DIR/debui.sh" ]]; then
-        exec "$SCRIPT_DIR/debui.sh"
+      PARENT_DIR=$(dirname "$SCRIPT_DIR")
+      if [[ -x "$PARENT_DIR/debui.sh" ]]; then
+        exec "$PARENT_DIR/debui.sh"
       else
         whiptail --msgbox "Main menu script debui.sh not found or not executable!" 10 50
         exit 1
@@ -150,3 +128,6 @@ while true; do
       ;;
   esac
 done
+```
+
+Falls du noch mehr willst, sag Bescheid!
