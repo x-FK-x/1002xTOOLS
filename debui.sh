@@ -59,11 +59,11 @@ CHOICE=$(whiptail --title "1002xTOOLS Menu ($VERSION)" \
   3>&1 1>&2 2>&3)
 
 case "$CHOICE" in
-  "1") bash "$SCRIPT_DIR/tools/updater.sh" ;;
-  "2") bash "$SCRIPT_DIR/tools/installer.sh" ;;
-  "3") bash "$SCRIPT_DIR/tools/remover.sh" ;;
-  "4") bash "$SCRIPT_DIR/tools/systemupgrade.sh" ;;
-  "5") bash "$SCRIPT_DIR/tools/adduser.sh" ;;
-  "6") bash "$SCRIPT_DIR/tools/1002xSHELL-installer.sh" ;;  # ← korrekter Dateiname
+  "1") sudo bash "$SCRIPT_DIR/tools/updater.sh" ;;
+  "2") sudo bash "$SCRIPT_DIR/tools/installer.sh" ;;
+  "3") sudo bash "$SCRIPT_DIR/tools/remover.sh" ;;
+  "4") sudo bash "$SCRIPT_DIR/tools/systemupgrade.sh" ;;
+  "5") sudo bash "$SCRIPT_DIR/tools/adduser.sh" ;;
+  "6") sudo bash "$SCRIPT_DIR/tools/1002xSHELL-installer.sh" ;;  # ← korrekter Dateiname
   "7"|*) clear; exit ;;
 esac
