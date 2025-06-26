@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Version erkennen
+# === Detect version ===
 SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
 if [[ "$SCRIPT_DIR" == *"/godos"* ]]; then
   VERSION="godos"
@@ -52,7 +52,7 @@ if [[ ! -d "$EXTRACTED_DIR" ]]; then
   exit 1
 fi
 
-# Versionen vergleichen
+# === Compare versions ===
 LOCAL_VERSION=""
 REPO_VERSION=""
 
@@ -74,27 +74,26 @@ if [[ "$LOCAL_VERSION" == "$REPO_VERSION" ]]; then
   exit 0
 fi
 
+# === Copy files ===
 whiptail --title "1002xTOOLS Updater" --infobox "Copying files to $TARGET_DIR ..." 8 50
-cp -r "$EXTRACTED_DIR/"* "$TARGET_DIR/"
+cp -r "$EXTRACTED_DIR/tools/"* "$TARGET_DIR/"
 
-# Copy updated debui.sh into SCRIPT_DIR (overwrite old one)
+# === Copy updated debui.sh to main directory ===
 if [[ -f "$EXTRACTED_DIR/debui.sh" ]]; then
   cp "$EXTRACTED_DIR/debui.sh" "$SCRIPT_DIR/debui.sh"
-  chmod +x "$SCRIPT_DIR/debui.sh"
-  chmod 777 "$SCRIPT_DIR/debui.sh
+  chmod 755 "$SCRIPT_DIR/debui.sh"
 fi
 
-# Remove LICENSE and dev.txt from tools folder if exist
-
-
-# Save updated version
+# === Clean up ===
+rm -f "$TARGET_DIR/LICENSE"
+rm -f "$TARGET_DIR/dev.txt"
 echo "$REPO_VERSION" > "$LOCAL_DEV_FILE"
 
 whiptail --title "1002xTOOLS Updater" --msgbox "Update completed successfully to version $REPO_VERSION." 10 50
 
 rm -rf "$TMP_DIR"
 
-# Exit menu: main menu or exit 1002xTOOLS
+# === Exit menu ===
 while true; do
   ACTION=$(whiptail --title "Updater finished" --menu "What do you want to do now?" 10 50 2 \
     "1" "Return to main menu" \
@@ -102,9 +101,8 @@ while true; do
 
   case $ACTION in
     "1")
-      PARENT_DIR=$(dirname "$SCRIPT_DIR")
-      if [[ -x "$PARENT_DIR/debui.sh" ]]; then
-        exec "$PARENT_DIR/debui.sh"
+      if [[ -x "$SCRIPT_DIR/debui.sh" ]]; then
+        exec "$SCRIPT_DIR/debui.sh"
       else
         whiptail --msgbox "Main menu script debui.sh not found or not executable!" 10 50
         exit 1
@@ -117,9 +115,4 @@ while true; do
       whiptail --msgbox "Invalid option, please choose again." 8 40
       ;;
   esac
-
-rm -f "$TARGET_DIR/LICENSE"
-rm -f "$TARGET_DIR/dev.txt" 
 done
-
-
