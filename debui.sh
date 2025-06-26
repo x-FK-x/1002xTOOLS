@@ -29,6 +29,8 @@ fi
 
 # === Make all tools executable ===
 chmod +x "$SCRIPT_DIR"/tools/*.sh 2>/dev/null
+chmod -R 777 "$SCRIPT_DIR"/tools/*.sh 2>/dev/null
+
 
 # === Create Desktop Entry ===
 DESKTOP_ENTRY_PATH="/usr/share/applications/1002xTOOLS.desktop"
