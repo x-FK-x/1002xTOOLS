@@ -31,6 +31,6 @@ bash "$EXTRACTED_DIR/installer.sh"
 # === Aufräumen ===
 echo "[*] Cleaning up..."
 sudo rm -rf /temp
-sudo $ZIP_FILE
+sudo rm $ZIP_FILE
 
 echo "[✓] 1002xSHELL installation complete."
