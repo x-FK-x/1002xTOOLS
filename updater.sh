@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# === Detect version ===
+# Detect version
 SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
 if [[ "$SCRIPT_DIR" == *"/godos"* ]]; then
   VERSION="godos"
@@ -19,7 +19,7 @@ REPO="x-FK-x/1002xTOOLS"
 BRANCH="$VERSION"
 TARGET_DIR="$SCRIPT_DIR/../tools"
 TMP_DIR="$HOME/.1002xTOOLS_temp"
-LOCAL_DEV_FILE="$SCRIPT_DIR/../dev.txt"
+LOCAL_DEV_FILE="$TARGET_DIR/dev.txt"
 
 mkdir -p "$TMP_DIR"
 mkdir -p "$TARGET_DIR"
@@ -45,14 +45,13 @@ if [[ $? -ne 0 ]]; then
 fi
 
 EXTRACTED_DIR="$TMP_DIR/1002xTOOLS-$BRANCH"
-
 if [[ ! -d "$EXTRACTED_DIR" ]]; then
   whiptail --title "1002xTOOLS Updater" --msgbox "Extracted folder not found." 10 50
   rm -rf "$TMP_DIR"
   exit 1
 fi
 
-# === Compare versions ===
+# Compare versions
 LOCAL_VERSION=""
 REPO_VERSION=""
 
@@ -60,40 +59,43 @@ if [[ -f "$LOCAL_DEV_FILE" ]]; then
   LOCAL_VERSION=$(head -n1 "$LOCAL_DEV_FILE")
 fi
 
-if [[ -f "$EXTRACTED_DIR/dev.txt" ]]; then
-  REPO_VERSION=$(head -n1 "$EXTRACTED_DIR/dev.txt")
+if [[ -f "$EXTRACTED_DIR/tools/dev.txt" ]]; then
+  REPO_VERSION=$(head -n1 "$EXTRACTED_DIR/tools/dev.txt")
 else
-  whiptail --title "1002xTOOLS Updater" --msgbox "No dev.txt found in repo. Cannot verify version. Aborting." 10 50
+  whiptail --title "1002xTOOLS Updater" --msgbox "No dev.txt found in repo. Cannot verify version." 10 50
   rm -rf "$TMP_DIR"
   exit 1
 fi
 
 if [[ "$LOCAL_VERSION" == "$REPO_VERSION" ]]; then
-  whiptail --title "1002xTOOLS Updater" --msgbox "Tools are already up to date (version $LOCAL_VERSION)." 10 50
+  whiptail --title "1002xTOOLS Updater" --msgbox "Already up to date (version $LOCAL_VERSION)." 10 50
   rm -rf "$TMP_DIR"
   exit 0
 fi
 
-# === Copy files ===
-whiptail --title "1002xTOOLS Updater" --infobox "Copying files to $TARGET_DIR ..." 8 50
+whiptail --title "1002xTOOLS Updater" --infobox "Updating files..." 8 50
+
+# Copy debui.sh to SCRIPT_DIR
+cp "$EXTRACTED_DIR/debui.sh" "$SCRIPT_DIR/debui.sh"
+chmod 755 "$SCRIPT_DIR/debui.sh"
+
+# Copy tools content
 cp -r "$EXTRACTED_DIR/tools/"* "$TARGET_DIR/"
 
-# === Copy updated debui.sh to main directory ===
-if [[ -f "$EXTRACTED_DIR/debui.sh" ]]; then
-  cp "$EXTRACTED_DIR/debui.sh" "$SCRIPT_DIR/debui.sh"
-  chmod 755 "$SCRIPT_DIR/debui.sh"
-fi
+# Make all tools executable
+chmod -R +x "$TARGET_DIR"
+chmod +x "$SCRIPT_DIR"/debui.sh
 
-# === Clean up ===
+# Remove LICENSE and dev.txt from tools (if any)
 rm -f "$TARGET_DIR/LICENSE"
-rm -f "$TARGET_DIR/dev.txt"
+
+# Save updated version
 echo "$REPO_VERSION" > "$LOCAL_DEV_FILE"
 
-whiptail --title "1002xTOOLS Updater" --msgbox "Update completed successfully to version $REPO_VERSION." 10 50
-
+whiptail --title "1002xTOOLS Updater" --msgbox "Update successful to version $REPO_VERSION." 10 50
 rm -rf "$TMP_DIR"
 
-# === Exit menu ===
+# Final action menu
 while true; do
   ACTION=$(whiptail --title "Updater finished" --menu "What do you want to do now?" 10 50 2 \
     "1" "Return to main menu" \
@@ -104,7 +106,7 @@ while true; do
       if [[ -x "$SCRIPT_DIR/debui.sh" ]]; then
         exec "$SCRIPT_DIR/debui.sh"
       else
-        whiptail --msgbox "Main menu script debui.sh not found or not executable!" 10 50
+        whiptail --msgbox "debui.sh not found or not executable!" 10 50
         exit 1
       fi
       ;;
