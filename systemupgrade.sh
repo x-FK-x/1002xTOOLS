@@ -11,7 +11,6 @@ function run_cmd() {
   CMD=$*
   echo "Running: $SUDO $CMD"
   $SUDO $CMD
-  sudo rm /etc/apt/sources.list.d/mx.list > 2>/dev/null
   local STATUS=$?
   if [[ $STATUS -ne 0 ]]; then
     echo "Error: Command failed: $CMD with exit code $STATUS"
@@ -21,7 +20,7 @@ function run_cmd() {
 
 echo "Starting system update..."
 
-run_cmd rm /etc/apt/sources.list.d/mx.list > 2>/dev/null
+run_cmd rm /etc/apt/sources.list.d/mx.list >/dev/null
 run_cmd apt update
 run_cmd apt upgrade -y
 run_cmd apt autoremove -y
