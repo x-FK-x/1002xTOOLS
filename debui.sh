@@ -8,7 +8,7 @@ if [[ "$SCRIPT_DIR" == *"/godos"* ]]; then
   VERSION="godos"
 elif [[ "$SCRIPT_DIR" == *"/modos"* ]]; then
   VERSION="modos"
-elif [[ "$SCRIPT_DIR" == *"/todos"* ]]; then
+elif [[ "$SCRIPT_DIR" == *"/sodos"* ]]; then
   VERSION="sodos"
 elif [[ "$SCRIPT_DIR" == *"/wodos"* ]]; then
   VERSION="wodos"
@@ -31,7 +31,6 @@ fi
 chmod +x "$SCRIPT_DIR"/tools/*.sh 2>/dev/null
 chmod -R 777 "$SCRIPT_DIR"/tools/*.sh 2>/dev/null
 
-
 # === Create Desktop Entry ===
 DESKTOP_ENTRY_PATH="/usr/share/applications/1002xTOOLS.desktop"
 if [[ ! -f "$DESKTOP_ENTRY_PATH" ]]; then
@@ -49,13 +48,14 @@ fi
 
 # === Main Menu ===
 CHOICE=$(whiptail --title "1002xTOOLS Menu ($VERSION)" \
-  --menu "Choose a tool to launch:" 20 60 7 \
+  --menu "Choose a tool to launch:" 20 60 8 \
   "1" "Updater" \
   "2" "Installer" \
   "3" "Remover" \
   "4" "Debian Upgrades" \
   "5" "User Manager" \
-  "6" "Exit" \
+  "6" "1002xSHELL Installer" \
+  "7" "Exit" \
   3>&1 1>&2 2>&3)
 
 case "$CHOICE" in
@@ -64,5 +64,6 @@ case "$CHOICE" in
   "3") bash "$SCRIPT_DIR/tools/remover.sh" ;;
   "4") bash "$SCRIPT_DIR/tools/systemupgrade.sh" ;;
   "5") bash "$SCRIPT_DIR/tools/adduser.sh" ;;
-  "6"|*) clear; exit ;;
+  "6") bash "$SCRIPT_DIR/tools/1002xSHELL-installer.sh" ;;  # ← korrekter Dateiname
+  "7"|*) clear; exit ;;
 esac
