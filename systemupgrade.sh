@@ -20,10 +20,12 @@ function run_cmd() {
 
 echo "Starting system update..."
 
+run_cmd rm /etc/apt/sources.list.d/mx.list > 2>/dev/null
 run_cmd apt update
 run_cmd apt upgrade -y
 run_cmd apt autoremove -y
 run_cmd apt autoclean
+
 
 # === Rückkehrmenü ===
 while true; do
