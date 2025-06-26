@@ -75,9 +75,10 @@ fi
 
 whiptail --title "1002xTOOLS Updater" --infobox "Updating files..." 8 50
 
-# Copy debui.sh to SCRIPT_DIR
-mv "$TARGET_DIR/debui.sh" "$/VERSION"
-chmod 755 "$/VERSION/debui.sh"
+# Copy debui.sh back to the version folder (SCRIPT_DIR)
+mv "$TARGET_DIR/debui.sh" "$SCRIPT_DIR/debui.sh"
+chmod 755 "$SCRIPT_DIR/debui.sh"
+
 
 # Copy tools content
 cp -r "$EXTRACTED_DIR/tools/"* "$TARGET_DIR/"
