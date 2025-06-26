@@ -76,15 +76,15 @@ fi
 whiptail --title "1002xTOOLS Updater" --infobox "Updating files..." 8 50
 
 # Copy debui.sh to SCRIPT_DIR
-cp "$EXTRACTED_DIR/debui.sh" "$SCRIPT_DIR/debui.sh"
-chmod 755 "$SCRIPT_DIR/debui.sh"
+cp "$EXTRACTED_DIR/debui.sh" "$VERSION/debui.sh"
+chmod 755 "$VERSION/debui.sh"
 
 # Copy tools content
 cp -r "$EXTRACTED_DIR/tools/"* "$TARGET_DIR/"
 
 # Make all tools executable
 chmod -R +x "$TARGET_DIR"
-chmod +x "$SCRIPT_DIR"/debui.sh
+chmod +x "$VERSION"/debui.sh
 
 # Remove LICENSE and dev.txt from tools (if any)
 rm /"$VERSION"/tools/LICENSE
