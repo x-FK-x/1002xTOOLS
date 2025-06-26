@@ -6,7 +6,7 @@ if [[ "$SCRIPT_DIR" == *"/godos"* ]]; then
   VERSION="godos"
 elif [[ "$SCRIPT_DIR" == *"/modos"* ]]; then
   VERSION="modos"
-elif [[ "$SCRIPT_DIR" == *"/sodos"* ]]; then
+elif [[ "$SCRIPT_DIR" == *"/todos"* ]]; then
   VERSION="sodos"
 elif [[ "$SCRIPT_DIR" == *"/wodos"* ]]; then
   VERSION="wodos"
