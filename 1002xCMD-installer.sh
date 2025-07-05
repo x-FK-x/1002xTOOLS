@@ -2,7 +2,7 @@
 
 # === Variablen ===
 
-ZIP_URL="https://github.com/x-FK-x/1002xSHELL/releases/download/v0.2/1002xCMD-0.2.zip"
+ZIP_URL="https://github.com/x-FK-x/1002xCMD/releases/download/v0.2/1002xCMD-0.2.zip"
 ZIP_FILE="1002xCMD-0.2.zip"
 
 
