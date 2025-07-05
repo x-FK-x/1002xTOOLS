@@ -7,7 +7,7 @@ ZIP_FILE="1002xCMD-0.2.zip"
 
 
 # === Herunterladen ===
-echo "[*] Downloading 1002xSHELL..."
+echo "[*] Downloading 1002xCMD..."
 wget -q -O "$ZIP_FILE" "$ZIP_URL"
 
 if [[ $? -ne 0 || ! -f "$ZIP_FILE" ]]; then
@@ -33,4 +33,4 @@ echo "[*] Cleaning up..."
 sudo rm -rf /temp
 sudo rm $ZIP_FILE
 
-echo "[✓] 1002xSHELL installation complete."
+echo "[✓] 1002xCMD installation complete."
