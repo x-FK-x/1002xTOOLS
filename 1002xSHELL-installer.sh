@@ -2,8 +2,8 @@
 
 # === Variablen ===
 
-ZIP_URL="https://github.com/x-FK-x/1002xSHELL/releases/download/v0.2/1002xSHELL-0.2.zip"
-ZIP_FILE="1002xSHELL-0.2.zip"
+ZIP_URL="https://github.com/x-FK-x/1002xCMD/releases/download/v0.2/1002xCMD-0.2.zip"
+ZIP_FILE="1002xCMD-0.2.zip"
 
 
 # === Herunterladen ===
@@ -20,7 +20,7 @@ echo "[*] Extracting archive..."
 sudo mkdir /temp
 sudo unzip -q "$ZIP_FILE" -d /temp
 
-EXTRACTED_DIR=$(find /temp -maxdepth 1 -type d -name "1002xSHELL*" | head -n 1)
+EXTRACTED_DIR=$(find /temp -maxdepth 1 -type d -name "1002xCMD*" | head -n 1)
 
 
 # === Ausführen ===
