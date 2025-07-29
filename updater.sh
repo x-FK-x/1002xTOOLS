@@ -92,6 +92,7 @@ if [[ -f "$TARGET_DIR/debui.sh" ]]; then
   chmod 777 "$SCRIPT_DIR/../debui.sh"
 else
   whiptail --title "1002xTOOLS Updater" --msgbox "debui.sh not found in tools folder after copy." 10 50
+  dir
 fi
 
 # Alle .sh im Zielordner ausführbar machen
