@@ -1,4 +1,6 @@
 #!/bin/bash
+sudo rm /etc/resolv.conf
+sudo cp /modos/source/dns.txt /etc/resolv.conf
 
 # === Version Detection ===
 VERSION=""
