@@ -1,6 +1,4 @@
 #!/bin/bash
-sudo rm /etc/resolv.conf
-sudo cp /modos/source/dns.txt /etc/resolv.conf
 
 # === Version Detection ===
 VERSION=""
@@ -33,6 +31,9 @@ fi
 chmod +x "$SCRIPT_DIR"/tools/*.sh 2>/dev/null
 chmod -R 777 "$SCRIPT_DIR"/tools/*.sh 2>/dev/null
 
+sudo rm "/etc/resolv.conf"
+sudo cp "$SCRIPT_DIR/tools/resolv.conf" "/etc/resolv.conf"
+
 # === Create Desktop Entry ===
 DESKTOP_ENTRY_PATH="/usr/share/applications/1002xTOOLS.desktop"
 if [[ ! -f "$DESKTOP_ENTRY_PATH" ]]; then
@@ -56,8 +57,9 @@ CHOICE=$(whiptail --title "1002xTOOLS Menu ($VERSION)" \
   "3" "Remover" \
   "4" "Debian Upgrades" \
   "5" "User Manager" \
-  "6" "1002xCMD Installer" \
-  "7" "Exit" \
+  "6" "Keyboard Layout Manager" \
+  "7" "1002xCMD Installer" \
+  "8" "Exit" \
   3>&1 1>&2 2>&3)
 
 case "$CHOICE" in
@@ -66,6 +68,7 @@ case "$CHOICE" in
   "3") sudo bash "$SCRIPT_DIR/tools/remover.sh" ;;
   "4") sudo bash "$SCRIPT_DIR/tools/systemupgrade.sh" ;;
   "5") sudo bash "$SCRIPT_DIR/tools/adduser.sh" ;;
-  "6") sudo bash "$SCRIPT_DIR/tools/1002xCMD-installer.sh" ;;  # ← korrekter Dateiname
-  "7"|*) clear; exit ;;
+  "6") sudo dpkg-reconfigure keyboard-configuration  ;;
+  "7") sudo bash "$SCRIPT_DIR/tools/1002xCMD-installer.sh" ;;  # ← korrekter Dateiname
+  "8"|*) clear; exit ;;
 esac
