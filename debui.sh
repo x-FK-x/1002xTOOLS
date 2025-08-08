@@ -68,7 +68,7 @@ case "$CHOICE" in
   "3") sudo bash "$SCRIPT_DIR/tools/remover.sh" ;;
   "4") sudo bash "$SCRIPT_DIR/tools/systemupgrade.sh" ;;
   "5") sudo bash "$SCRIPT_DIR/tools/adduser.sh" ;;
-  "5") sudo dpkg-reconfigure keyboard-configuration  ;;
+  "6") sudo dpkg-reconfigure keyboard-configuration  ;;
   "7") sudo bash "$SCRIPT_DIR/tools/1002xCMD-installer.sh" ;;  # ← korrekter Dateiname
   "8"|*) clear; exit ;;
 esac
