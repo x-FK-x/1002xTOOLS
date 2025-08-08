@@ -32,7 +32,7 @@ chmod +x "$SCRIPT_DIR"/tools/*.sh 2>/dev/null
 chmod -R 777 "$SCRIPT_DIR"/tools/*.sh 2>/dev/null
 
 sudo rm "/etc/resolv.conf"
-sudo cp "$SCRIPT_DIR/tools/resolv.conf" "/etc/resolv.con"
+sudo cp "$SCRIPT_DIR/tools/resolv.conf" "/etc/resolv.conf"
 
 # === Create Desktop Entry ===
 DESKTOP_ENTRY_PATH="/usr/share/applications/1002xTOOLS.desktop"
