@@ -55,7 +55,7 @@ CHOICE=$(whiptail --title "1002xTOOLS Menu ($VERSION)" \
   "4" "Debian Upgrades" \
   "5" "User Manager" \
   "6" "Keyboard Layout Manager" \
-  "7" "1002xCND Installer" \
+  "7" "1002xCMD Installer" \
   "8" "Exit" \
   3>&1 1>&2 2>&3)
 
