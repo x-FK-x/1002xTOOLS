@@ -59,6 +59,7 @@ CHOICE=$(whiptail --title "1002xTOOLS Menu ($VERSION)" \
   "5" "User Manager" \
   "6" "Keyboard Layout Manager" \
   "7" "1002xCMD Installer" \
+  "8" "1002xSUDO Installer" \
   "8" "Exit" \
   3>&1 1>&2 2>&3)
 
@@ -69,6 +70,7 @@ case "$CHOICE" in
   "4") sudo bash "$SCRIPT_DIR/tools/systemupgrade.sh" ;;
   "5") sudo bash "$SCRIPT_DIR/tools/adduser.sh" ;;
   "6") sudo dpkg-reconfigure keyboard-configuration  ;;
-  "7") sudo bash "$SCRIPT_DIR/tools/1002xCMD-installer.sh" ;;  # ← korrekter Dateiname
-  "8"|*) clear; exit ;;
+  "7") sudo bash "$SCRIPT_DIR/tools/1002xCMD-installer.sh" ;; 
+  "8") sudo bash "$SCRIPT_DIR/tools/1002xSUDO-installer.sh" ;; # ← korrekter Dateiname
+  "9"|*) clear; exit ;;
 esac
