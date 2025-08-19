@@ -71,8 +71,9 @@ CHOICE=$(whiptail --title "1002xTOOLS Menu ($VERSION)" \
   "5" "User Manager" \
   "6" "Keyboard Layout Manager" \
   "7" "1002xCMD Installer" \
-  "8" "GODOS Installer" \
-  "9" "Exit" \
+  "8" "1002xSUDO Installer" \
+  "9" "GODOS Installer" \
+  "10" "Exit" \
   3>&1 1>&2 2>&3)
 
 case "$CHOICE" in
