@@ -11,21 +11,36 @@ ROOT_PART="${DISK}1"
 SWAP_PART="${DISK}2"
 HOME_PART="${DISK}3"
 
-# Partitionierung
+# Partitionierung mit fdisk
 echo "Erstelle Partitionstabelle auf ${DISK}..."
-parted ${DISK} --script mklabel gpt
+fdisk ${DISK} <<EOF
+o
+n
+p
+1
 
-# Erstelle Root-Partition (20 GB)
-echo "Erstelle Root-Partition (${ROOT_PART})..."
-parted ${DISK} --script mkpart primary ext4 1MiB 20GiB
++20G
+n
+p
+2
 
-# Erstelle Swap-Partition (2 GB)
-echo "Erstelle Swap-Partition (${SWAP_PART})..."
-parted ${DISK} --script mkpart primary linux-swap 20GiB 22GiB
++2G
+n
+p
+3
 
-# Erstelle Home-Partition (Rest der Festplatte)
-echo "Erstelle Home-Partition (${HOME_PART})..."
-parted ${DISK} --script mkpart primary ext4 22GiB 100%
+
+t
+1
+83
+t
+2
+82
+t
+3
+83
+w
+EOF
 
 # Aktualisiere die Partitionstabelle
 partprobe ${DISK}
@@ -87,4 +102,3 @@ EOF
 umount -R /mnt
 
 echo "Fertig! Dein System ist jetzt installiert. Du kannst jetzt von der Festplatte starten."
-
