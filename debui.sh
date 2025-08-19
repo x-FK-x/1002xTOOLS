@@ -31,6 +31,8 @@ chmod -R 777 "$SCRIPT_DIR"/tools/*.sh 2>/dev/null
 
 sudo rm "/etc/resolv.conf"
 sudo cp "$SCRIPT_DIR/tools/resolv.conf" "/etc/resolv.conf"
+sudo apt remove --purge -y refractainstaller-base refractainstaller-gui
+
 
 # === Create Desktop Entry ===
 DESKTOP_ENTRY_PATH="/usr/share/applications/1002xTOOLS.desktop"
