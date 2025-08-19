@@ -72,7 +72,7 @@ CHOICE=$(whiptail --title "1002xTOOLS Menu ($VERSION)" \
   "6" "Keyboard Layout Manager" \
   "7" "1002xCMD Installer" \
   "8" "1002xSUDO Installer" \
-  "8" "Exit" \
+  "9" "Exit" \
   3>&1 1>&2 2>&3)
 
 case "$CHOICE" in
