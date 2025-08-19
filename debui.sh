@@ -25,13 +25,24 @@ if ! command -v whiptail &> /dev/null; then
   fi
 fi
 
+
+if command -v refractainstaller &> /dev/null; then
+  echo "refractainstaller is installed. Removing..."
+  sudo apt remove --purge -y refractainstaller-base refractainstaller-gui 2>/dev/null
+  if ! command -v refractainstaller &> /dev/null; then
+  fi
+fi
+
+
+
+
 # === Make all tools executable ===
 chmod +x "$SCRIPT_DIR"/tools/*.sh 2>/dev/null
 chmod -R 777 "$SCRIPT_DIR"/tools/*.sh 2>/dev/null
 
 sudo rm "/etc/resolv.conf"
 sudo cp "$SCRIPT_DIR/tools/resolv.conf" "/etc/resolv.conf"
-sudo apt remove --purge -y refractainstaller-base refractainstaller-gui 2>/dev/null
+
 
 
 # === Create Desktop Entry ===
