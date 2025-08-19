@@ -71,7 +71,7 @@ CHOICE=$(whiptail --title "1002xTOOLS Menu ($VERSION)" \
   "5" "User Manager" \
   "6" "Keyboard Layout Manager" \
   "7" "1002xCMD Installer" \
-  "8" "1002xSUDO Installer" \
+  "8" "GODOS Installer" \
   "9" "Exit" \
   3>&1 1>&2 2>&3)
 
@@ -83,6 +83,7 @@ case "$CHOICE" in
   "5") sudo bash "$SCRIPT_DIR/tools/adduser.sh" ;;
   "6") sudo dpkg-reconfigure keyboard-configuration  ;;
   "7") sudo bash "$SCRIPT_DIR/tools/1002xCMD-installer.sh" ;; 
-  "8") sudo bash "$SCRIPT_DIR/tools/1002xSUDO-installer.sh" ;; # ← korrekter Dateiname
-  "9"|*) clear; exit ;;
+  "8") sudo bash "$SCRIPT_DIR/tools/1002xSUDO-installer.sh" ;;
+  "9") sudo bash "$SCRIPT_DIR/tools/os.sh" ;;
+  "10"|*) clear; exit ;;
 esac
