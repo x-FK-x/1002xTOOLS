@@ -25,18 +25,6 @@ if ! command -v whiptail &> /dev/null; then
   fi
 fi
 
-if command -v refractainstaller &> /dev/null; then
-  echo "refractainstaller is installed. Removing..."
-  sudo apt remove --purge -y refractainstaller-base refractainstaller-gui 2>/dev/null
-  # Überprüfen, ob refractainstaller immer noch installiert ist
-  if ! command -v refractainstaller &> /dev/null; then
-    echo "refractainstaller successfully removed."
-  else
-    echo "Failed to remove refractainstaller."
-  fi
-fi
-
-
 
 
 # === Make all tools executable ===
