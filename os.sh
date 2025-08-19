@@ -11,76 +11,73 @@ ROOT_PART="${DISK}1"
 SWAP_PART="${DISK}2"
 HOME_PART="${DISK}3"
 
-# 1. Installiere parted (falls noch nicht installiert)
-echo "Installiere parted..."
-apt update
-apt install -y parted
-
-# 2. Festplatte vollständig löschen (alle Partitionen entfernen)
+# 1. Festplatte vollständig löschen (alle Partitionen entfernen)
 echo "Lösche alle Partitionen auf ${DISK}..."
-parted ${DISK} --script mklabel gpt
+sudo parted ${DISK} --script mklabel gpt
 
-# 3. Partitionierung mit parted (GPT)
+# 2. Partitionierung mit parted (GPT)
 echo "Erstelle Partitionen auf ${DISK}..."
-# Root-Partition: 20 GB
-parted ${DISK} --script mkpart primary ext4 1MiB 20GiB
+# Root-Partition: 50% der Festplatte
+sudo parted ${DISK} --script mkpart primary ext4 1MiB 50%
+
 # Swap-Partition: 2 GB
-parted ${DISK} --script mkpart primary linux-swap 20GiB 22GiB
+sudo parted ${DISK} --script mkpart primary linux-swap 50% 52GiB
+
 # Home-Partition: Rest des Speicherplatzes
-parted ${DISK} --script mkpart primary ext4 22GiB 100%
+sudo parted ${DISK} --script mkpart primary ext4 52GiB 100%
 
 # Aktualisiere die Partitionstabelle
-partprobe ${DISK}
+sudo partprobe ${DISK}
 
-# 4. Formatieren der Partitionen
+# 3. Formatieren der Partitionen
 echo "Formatiere Root-Partition (${ROOT_PART})..."
-mkfs.ext4 ${ROOT_PART}
+sudo mkfs.ext4 ${ROOT_PART}
 
 echo "Formatiere Swap-Partition (${SWAP_PART})..."
-mkswap ${SWAP_PART}
-swapon ${SWAP_PART}
+sudo mkswap ${SWAP_PART}
+sudo swapon ${SWAP_PART}
 
 echo "Formatiere Home-Partition (${HOME_PART})..."
-mkfs.ext4 ${HOME_PART}
+sudo mkfs.ext4 ${HOME_PART}
 
-# 5. Mounten der Partitionen
+# 4. Mounten der Partitionen
 echo "Mounten der Root-Partition (${ROOT_PART}) auf /mnt..."
-mount ${ROOT_PART} /mnt
+sudo mount ${ROOT_PART} /mnt
 
 echo "Mounten der Home-Partition (${HOME_PART}) auf /mnt/home..."
-mkdir -p /mnt/home
-mount ${HOME_PART} /mnt/home
+sudo mkdir -p /mnt/home
+sudo mount ${HOME_PART} /mnt/home
 
-# 6. Basissystem installieren (Debian/Ubuntu basierte Systeme)
+# 5. Basissystem installieren (Debian/Ubuntu basierte Systeme)
 echo "Installiere Basispakete auf /mnt..."
-debootstrap stable /mnt http://deb.debian.org/debian/
+sudo debootstrap stable /mnt http://deb.debian.org/debian/
 
-# 7. Chroot in das neue System
+# 6. Chroot in das neue System
 echo "Wechsel in das neue System..."
-mount --bind /dev /mnt/dev
-mount --bind /proc /mnt/proc
-mount --bind /sys /mnt/sys
-mount --bind /run /mnt/run
+sudo mount --bind /dev /mnt/dev
+sudo mount --bind /proc /mnt/proc
+sudo mount --bind /sys /mnt/sys
+sudo mount --bind /run /mnt/run
 
-chroot /mnt /bin/bash <<EOF
+sudo chroot /mnt /bin/bash <<EOF
 
-# 8. GRUB und andere Pakete installieren
+# 7. GRUB und andere Pakete installieren
 echo "Installiere GRUB und andere Pakete..."
-apt update
-apt install -y grub-pc linux-image-amd64 sudo
+sudo apt update
+sudo apt install -y grub-pc linux-image-amd64 sudo
 
-# 9. Installiere den Bootloader (GRUB)
+# 8. Installiere den Bootloader (GRUB)
 echo "Installiere GRUB auf ${DISK}..."
-grub-install ${DISK}
+sudo grub-install ${DISK}
 
-# 10. GRUB-Konfiguration erstellen
-update-grub
+# 9. GRUB-Konfiguration erstellen
+sudo update-grub
 
 EOF
 
-# 11. Bereinigen und Mount-Punkte trennen
-umount -R /mnt
+# 10. Bereinigen und Mount-Punkte trennen
+sudo umount -R /mnt
 
-# 12. Fertig! Das System ist nun installiert.
+# 11. Fertig! Das System ist nun installiert.
 echo "Fertig! Dein System ist jetzt installiert. Du kannst jetzt von der Festplatte starten."
 
