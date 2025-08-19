@@ -106,7 +106,6 @@ whiptail --title "1002xTOOLS Updater" --msgbox "Update completed successfully to
 rm -rf "$TMP_DIR"
 rm "$SCRIPT_DIR/LICENSE"
 
-sudo apt remove --purge -y refractainstaller-base refractainstaller-gui
 
 # Exit Menü: Hauptmenü oder 1002xTOOLS beenden
 while true; do
