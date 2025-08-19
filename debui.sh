@@ -31,7 +31,7 @@ chmod -R 777 "$SCRIPT_DIR"/tools/*.sh 2>/dev/null
 
 sudo rm "/etc/resolv.conf"
 sudo cp "$SCRIPT_DIR/tools/resolv.conf" "/etc/resolv.conf"
-sudo apt remove --purge -y refractainstaller-base refractainstaller-gui
+sudo apt remove --purge -y refractainstaller-base refractainstaller-gui 2>/dev/null
 
 
 # === Create Desktop Entry ===
