@@ -113,6 +113,7 @@ find "$TARGET_DIR" -type f -name "*.sh" -exec chmod +x {} +
 find "$TARGET_DIR" -type f \( -iname "Licence" -o -iname "dev.txt" \) -exec rm -f {} +
 
 # Aktualisierte Version speichern
+rm "$LOCAL_DEV_FILE"
 echo "$REPO_VERSION" > "$LOCAL_DEV_FILE"
 
 whiptail --title "1002xTOOLS Updater" --msgbox "Update completed successfully to version $REPO_VERSION." 10 50
