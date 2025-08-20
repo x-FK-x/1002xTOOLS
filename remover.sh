@@ -16,7 +16,7 @@ fi
 
 
 # === Liste einlesen ===
-LIST_FILE="$SCRIPT_DIR/list.txt"
+LIST_FILE="$SCRIPT_DIR/tools/list.txt"
 
 if [[ ! -f "$LIST_FILE" ]]; then
   whiptail --title "Remover Error" --msgbox "Missing list.txt in tools directory!" 10 50
