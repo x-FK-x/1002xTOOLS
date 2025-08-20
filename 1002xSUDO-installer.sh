@@ -1,30 +1,5 @@
 #!/bin/bash
 
-# === Version Detection ===
-VERSION=""
-SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
-
-if [[ "$SCRIPT_DIR" == *"/godos"* ]]; then
-  VERSION="godos"
-elif [[ "$SCRIPT_DIR" == *"/modos"* ]]; then
-  VERSION="modos"
-elif [[ "$SCRIPT_DIR" == *"/wodos"* ]]; then
-  VERSION="wodos"
-else
-  whiptail --title "1002xTOOLS Error" --msgbox "No valid version directory detected. Exiting." 10 50
-  exit 1
-fi
-
-# === Ensure whiptail is installed ===
-if ! command -v whiptail &> /dev/null; then
-  echo "Whiptail is not installed. Installing..."
-  sudo apt update && sudo apt install -y whiptail
-  if ! command -v whiptail &> /dev/null; then
-    echo "Failed to install whiptail. Exiting."
-    exit 1
-  fi
-fi
-
 whiptail --title "1002xTOOLS Error" --msgbox "Not yet available." 10 50
 
 # === Rückkehrmenü ===
