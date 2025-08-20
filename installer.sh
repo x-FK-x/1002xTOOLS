@@ -1,22 +1,18 @@
 #!/bin/bash
 
 # === Versionserkennung ===
-SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
-if [[ "$SCRIPT_DIR" == *"/godos"* ]]; then
+if [[ -d /etc/godos ]]; then
   VERSION="godos"
-elif [[ "$SCRIPT_DIR" == *"/modos"* ]]; then
+  SCRIPT_DIR="/etc/godos"
+elif [[ -d /etc/modos ]]; then
   VERSION="modos"
-elif [[ "$SCRIPT_DIR" == *"/wodos"* ]]; then
+  SCRIPT_DIR="/etc/modos"
+elif [[ -d /etc/wodos ]]; then
   VERSION="wodos"
+  SCRIPT_DIR="/etc/wodos"
 else
-  whiptail --title "Installer Error" --msgbox "No valid version directory detected. Exiting." 10 50
+  whiptail --title "Updater Error" --msgbox "No valid version directory detected. Exiting." 10 50
   exit 1
-fi
-
-# === Check whiptail ===
-if ! command -v whiptail &> /dev/null; then
-  echo "Installing whiptail..."
-  sudo apt update && sudo apt install -y whiptail
 fi
 
 # === Liste einlesen ===
