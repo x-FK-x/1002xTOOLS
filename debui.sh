@@ -4,11 +4,11 @@
 VERSION=""
 SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
 
-if [[ "$SCRIPT_DIR" == *"/godos"* ]]; then
+if [[ "$SCRIPT_DIR" == *"/etc/godos"* ]]; then
   VERSION="godos"
-elif [[ "$SCRIPT_DIR" == *"/modos"* ]]; then
+elif [[ "$SCRIPT_DIR" == *"/etc/modos"* ]]; then
   VERSION="modos"
-elif [[ "$SCRIPT_DIR" == *"/wodos"* ]]; then
+elif [[ "$SCRIPT_DIR" == *"/etc/wodos"* ]]; then
   VERSION="wodos"
 else
   whiptail --title "1002xTOOLS Error" --msgbox "No valid version directory detected. Exiting." 10 50
