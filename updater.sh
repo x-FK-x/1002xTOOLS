@@ -124,21 +124,15 @@ while true; do
     "1" "Return to main menu" \
     "2" "Exit 1002xTOOLS" 3>&1 1>&2 2>&3)
 
-  case $ACTION in
+  case "$ACTION" in
     "1")
-      PARENT_DIR=$(dirname "$SCRIPT_DIR")
-      if [[ -x "$PARENT_DIR/debui.sh" ]]; then
-        exec "$PARENT_DIR/debui.sh"
-      else
-        whiptail --msgbox "Main menu script debui.sh not found or not executable!" 10 50
-        exit 1
-      fi
+      bash /etc/godos/debui.sh
       ;;
     "2")
       exit 0
       ;;
     *)
-      whiptail --msgbox "Invalid option, please choose again." 8 40
+      whiptail --msgbox "Invalid option. Please choose again." 8 40
       ;;
   esac
 done
