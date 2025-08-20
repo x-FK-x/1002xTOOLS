@@ -46,7 +46,7 @@ if [[ "$AUTOLOGIN" == "yes" ]]; then
 else
   # Autologin deaktivieren
   sudo rm -f /etc/lightdm/lightdm.conf.d/50-autologin.conf
-  sudo rm -f /etc/sddm.conf.d/10-autologin.conf
+  sudo rm -f /etc/sddm.conf.d/autologin.conf
 fi
 
 # === Abschlussmeldung ===
