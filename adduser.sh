@@ -1,11 +1,5 @@
 #!/bin/bash
 
-# === Whiptail Check ===
-if ! command -v whiptail &>/dev/null; then
-  echo "Whiptail is not installed. Installing..."
-  sudo apt update && sudo apt install -y whiptail
-fi
-
 # === Benutzername abfragen ===
 USERNAME=$(whiptail --inputbox "Enter the new username:" 10 50 3>&1 1>&2 2>&3) || exit 1
 
