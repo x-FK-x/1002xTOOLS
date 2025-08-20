@@ -15,12 +15,6 @@ else
   exit 1
 fi
 
-# === Check whiptail ===
-if ! command -v whiptail &> /dev/null; then
-  echo "Installing whiptail..."
-  sudo apt update && sudo apt install -y whiptail
-fi
-
 # === Liste einlesen ===
 LIST_FILE="$SCRIPT_DIR/list.txt"
 
