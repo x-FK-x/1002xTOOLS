@@ -1,17 +1,19 @@
 #!/bin/bash
 
 # Version erkennen
-SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
-
-case "$SCRIPT_DIR" in
-  */etc/godos*) VERSION="godos" ;;
-  */etc/modos*) VERSION="modos" ;;
-  */etc/wodos*) VERSION="wodos" ;;
-  *)
-    whiptail --title "Updater Error" --msgbox "No valid version directory detected. Exiting." 10 50
-    exit 1
-    ;;
-esac
+if [[ -d /etc/godos ]]; then
+  VERSION="godos"
+  SCRIPT_DIR="/etc/godos"
+elif [[ -d /etc/modos ]]; then
+  VERSION="modos"
+  SCRIPT_DIR="/etc/modos"
+elif [[ -d /etc/wodos ]]; then
+  VERSION="wodos"
+  SCRIPT_DIR="/etc/wodos"
+else
+  whiptail --title "Updater Error" --msgbox "No valid version directory detected. Exiting." 10 50
+  exit 1
+fi
 
 REPO="x-FK-x/1002xTOOLS"
 BRANCH="$VERSION"
