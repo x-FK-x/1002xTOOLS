@@ -15,18 +15,6 @@ else
   exit 1
 fi
 
-# === Ensure whiptail is installed ===
-if ! command -v whiptail &> /dev/null; then
-  echo "Whiptail is not installed. Installing..."
-  sudo apt update && sudo apt install -y whiptail
-  if ! command -v whiptail &> /dev/null; then
-    echo "Failed to install whiptail. Exiting."
-    exit 1
-  fi
-fi
-
-
-
 # === Make all tools executable ===
 chmod +x "$SCRIPT_DIR"/tools/*.sh 2>/dev/null
 chmod -R 777 "$SCRIPT_DIR"/tools/*.sh 2>/dev/null
