@@ -1,10 +1,4 @@
 #!/bin/bash
-
-if ! command -v whiptail &> /dev/null; then
-  echo "Installing whiptail..."
-  sudo apt update && sudo apt install -y whiptail
-fi
-
 # === Versionserkennung ===
 if [[ -d /etc/godos ]]; then
   VERSION="godos"
