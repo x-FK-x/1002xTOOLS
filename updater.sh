@@ -8,6 +8,8 @@ if ! command -v whiptail &> /dev/null; then
   fi
 fi
 
+
+# Version erkennen
 if [[ -d /etc/godos ]]; then
   VERSION="godos"
   SCRIPT_DIR="/etc/godos"
@@ -24,7 +26,7 @@ fi
 
 REPO="x-FK-x/1002xTOOLS"
 BRANCH="$VERSION"
-TARGET_DIR="$SCRIPT_DIR/../tools"
+TARGET_DIR="$SCRIPT_DIR/tools"
 TMP_DIR="$HOME/.1002xtools_temp"
 LOCAL_DEV_FILE="$SCRIPT_DIR/dev.txt"
 
@@ -67,8 +69,6 @@ fi
 LOCAL_VERSION=""
 REPO_VERSION=""
 
-
-
 if [[ -f "$LOCAL_DEV_FILE" ]]; then
   LOCAL_VERSION=$(head -n1 "$LOCAL_DEV_FILE")
 fi
@@ -97,8 +97,8 @@ cp -r "$EXTRACTED_DIR/"* "$TARGET_DIR/"
 
 # Verschiebe debui.sh nach $SCRIPT_DIR/../ und setze Rechte
 if [[ -f "$TARGET_DIR/debui.sh" ]]; then
-  mv "$TARGET_DIR/debui.sh" "$SCRIPT_DIR/../debui.sh"
-  chmod 777 "$SCRIPT_DIR/../debui.sh"
+  mv "$TARGET_DIR/debui.sh" "$SCRIPT_DIR/debui.sh"
+  chmod 777 "$SCRIPT_DIR/debui.sh"
 else
   whiptail --title "1002xTOOLS Updater" --msgbox "debui.sh not found in tools folder after copy." 10 50
 fi
@@ -118,9 +118,9 @@ rm -rf "$TMP_DIR"
 rm "$SCRIPT_DIR/LICENSE"
 
 
-# Exit Menü: Hauptmenü oder 1002xTOOLS beenden
+# === Rückkehrmenü ===
 while true; do
-  ACTION=$(whiptail --title "Updater finished" --menu "What do you want to do now?" 10 50 2 \
+  ACTION=$(whiptail --title Updater finished" --menu "What do you want to do now?" 10 50 2 \
     "1" "Return to main menu" \
     "2" "Exit 1002xTOOLS" 3>&1 1>&2 2>&3)
 
