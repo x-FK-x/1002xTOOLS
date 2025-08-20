@@ -39,7 +39,7 @@ while true; do
 
   case "$ACTION" in
     "1")
-      bash /etc/godos/debui.sh
+      bash /etc/wodos/debui.sh
       ;;
     "2")
       exit 0
