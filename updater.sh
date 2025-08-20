@@ -1,4 +1,13 @@
 #!/bin/bash
+if ! command -v whiptail &> /dev/null; then
+  echo "Whiptail is not installed. Installing..."
+  sudo apt update && sudo apt install -y whiptail
+  if ! command -v whiptail &> /dev/null; then
+    echo "Failed to install whiptail. Exiting."
+    exit 1
+  fi
+fi
+
 
 # Version erkennen
 if [[ -d /etc/godos ]]; then
