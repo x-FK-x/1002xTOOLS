@@ -1,13 +1,14 @@
 #!/bin/bash
 
-# Version erkennen
-SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
-if [[ "$SCRIPT_DIR" == *"/etc/godos"* ]]; then
+if [[ -d /etc/godos ]]; then
   VERSION="godos"
-elif [[ "$SCRIPT_DIR" == *"/etc/modos"* ]]; then
+  SCRIPT_DIR="/etc/godos"
+elif [[ -d /etc/modos ]]; then
   VERSION="modos"
-elif [[ "$SCRIPT_DIR" == *"/etc/wodos"* ]]; then
+  SCRIPT_DIR="/etc/modos"
+elif [[ -d /etc/wodos ]]; then
   VERSION="wodos"
+  SCRIPT_DIR="/etc/wodos"
 else
   whiptail --title "Updater Error" --msgbox "No valid version directory detected. Exiting." 10 50
   exit 1
