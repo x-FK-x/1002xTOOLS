@@ -2,16 +2,16 @@
 
 # Version erkennen
 SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
-if [[ "$SCRIPT_DIR" == *"/etc/godos"* ]]; then
-  VERSION="godos"
-elif [[ "$SCRIPT_DIR" == *"/etc/modos"* ]]; then
-  VERSION="modos"
-elif [[ "$SCRIPT_DIR" == *"/etc/wodos"* ]]; then
-  VERSION="wodos"
-else
-  whiptail --title "Updater Error" --msgbox "No valid version directory detected. Exiting." 10 50
-  exit 1
-fi
+
+case "$SCRIPT_DIR" in
+  */etc/godos*) VERSION="godos" ;;
+  */etc/modos*) VERSION="modos" ;;
+  */etc/wodos*) VERSION="wodos" ;;
+  *)
+    whiptail --title "Updater Error" --msgbox "No valid version directory detected. Exiting." 10 50
+    exit 1
+    ;;
+esac
 
 REPO="x-FK-x/1002xTOOLS"
 BRANCH="$VERSION"
