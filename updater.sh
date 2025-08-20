@@ -14,7 +14,7 @@ else
 fi
 
 REPO="x-FK-x/1002xTOOLS"
-BRANCH="$VERSION-test"
+BRANCH="$VERSION"
 TARGET_DIR="$SCRIPT_DIR/../tools"
 TMP_DIR="$HOME/.1002xtools_temp"
 LOCAL_DEV_FILE="$SCRIPT_DIR/../dev.txt"
