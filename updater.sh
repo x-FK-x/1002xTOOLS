@@ -12,12 +12,15 @@ fi
 # Version erkennen
 if [[ -d /etc/godos ]]; then
   VERSION="godos"
+  LOCAL_DEV_FILE="/etc/godos/dev.txt"
   SCRIPT_DIR="/etc/godos"
 elif [[ -d /etc/modos ]]; then
   VERSION="modos"
+  LOCAL_DEV_FILE="/etc/modos/dev.txt"
   SCRIPT_DIR="/etc/modos"
 elif [[ -d /etc/wodos ]]; then
   VERSION="wodos"
+  LOCAL_DEV_FILE="/etc/wodos/dev.txt"
   SCRIPT_DIR="/etc/wodos"
 else
   whiptail --title "Updater Error" --msgbox "No valid version directory detected. Exiting." 10 50
@@ -28,7 +31,6 @@ REPO="x-FK-x/1002xTOOLS"
 BRANCH="$VERSION"
 TARGET_DIR="$SCRIPT_DIR/../tools"
 TMP_DIR="$HOME/.1002xtools_temp"
-LOCAL_DEV_FILE="$SCRIPT_DIR/../dev.txt"
 
 mkdir -p "$TMP_DIR"
 mkdir -p "$TARGET_DIR"
@@ -56,6 +58,7 @@ fi
 # Debug: Zeige Inhalt des Temp-Ordners
 echo "Contents of $TMP_DIR:"
 ls -l "$TMP_DIR"
+cat $LOCAL_DEV_FILE
 
 EXTRACTED_DIR=$(find "$TMP_DIR" -maxdepth 1 -type d -name "1002xTOOLS*" | head -n 1)
 
