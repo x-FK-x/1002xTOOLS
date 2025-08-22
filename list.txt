@@ -5,3 +5,4 @@ steam
 libreoffice-common
 lutris
 synaptic
+plasma-discover
