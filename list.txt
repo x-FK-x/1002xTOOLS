@@ -1,2 +1,4 @@
 firefox-esr
 vlc
+libreoffice-common
+wine
