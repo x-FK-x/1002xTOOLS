@@ -120,7 +120,7 @@ rm "$SCRIPT_DIR/LICENSE"
 
 # === Rückkehrmenü ===
 while true; do
-  ACTION=$(whiptail --title Updater finished" --menu "What do you want to do now?" 10 50 2 \
+  ACTION=$(whiptail --title "Updater finished" --menu "What do you want to do now?" 10 50 2 \
     "1" "Return to main menu" \
     "2" "Exit 1002xTOOLS" 3>&1 1>&2 2>&3)
 
