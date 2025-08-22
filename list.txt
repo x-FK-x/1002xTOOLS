@@ -4,3 +4,4 @@ wine
 steam
 libreoffice-common
 lutris
+synaptic
