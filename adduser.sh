@@ -8,7 +8,6 @@ if id "$USERNAME" &>/dev/null; then
   whiptail --title "User Config" --msgbox "User '$USERNAME' already exists." 10 50
 else
   sudo adduser "$USERNAME"
-  sudo usermod -aG sudo "$USERNAME"
 fi
 
 # === Autologin fragen ===
