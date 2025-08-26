@@ -2,7 +2,7 @@ firefox-esr
 vlc
 wine-stable
 steam
-libreoffice-common
+libreoffice-base
 lutris
 synaptic
 plasma-discover
