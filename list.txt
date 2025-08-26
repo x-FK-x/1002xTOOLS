@@ -4,3 +4,4 @@ libreoffice-base
 wine-stable
 synaptic
 gnome-system-tools
+keepass2
