@@ -47,10 +47,11 @@ CHOICE=$(whiptail --title "1002xTOOLS Menu ($VERSION)" \
   "3" "Remover" \
   "4" "Debian Upgrades" \
   "5" "User Manager" \
-  "6" "Keyboard Layout Manager" \
-  "7" "1002xCMD Installer" \
-  "8" "1002xSUDO Installer" \
-  "9" "Exit" \
+  "6") "Language Settings" \
+  "7") "Keyboard Settings" \ 
+  "8" "1002xCMD Installer" \
+  "9" "1002xSUDO Installer" \
+  "10" "Exit" \
   3>&1 1>&2 2>&3)
 
 case "$CHOICE" in
@@ -59,8 +60,9 @@ case "$CHOICE" in
   "3") sudo bash "$SCRIPT_DIR/tools/remover.sh" ;;
   "4") sudo bash "$SCRIPT_DIR/tools/systemupgrade.sh" ;;
   "5") sudo bash "$SCRIPT_DIR/tools/adduser.sh" ;;
-  "6") sudo dpkg-reconfigure keyboard-configuration  ;;
-  "7") sudo bash "$SCRIPT_DIR/tools/1002xCMD-installer.sh" ;; 
-  "8") sudo bash "$SCRIPT_DIR/tools/1002xSUDO-installer.sh" ;; # ← korrekter Dateiname
-  "9"|*) clear; exit ;;
+  "6") sudo dpkg-reconfigure locales  ;;
+  "7") sudo dpkg-reconfigure keyboard-configuration  ;;
+  "8") sudo bash "$SCRIPT_DIR/tools/1002xCMD-installer.sh" ;; 
+  "9") sudo bash "$SCRIPT_DIR/tools/1002xSUDO-installer.sh" ;; # ← korrekter Dateiname
+  "10"|*) clear; exit ;;
 esac
