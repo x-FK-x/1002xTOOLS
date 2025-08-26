@@ -3,3 +3,4 @@ vlc
 libreoffice-common
 wine
 synaptic
+gnome-system-tools
