@@ -4,6 +4,5 @@ wine-stable
 steam
 libreoffice-base
 lutris
-synaptic
 plasma-discover
 keepass2
