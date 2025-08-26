@@ -6,3 +6,4 @@ libreoffice-base
 lutris
 synaptic
 plasma-discover
+keepass2
