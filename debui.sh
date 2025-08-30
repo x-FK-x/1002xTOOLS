@@ -24,6 +24,13 @@ chmod -R 777 "$SCRIPT_DIR"/tools/*.sh 2>/dev/null
 sudo rm "/etc/resolv.conf"
 sudo cp "$SCRIPT_DIR/tools/resolv.conf" "/etc/resolv.conf"
 
+LOCAL_DEV_FILE="$SCRIPT_DIR/dev.txt"
+LOCAL_VERSION=""
+if [[ -f "$LOCAL_DEV_FILE" ]]; then
+  LOCAL_VERSION=$(head -n1 "$LOCAL_DEV_FILE")
+fi
+
+
 # === Create Desktop Entry ===
 DESKTOP_ENTRY_PATH="/usr/share/applications/1002xTOOLS.desktop"
 if [[ ! -f "$DESKTOP_ENTRY_PATH" ]]; then
@@ -40,7 +47,7 @@ EOF
 fi
 
 # === Main Menu ===
-CHOICE=$(whiptail --title "1002xTOOLS Menu ($VERSION)" \
+CHOICE=$(whiptail --title "1002xTOOLS Menu ($VERSION ERNO $LOCAL_VERSION)" \
   --menu "Choose a tool to launch:" 20 60 8 \
   "1" "Updater" \
   "2" "Installer" \
