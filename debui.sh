@@ -8,7 +8,7 @@ elif [[ -d /etc/modos ]]; then
   VERSION="modos"
   SCRIPT_DIR="/etc/modos"
 elif [[ -d /etc/wodos ]]; then
-  VERSION="wodos"
+  VERSION="WODOS"
   SCRIPT_DIR="/etc/wodos"
 else
   whiptail --title "Updater Error" --msgbox "No valid version directory detected. Exiting." 10 50
