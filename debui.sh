@@ -47,7 +47,7 @@ EOF
 fi
 
 # === Main Menu ===
-CHOICE=$(whiptail --title "1002xTOOLS Menu ($VERSION ERNO $LOCAL_VERSION)" \
+CHOICE=$(whiptail --title "1002xTOOLS Menu ($VERSION VERNO $LOCAL_VERSION)" \
   --menu "Choose a tool to launch:" 20 60 8 \
   "1" "Updater of 1002xTOOLS" \
   "2" "Installer of Software" \
