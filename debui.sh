@@ -50,8 +50,8 @@ fi
 CHOICE=$(whiptail --title "1002xTOOLS Menu ($VERSION VERNO $LOCAL_VERSION)" \
   --menu "Choose a tool to launch:" 20 60 8 \
   "1" "Updater" \
-  "2" "Installer" \
-  "3" "Remover" \
+  "2" "Installer for Software" \
+  "3" "Remover for Software" \
   "4" "Debian Upgrades" \
   "5" "Add User" \
   "6" "Language Settings" \
