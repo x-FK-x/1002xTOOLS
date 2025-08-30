@@ -1,6 +1,6 @@
 firefox-esr
 vlc
-wine-stable
+wine-stable wine
 steam
 libreoffice-base
 lutris
