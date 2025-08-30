@@ -2,13 +2,13 @@
 
 # === Version Detection ===
 if [[ -d /etc/godos ]]; then
-  VERSION="godos"
+  VERSION="GODOS"
   SCRIPT_DIR="/etc/godos"
 elif [[ -d /etc/modos ]]; then
-  VERSION="modos"
+  VERSION="MODOS"
   SCRIPT_DIR="/etc/modos"
 elif [[ -d /etc/wodos ]]; then
-  VERSION="wodos"
+  VERSION="VERSION"
   SCRIPT_DIR="/etc/wodos"
 else
   whiptail --title "Updater Error" --msgbox "No valid version directory detected. Exiting." 10 50
@@ -47,7 +47,7 @@ EOF
 fi
 
 # === Main Menu ===
-CHOICE=$(whiptail --title "1002xTOOLS Menu ($VERSION)" \
+CHOICE=$(whiptail --title "1002xTOOLS Menu ($VERSION VERNO $LOCAL_VERSION)" \
   --menu "Choose a tool to launch:" 20 60 8 \
   "1" "Updater" \
   "2" "Installer" \
