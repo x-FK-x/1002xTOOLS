@@ -10,6 +10,15 @@ else
   sudo adduser "$USERNAME"
 fi
 
+SUDO=$(whiptail --title "SUDO" --yesno "Should '$USERNAME' get SUDO/ROOT rights?" 10 60 3>&1 1>&2 2>&3 && echo "yes" || echo "no")
+
+if [[ "$SUDO" == "yes" ]]; then
+ sudo echo "$USERNAME  ALL=(ALL:ALL) ALL" >> /etc/sudoers
+ sudo adduser $USERNAME sudo
+fi
+
+
+
 # === Autologin fragen ===
 AUTOLOGIN=$(whiptail --title "Autologin" --yesno "Should '$USERNAME' be configured for autologin?" 10 60 3>&1 1>&2 2>&3 && echo "yes" || echo "no")
 
@@ -43,4 +52,4 @@ else
 fi
 
 # === Abschlussmeldung ===
-whiptail --title "User Config" --msgbox "Configuration complete.\nUser: $USERNAME\nAutologin: $AUTOLOGIN\nSudo: Granted" 10 50
+whiptail --title "User Config" --msgbox "Configuration complete.\nUser: $USERNAME\nAutologin: $AUTOLOGIN\nSudo-Rights: $SUDO" 10 50
