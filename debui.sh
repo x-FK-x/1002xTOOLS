@@ -54,11 +54,12 @@ CHOICE=$(whiptail --title "1002xTOOLS Menu ($VERSION VERNO $LOCAL_VERSION)" \
   "3" "Remover of Software" \
   "4" "Debian Upgrades" \
   "5" "Add User" \
-  "6" "Language Settings" \
-  "7" "Keyboard Manager" \
-  "8" "1002xCMD Installer" \
-  "9" "1002xSUDO Installer" \
-  "10" "Exit" \
+  "6" "Delete User" \
+  "7" "Language Settings" \
+  "8" "Keyboard Manager" \
+  "9" "1002xCMD Installer" \
+  "10" "1002xSUDO Installer" \
+  "11" "Exit" \
   3>&1 1>&2 2>&3)
 
 case "$CHOICE" in
@@ -67,9 +68,10 @@ case "$CHOICE" in
   "3") sudo bash "$SCRIPT_DIR/tools/remover.sh" ;;
   "4") sudo bash "$SCRIPT_DIR/tools/systemupgrade.sh" ;;
   "5") sudo bash "$SCRIPT_DIR/tools/adduser.sh" ;;
-  "6") sudo dpkg-reconfigure locales  ;;
-  "7") sudo dpkg-reconfigure keyboard-configuration  ;;
-  "8") sudo bash "$SCRIPT_DIR/tools/1002xCMD-installer.sh" ;; 
-  "9") sudo bash "$SCRIPT_DIR/tools/1002xSUDO-installer.sh" ;; # ← korrekter Dateiname
-  "10"|*) clear; exit ;;
+  "6") sudo bash "$SCRIPT_DIR/tools/deluser.sh" ;;
+  "7") sudo dpkg-reconfigure locales  ;;
+  "8") sudo dpkg-reconfigure keyboard-configuration  ;;
+  "9") sudo bash "$SCRIPT_DIR/tools/1002xCMD-installer.sh" ;; 
+  "10") sudo bash "$SCRIPT_DIR/tools/1002xSUDO-installer.sh" ;; # ← korrekter Dateiname
+  "11"|*) clear; exit ;;
 esac
