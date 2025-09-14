@@ -49,7 +49,6 @@ if [[ -f "$OS_FILE" ]]; then
 else
     OS_VERSION="Unknown"
 fi
-
 log "OS version: $OS_VERSION"
 
 # === Repo & Temp ===
@@ -129,7 +128,7 @@ fi
 cp -f "$TMP_DIR/dev.txt" "$LOCAL_DEV_FILE"
 log "Copied dev.txt to $LOCAL_DEV_FILE"
 
-# debui.sh
+# debui.sh aus V1 kopieren
 if [[ -f "$EXTRACTED_DIR/debui.sh" ]]; then
     cp -f "$EXTRACTED_DIR/debui.sh" "$SCRIPT_DIR/debui.sh"
     chmod +x "$SCRIPT_DIR/debui.sh"
@@ -144,8 +143,11 @@ if [[ -d "$EXTRACTED_DIR/tools" ]]; then
     for file in "$EXTRACTED_DIR/tools/"*.sh; do
         [ -f "$file" ] || continue
         cp -f "$file" "$TARGET_TOOLS_DIR/"
+        chmod +x "$TARGET_TOOLS_DIR/$(basename "$file")"
         log "Copied $file to $TARGET_TOOLS_DIR/"
     done
+else
+    log "No tools folder found in V1"
 fi
 
 # Alle .sh im Ziel ausführbar machen
