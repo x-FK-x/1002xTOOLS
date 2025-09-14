@@ -27,13 +27,13 @@ fi
 
 REPO="x-FK-x/1002xTOOLS"
 BRANCH="$VERSION"
-TARGET_DIR="$SCRIPT_DIR/tools"
 TMP_DIR="$HOME/.1002xtools_temp"
-LOCAL_DEV_FILE="$SCRIPT_DIR/dev.txt"
 FOLDER="V1"   # Ordner, der aus dem Repo extrahiert werden soll
+TARGET_TOOLS_DIR="$SCRIPT_DIR/tools"
+LOCAL_DEV_FILE="$SCRIPT_DIR/dev.txt"
 
 mkdir -p "$TMP_DIR"
-mkdir -p "$TARGET_DIR"
+mkdir -p "$TARGET_TOOLS_DIR"
 
 whiptail --title "1002xTOOLS Updater" --infobox "Downloading $BRANCH.zip archive..." 8 50
 
@@ -47,6 +47,7 @@ if [[ $? -ne 0 ]]; then
   exit 1
 fi
 
+# Repo entpacken
 whiptail --title "1002xTOOLS Updater" --infobox "Extracting archive..." 8 50
 unzip -q -o "$ZIP_FILE" -d "$TMP_DIR"
 if [[ $? -ne 0 ]]; then
@@ -55,29 +56,24 @@ if [[ $? -ne 0 ]]; then
   exit 1
 fi
 
-# Ordner im Temp-Verzeichnis ermitteln
-EXTRACTED_DIR=$(find "$TMP_DIR" -maxdepth 1 -type d -name "1002xTOOLS*" | head -n 1)
+# Ordner V1 im entpackten Repo finden
+EXTRACTED_DIR=$(find "$TMP_DIR" -type d -name "$FOLDER" | head -n 1)
 if [[ ! -d "$EXTRACTED_DIR" ]]; then
-  whiptail --title "1002xTOOLS Updater" --msgbox "Extracted folder not found." 10 50
+  whiptail --title "1002xTOOLS Updater" --msgbox "Folder $FOLDER not found in the repo." 10 50
   rm -rf "$TMP_DIR"
   exit 1
 fi
 
-# Versionen vergleichen
-LOCAL_VERSION=""
-REPO_VERSION=""
-
-if [[ -f "$LOCAL_DEV_FILE" ]]; then
-  LOCAL_VERSION=$(head -n1 "$LOCAL_DEV_FILE")
-fi
-
-if [[ -f "$EXTRACTED_DIR/dev.txt" ]]; then
-  REPO_VERSION=$(head -n1 "$EXTRACTED_DIR/dev.txt")
-else
-  whiptail --title "1002xTOOLS Updater" --msgbox "No dev.txt found in repo. Cannot verify version. Aborting." 10 50
+# Versionsprüfung
+REPO_DEV_FILE="$EXTRACTED_DIR/dev.txt"
+if [[ ! -f "$REPO_DEV_FILE" ]]; then
+  whiptail --title "1002xTOOLS Updater" --msgbox "dev.txt not found in $FOLDER. Cannot verify version." 10 50
   rm -rf "$TMP_DIR"
   exit 1
 fi
+
+REPO_VERSION=$(head -n1 "$REPO_DEV_FILE")
+LOCAL_VERSION=$( [[ -f "$LOCAL_DEV_FILE" ]] && head -n1 "$LOCAL_DEV_FILE" || echo "" )
 
 if [[ "$LOCAL_VERSION" == "$REPO_VERSION" ]]; then
   whiptail --title "1002xTOOLS Updater" --msgbox "Tools are already up to date (version $LOCAL_VERSION)." 10 50
@@ -85,41 +81,32 @@ if [[ "$LOCAL_VERSION" == "$REPO_VERSION" ]]; then
   exit 0
 fi
 
-whiptail --title "1002xTOOLS Updater" --infobox "Copying $FOLDER to $TARGET_DIR ..." 8 50
+# --- Dateien kopieren ---
 
-# Nur den Unterordner V1 kopieren
-if [[ -d "$EXTRACTED_DIR/$FOLDER" ]]; then
-    # Alte .sh Dateien im Zielordner löschen
-    find "$TARGET_DIR" -type f -name "*.sh" -exec rm -f {} +
+# dev.txt nach SCRIPT_DIR
+cp -f "$REPO_DEV_FILE" "$LOCAL_DEV_FILE"
 
-    # Nur den Inhalt von V1 kopieren
-    cp -r "$EXTRACTED_DIR/$FOLDER/"* "$TARGET_DIR/"
-
-    # debui.sh verschieben und Rechte setzen, falls vorhanden
-    if [[ -f "$TARGET_DIR/debui.sh" ]]; then
-        mv "$TARGET_DIR/debui.sh" "$SCRIPT_DIR/debui.sh"
-        chmod 777 "$SCRIPT_DIR/debui.sh"
-    fi
-
-    # Alle .sh im Zielordner ausführbar machen
-    find "$TARGET_DIR" -type f -name "*.sh" -exec chmod +x {} +
-
-    # "Licence" und dev.txt aus Zielordner entfernen
-    find "$TARGET_DIR" -type f \( -iname "Licence" -o -iname "dev.txt" \) -exec rm -f {} +
+# debui.sh nach SCRIPT_DIR
+if [[ -f "$EXTRACTED_DIR/debui.sh" ]]; then
+  cp -f "$EXTRACTED_DIR/debui.sh" "$SCRIPT_DIR/debui.sh"
 else
-    whiptail --title "1002xTOOLS Updater" --msgbox "Folder $FOLDER not found in the repo." 10 50
-    rm -rf "$TMP_DIR"
-    exit 1
+  whiptail --title "1002xTOOLS Updater" --msgbox "debui.sh not found in $FOLDER." 10 50
 fi
 
-# Aktualisierte Version speichern
-echo "$REPO_VERSION" > "$LOCAL_DEV_FILE"
+# Alles aus V1/tools nach SCRIPT_DIR/tools kopieren (überschreiben/ergänzen)
+if [[ -d "$EXTRACTED_DIR/tools" ]]; then
+  cp -ru "$EXTRACTED_DIR/tools/"* "$TARGET_TOOLS_DIR/"
+else
+  whiptail --title "1002xTOOLS Updater" --msgbox "No tools folder found in $FOLDER." 10 50
+fi
+
+# Alle .sh im Ziel ausführbar machen
+find "$SCRIPT_DIR" -type f -name "*.sh" -exec chmod +x {} +
+
+# Cleanup
+rm -rf "$TMP_DIR"
 
 whiptail --title "1002xTOOLS Updater" --msgbox "Update completed successfully to version $REPO_VERSION." 10 50
-
-# Temp aufräumen
-rm -rf "$TMP_DIR"
-rm -f "$SCRIPT_DIR/LICENSE"
 
 # === Rückkehrmenü ===
 while true; do
