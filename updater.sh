@@ -65,9 +65,9 @@ if [[ ! -d "$EXTRACTED_ROOT" ]]; then
 fi
 
 # Ordner V1
-EXTRACTED_DIR="$EXTRACTED_ROOT/V1"
+EXTRACTED_DIR="$EXTRACTED_ROOT/$FOLDER"
 if [[ ! -d "$EXTRACTED_DIR" ]]; then
-  whiptail --title "1002xTOOLS Updater" --msgbox "Folder V1 not found in the repo." 10 50
+  whiptail --title "1002xTOOLS Updater" --msgbox "Folder $FOLDER not found in the repo." 10 50
   rm -rf "$TMP_DIR"
   exit 1
 fi
@@ -97,12 +97,14 @@ else
   whiptail --title "1002xTOOLS Updater" --msgbox "debui.sh not found in V1." 10 50
 fi
 
-# Alles aus V1/tools nach SCRIPT_DIR/tools kopieren (bestehende Dateien überschreiben/ergänzen)
-if [[ -d "$EXTRACTED_DIR/tools" ]]; then
-  cp -ru "$EXTRACTED_DIR/tools/"* "$TARGET_TOOLS_DIR/"
-else
-  whiptail --title "1002xTOOLS Updater" --msgbox "No tools folder found in V1." 10 50
-fi
+# Alle anderen .sh-Dateien nach tools kopieren (debui.sh und dev.txt ausgeschlossen)
+mkdir -p "$TARGET_TOOLS_DIR"
+for file in "$EXTRACTED_DIR"/*.sh; do
+    filename=$(basename "$file")
+    if [[ "$filename" != "debui.sh" ]]; then
+        cp -u "$file" "$TARGET_TOOLS_DIR/"
+    fi
+done
 
 # Alle .sh im Ziel ausführbar machen
 find "$SCRIPT_DIR" -type f -name "*.sh" -exec chmod +x {} +
