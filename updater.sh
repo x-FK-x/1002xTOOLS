@@ -137,7 +137,7 @@ if [[ -f "$EXTRACTED_DIR/debui.sh" ]]; then
     log "Copied debui.sh to $SCRIPT_DIR/debui.sh"
 else
     log "debui.sh not found in folder."
-    whiptail --title "Updater" --msgbox "debui.sh not found in V1 folder." 10 50
+    whiptail --title "Updater" --msgbox "debui.sh not found in folder." 10 50
 fi
 
 # motd 
@@ -146,7 +146,7 @@ if [[ -f "$EXTRACTED_DIR/tools/motd" ]]; then
        log "Copied motd to $SCRIPT_DIR/tools/motd"
 else
     log "motd not found in folder."
-    whiptail --title "Updater" --msgbox "motd not found in V1 folder." 10 50
+    whiptail --title "Updater" --msgbox "motd not found in folder." 10 50
 fi
 
 # osversion 
@@ -155,7 +155,7 @@ if [[ -f "$EXTRACTED_DIR/tools/osversion.txt" ]]; then
     log "Copied osversion.txt to $SCRIPT_DIR/tools/osversion.txt"
 else
     log "osversion.txt not found in folder."
-    whiptail --title "Updater" --msgbox "osversion.txt not found in V1 folder." 10 50
+    whiptail --title "Updater" --msgbox "osversion.txt not found in folder." 10 50
 fi
 
 
@@ -177,7 +177,7 @@ fi
 find "$SCRIPT_DIR" -type f -name "*.sh" -exec chmod +x {} +
 
 # Alias für alle User setzen
-ALIAS_LINE='alias 1002xTOOLS="sudo bash '"$SCRIPT_DIR"'/debui.sh"'
+ALIAS_LINE='alias 1002xUPDATES="sudo bash '"$SCRIPT_DIR"'/tools/updater.sh"'
 if ! grep -Fxq "$ALIAS_LINE" /etc/bash.bashrc; then
     echo "$ALIAS_LINE" | sudo tee -a /etc/bash.bashrc >/dev/null
     log "Alias added to /etc/bash.bashrc"
