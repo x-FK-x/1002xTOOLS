@@ -42,13 +42,9 @@ fi
 
 log "Detected version: $VERSION, SCRIPT_DIR: $SCRIPT_DIR"
 
+OS_VERSION=0
 # === OS-Version prüfen ===
-OS_FILE="$SCRIPT_DIR/tools/osversion.txt"
-if [[ -f "$OS_FILE" ]]; then
-    cat $OS_FILE
-else
-    OS_VERSION="Unknown"
-fi
+cat "/etc/godos/tools/osversion.txt" > $OS_VERSION
 log "OS version: $OS_VERSION"
 
 # === Repo & Temp ===
