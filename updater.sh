@@ -40,6 +40,10 @@ else
     exit 1
 fi
 
+sudo touch "/etc/wodos/tools/osversion.txt"
+echo "1" > "/etc/wodos/tools/osversion.txt"
+
+
 log "Detected version: $VERSION, SCRIPT_DIR: $SCRIPT_DIR"
 OS_VERSION=$(head -n1 "/etc/godos/tools/osversion.txt")
 echo "$OS_VERSION"
@@ -56,8 +60,6 @@ else
     log "Unkown Version: $OS_VERSION"
     exit 0
 fi
-
-
 
 # === Repo & Temp ===
 REPO="x-FK-x/1002xTOOLS"
