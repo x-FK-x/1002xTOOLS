@@ -59,7 +59,7 @@ fi
 # Root-Verzeichnis des entpackten Repos
 EXTRACTED_ROOT=$(find "$TMP_DIR" -maxdepth 1 -type d -name "1002xTOOLS*" | head -n1)
 if [[ ! -d "$EXTRACTED_ROOT" ]]; then
- # whiptail --title "1002xTOOLS Updater" --msgbox "Extracted repo folder not found." 10 50
+  whiptail --title "1002xTOOLS Updater" --msgbox "Extracted repo folder not found." 10 50
   rm -rf "$TMP_DIR"
   exit 1
 fi
@@ -97,7 +97,7 @@ else
   whiptail --title "1002xTOOLS Updater" --msgbox "debui.sh not found in V1." 10 50
 fi
 
-# Alle anderen .sh-Dateien nach tools kopieren (debui.sh und dev.txt ausgeschlossen)
+# Alle anderen .sh-Dateien nach tools kopieren (debui.sh ausgeschlossen)
 mkdir -p "$TARGET_TOOLS_DIR"
 for file in "$EXTRACTED_DIR"/*.sh; do
     filename=$(basename "$file")
