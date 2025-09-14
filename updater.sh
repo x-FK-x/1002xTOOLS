@@ -119,6 +119,12 @@ else
     whiptail --title "1002xTOOLS Updater" --msgbox "debui.sh not found in folder." 10 50
 fi
 
+if [[ -f "$EXTRACTED_DIR/dev.txt" ]]; then
+    cp -f "$EXTRACTED_DIR/dev.txt" "$SCRIPT_DIR/dev.txt"
+else
+    whiptail --title "1002xTOOLS Updater" --msgbox "dev.txt not found in folder." 10 50
+fi
+
 # Alle .sh-Dateien aus V1/tools nach tools kopieren
 if [[ -d "$EXTRACTED_DIR/tools" ]]; then
     for file in "$EXTRACTED_DIR/tools/"*.sh; do
