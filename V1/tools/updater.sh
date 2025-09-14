@@ -45,9 +45,6 @@ OS_VERSION=$(head -n1 "/etc/godos/tools/osversion.txt")
 echo "$OS_VERSION"
 log "OS version: $OS_VERSION"
 
-OS_VERSION=$(head -n1 "/etc/godos/tools/osversion.txt")
-log "OS version: $OS_VERSION"
-
 if [ "$OS_VERSION" = "1" ]; then
     log "Version 1"
     whiptail --title "Updater" --msgbox "V1 installed. Continue." 10 50
