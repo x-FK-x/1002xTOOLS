@@ -56,7 +56,7 @@ if [[ $? -ne 0 ]]; then
   exit 1
 fi
 
-# Root-Verzeichnis des entpackten Repos ermitteln
+# Root-Verzeichnis des entpackten Repos
 EXTRACTED_ROOT=$(find "$TMP_DIR" -maxdepth 1 -type d -name "1002xTOOLS*" | head -n1)
 if [[ ! -d "$EXTRACTED_ROOT" ]]; then
   whiptail --title "1002xTOOLS Updater" --msgbox "Extracted repo folder not found." 10 50
@@ -64,23 +64,20 @@ if [[ ! -d "$EXTRACTED_ROOT" ]]; then
   exit 1
 fi
 
-# Ordner V1 unter Root
+# Ordner V1
 EXTRACTED_DIR="$EXTRACTED_ROOT/V1"
 if [[ ! -d "$EXTRACTED_DIR" ]]; then
-    whiptail --title "1002xTOOLS Updater" --msgbox "Folder V1 not found in the repo." 10 50
-    rm -rf "$TMP_DIR"
-    exit 1
+  whiptail --title "1002xTOOLS Updater" --msgbox "Folder V1 not found in the repo." 10 50
+  rm -rf "$TMP_DIR"
+  exit 1
 fi
+
+# dev.txt aus Temp kopieren für Versionscheck
+TMP_DEV_FILE="$TMP_DIR/dev.txt"
+cp -f "$EXTRACTED_DIR/dev.txt" "$TMP_DEV_FILE"
 
 # Versionsprüfung
-REPO_DEV_FILE="$EXTRACTED_DIR/dev.txt"
-if [[ ! -f "$REPO_DEV_FILE" ]]; then
-    whiptail --title "1002xTOOLS Updater" --msgbox "dev.txt not found in V1. Cannot verify version." 10 50
-    rm -rf "$TMP_DIR"
-    exit 1
-fi
-
-REPO_VERSION=$(head -n1 "$REPO_DEV_FILE")
+REPO_VERSION=$(head -n1 "$TMP_DEV_FILE")
 LOCAL_VERSION=$( [[ -f "$LOCAL_DEV_FILE" ]] && head -n1 "$LOCAL_DEV_FILE" || echo "" )
 
 if [[ "$LOCAL_VERSION" == "$REPO_VERSION" ]]; then
@@ -91,7 +88,7 @@ fi
 
 # --- Dateien kopieren ---
 # dev.txt nach SCRIPT_DIR
-cp -f "$REPO_DEV_FILE" "$LOCAL_DEV_FILE"
+cp -f "$TMP_DEV_FILE" "$LOCAL_DEV_FILE"
 
 # debui.sh nach SCRIPT_DIR
 if [[ -f "$EXTRACTED_DIR/debui.sh" ]]; then
@@ -100,7 +97,7 @@ else
   whiptail --title "1002xTOOLS Updater" --msgbox "debui.sh not found in V1." 10 50
 fi
 
-# Alles aus V1/tools nach SCRIPT_DIR/tools kopieren (überschreiben/ergänzen)
+# Alles aus V1/tools nach SCRIPT_DIR/tools kopieren (bestehende Dateien überschreiben/ergänzen)
 if [[ -d "$EXTRACTED_DIR/tools" ]]; then
   cp -ru "$EXTRACTED_DIR/tools/"* "$TARGET_TOOLS_DIR/"
 else
