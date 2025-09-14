@@ -56,8 +56,16 @@ if [[ $? -ne 0 ]]; then
   exit 1
 fi
 
-# Ordner V1 im entpackten Repo finden
-EXTRACTED_DIR=$(find "$TMP_DIR" -type d -name "$FOLDER" | head -n 1)
+# Root-Verzeichnis des entpackten Repos ermitteln
+EXTRACTED_ROOT=$(find "$TMP_DIR" -maxdepth 1 -type d -name "1002xTOOLS*" | head -n1)
+if [[ ! -d "$EXTRACTED_ROOT" ]]; then
+  whiptail --title "1002xTOOLS Updater" --msgbox "Extracted repo folder not found." 10 50
+  rm -rf "$TMP_DIR"
+  exit 1
+fi
+
+# Ordner V1 unter Root
+EXTRACTED_DIR="$EXTRACTED_ROOT/$FOLDER"
 if [[ ! -d "$EXTRACTED_DIR" ]]; then
   whiptail --title "1002xTOOLS Updater" --msgbox "Folder $FOLDER not found in the repo." 10 50
   rm -rf "$TMP_DIR"
@@ -82,7 +90,6 @@ if [[ "$LOCAL_VERSION" == "$REPO_VERSION" ]]; then
 fi
 
 # --- Dateien kopieren ---
-
 # dev.txt nach SCRIPT_DIR
 cp -f "$REPO_DEV_FILE" "$LOCAL_DEV_FILE"
 
@@ -93,7 +100,7 @@ else
   whiptail --title "1002xTOOLS Updater" --msgbox "debui.sh not found in $FOLDER." 10 50
 fi
 
-# Alles aus V1/tools nach SCRIPT_DIR/tools kopieren (überschreiben/ergänzen)
+# Alles aus V1/tools nach SCRIPT_DIR/tools kopieren (bestehende Dateien überschreiben/ergänzen)
 if [[ -d "$EXTRACTED_DIR/tools" ]]; then
   cp -ru "$EXTRACTED_DIR/tools/"* "$TARGET_TOOLS_DIR/"
 else
