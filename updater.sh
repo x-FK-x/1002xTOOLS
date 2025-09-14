@@ -1,156 +1,211 @@
 #!/bin/bash
 
+# Logfile im tools-Ordner
+TARGET_TOOLS_DIR="/etc/godos/tools"
+LOG_FILE="$TARGET_TOOLS_DIR/1002xTOOLS_updater.log"
+
+mkdir -p "$TARGET_TOOLS_DIR"
+echo "=== 1002xTOOLS Updater Log ===" > "$LOG_FILE"
+echo "Start time: $(date)" >> "$LOG_FILE"
+
+log() {
+    echo "$1" | tee -a "$LOG_FILE"
+}
+
+log "Starting updater..."
+
 # === Prüfen ob whiptail installiert ist ===
 if ! command -v whiptail &> /dev/null; then
-  echo "Whiptail is not installed. Installing..."
-  sudo apt update && sudo apt install -y whiptail
-  if ! command -v whiptail &> /dev/null; then
-    echo "Failed to install whiptail. Exiting."
-    exit 1
-  fi
+    log "Whiptail not installed. Installing..."
+    sudo apt update && sudo apt install -y whiptail | tee -a "$LOG_FILE"
+    if ! command -v whiptail &> /dev/null; then
+        log "Failed to install whiptail. Exiting."
+        exit 1
+    fi
 fi
-
-
 
 # === Version erkennen ===
 if [[ -d /etc/godos ]]; then
-  VERSION="GODOS"
-  SCRIPT_DIR="/etc/godos"
+    VERSION="godos"
+    SCRIPT_DIR="/etc/godos"
 elif [[ -d /etc/modos ]]; then
-  VERSION="MODOS"
-  SCRIPT_DIR="/etc/modos"
+    VERSION="modos"
+    SCRIPT_DIR="/etc/modos"
 elif [[ -d /etc/wodos ]]; then
-  VERSION="wodos"
-  SCRIPT_DIR="/etc/WODOS"
+    VERSION="wodos"
+    SCRIPT_DIR="/etc/wodos"
 else
-  whiptail --title "Updater Error" --msgbox "No valid version directory detected. Exiting." 10 50
-  exit 1
+    log "No valid version directory detected. Exiting."
+    whiptail --title "Updater Error" --msgbox "No valid version directory detected. Exiting." 10 50
+    exit 1
 fi
 
+log "Detected version: $VERSION, SCRIPT_DIR: $SCRIPT_DIR"
 
-
-OS_FILE="$SCRIPT_DIR/tools/osversion.txt"
-OS_VERSION=$(head -n1 "$OS_FILE")
-
-if [[ "$OS_VERSION" == "1" ]]; then
-    whiptail --title "Updater" --msgbox "You have $VERSION V$OS_VERSION." 10 50
-elif [[ "$OS_VERSION" == "2" ]]; then
-    # Vorsorge für OS Version 2 – aktuell nichts zu tun
-    :
+# === OS-Version prüfen ===
+OS_FILE="$TARGET_TOOLS_DIR/ostools.txt"
+if [[ -f "$OS_FILE" ]]; then
+    OS_VERSION=$(head -n1 "$OS_FILE")
 else
-    whiptail --title "Updater" --msgbox "Unknown OS version: $OS_VERSION" 10 50
-    # optional: exit 1
+    OS_VERSION="Unknown"
 fi
+log "OS version: $OS_VERSION"
 
-
-
-
+# === Repo & Temp ===
 REPO="x-FK-x/1002xTOOLS"
 BRANCH="$VERSION"
 TMP_DIR="$HOME/.1002xtools_temp"
 FOLDER="V1"
-TARGET_TOOLS_DIR="$SCRIPT_DIR/tools"
 LOCAL_DEV_FILE="$SCRIPT_DIR/dev.txt"
 
 mkdir -p "$TMP_DIR"
-mkdir -p "$TARGET_TOOLS_DIR"
 
-whiptail --title "1002xTOOLS Updater" --infobox "Downloading $BRANCH.zip archive..." 8 50
-
+log "Downloading branch $BRANCH from repo $REPO..."
 ZIP_URL="https://github.com/$REPO/archive/refs/heads/$BRANCH.zip"
 ZIP_FILE="$TMP_DIR/$BRANCH.zip"
 
 wget -q -O "$ZIP_FILE" "$ZIP_URL"
 if [[ $? -ne 0 ]]; then
-  whiptail --title "1002xTOOLS Updater" --msgbox "Failed to download $ZIP_URL" 10 50
-  rm -rf "$TMP_DIR"
-  exit 1
+    log "Failed to download $ZIP_URL"
+    whiptail --title "Updater" --msgbox "Failed to download $ZIP_URL" 10 50
+    rm -rf "$TMP_DIR"
+    exit 1
 fi
+log "Downloaded zip to $ZIP_FILE"
 
 # Repo entpacken
-whiptail --title "1002xTOOLS Updater" --infobox "Extracting archive..." 8 50
+log "Extracting archive..."
 unzip -q -o "$ZIP_FILE" -d "$TMP_DIR"
 if [[ $? -ne 0 ]]; then
-  whiptail --title "1002xTOOLS Updater" --msgbox "Failed to extract archive." 10 50
-  rm -rf "$TMP_DIR"
-  exit 1
+    log "Failed to extract archive."
+    whiptail --title "Updater" --msgbox "Failed to extract archive." 10 50
+    rm -rf "$TMP_DIR"
+    exit 1
 fi
 
-# Root-Verzeichnis des entpackten Repos
 EXTRACTED_ROOT=$(find "$TMP_DIR" -maxdepth 1 -type d -name "1002xTOOLS*" | head -n1)
 if [[ ! -d "$EXTRACTED_ROOT" ]]; then
-  whiptail --title "1002xTOOLS Updater" --msgbox "Extracted repo folder not found." 10 50
-  rm -rf "$TMP_DIR"
-  exit 1
+    log "Extracted repo folder not found."
+    whiptail --title "Updater" --msgbox "Extracted repo folder not found." 10 50
+    rm -rf "$TMP_DIR"
+    exit 1
 fi
+log "Extracted root: $EXTRACTED_ROOT"
 
-# Ordner V1
 EXTRACTED_DIR="$EXTRACTED_ROOT/$FOLDER"
 if [[ ! -d "$EXTRACTED_DIR" ]]; then
-  whiptail --title "1002xTOOLS Updater" --msgbox "Folder $FOLDER not found in the repo." 10 50
-  rm -rf "$TMP_DIR"
-  exit 1
+    log "Folder $FOLDER not found in the repo."
+    whiptail --title "Updater" --msgbox "Folder $FOLDER not found in the repo." 10 50
+    rm -rf "$TMP_DIR"
+    exit 1
 fi
+log "Using V1 folder: $EXTRACTED_DIR"
 
 # Versionscheck
-TMP_DEV_FILE="$TMP_DIR/dev.txt"
-cp -f "$EXTRACTED_DIR/dev.txt" "$TMP_DEV_FILE"
+if [[ -f "$EXTRACTED_DIR/dev.txt" ]]; then
+    cp -f "$EXTRACTED_DIR/dev.txt" "$TMP_DIR/dev.txt"
+    REPO_VERSION=$(head -n1 "$TMP_DIR/dev.txt")
+    log "Repo version: $REPO_VERSION"
+else
+    log "dev.txt not found in V1 folder."
+    whiptail --title "Updater" --msgbox "dev.txt not found in V1 folder." 10 50
+    rm -rf "$TMP_DIR"
+    exit 1
+fi
 
-REPO_VERSION=$(head -n1 "$TMP_DEV_FILE")
+
+
 LOCAL_VERSION=$( [[ -f "$LOCAL_DEV_FILE" ]] && head -n1 "$LOCAL_DEV_FILE" || echo "" )
+log "Local version: $LOCAL_VERSION"
 
 if [[ "$LOCAL_VERSION" == "$REPO_VERSION" ]]; then
-  whiptail --title "1002xTOOLS Updater" --msgbox "Tools are already up to date (version $OS_VERSION.$LOCAL_VERSION)." 10 50
-  rm -rf "$TMP_DIR"
-  exit 0
+    log "Tools are already up to date."
+    whiptail --title "Updater" --msgbox "Tools are already up to date (version $OS_VERSION.$LOCAL_VERSION)." 10 50
+    rm -rf "$TMP_DIR"
+    exit 0
 fi
 
 # --- Dateien kopieren ---
-# dev.txt nach SCRIPT_DIR
-cp -f "$TMP_DEV_FILE" "$LOCAL_DEV_FILE"
+# dev.txt
+cp -f "$TMP_DIR/dev.txt" "$LOCAL_DEV_FILE"
+log "Copied dev.txt to $LOCAL_DEV_FILE"
 
-# debui.sh nach SCRIPT_DIR
+# debui.sh 
 if [[ -f "$EXTRACTED_DIR/debui.sh" ]]; then
-  cp -f "$EXTRACTED_DIR/debui.sh" "$SCRIPT_DIR/debui.sh"
+    cp -f "$EXTRACTED_DIR/debui.sh" "$SCRIPT_DIR/debui.sh"
+    chmod +x "$SCRIPT_DIR/debui.sh"
+    log "Copied debui.sh to $SCRIPT_DIR/debui.sh"
+else
+    log "debui.sh not found in folder."
+    whiptail --title "Updater" --msgbox "debui.sh not found in folder." 10 50
 fi
+
+# motd 
+if [[ -f "$EXTRACTED_DIR/tools/motd" ]]; then
+    cp -f "$EXTRACTED_DIR/tools/motd" "$SCRIPT_DIR/tools/motd"
+       log "Copied motd to $SCRIPT_DIR/tools/motd"
+else
+    log "motd not found in folder."
+    whiptail --title "Updater" --msgbox "motd not found in folder." 10 50
+fi
+
+# osversion 
+if [[ -f "$EXTRACTED_DIR/tools/osversion.txt" ]]; then
+    cp -f "$EXTRACTED_DIR/tools/osversion.txt" "$SCRIPT_DIR/tools/osversion.txt"
+    log "Copied osversion.txt to $SCRIPT_DIR/tools/osversion.txt"
+else
+    log "osversion.txt not found in folder."
+    whiptail --title "Updater" --msgbox "osversion.txt not found in folder." 10 50
+fi
+
+
+
 
 # Alle .sh-Dateien aus V1/tools nach tools kopieren
 if [[ -d "$EXTRACTED_DIR/tools" ]]; then
     for file in "$EXTRACTED_DIR/tools/"*.sh; do
         [ -f "$file" ] || continue
         cp -f "$file" "$TARGET_TOOLS_DIR/"
+        chmod +x "$TARGET_TOOLS_DIR/$(basename "$file")"
+        log "Copied $file to $TARGET_TOOLS_DIR/"
     done
+else
+    log "No tools folder found in V1"
 fi
 
 # Alle .sh im Ziel ausführbar machen
 find "$SCRIPT_DIR" -type f -name "*.sh" -exec chmod +x {} +
 
 # Alias für alle User setzen
-ALIAS_LINE='alias 1002xTOOLS="sudo bash '"$SCRIPT_DIR"'/debui.sh"'
+ALIAS_LINE='alias 1002xUPDATES="sudo bash '"$SCRIPT_DIR"'/tools/updater.sh"'
 if ! grep -Fxq "$ALIAS_LINE" /etc/bash.bashrc; then
     echo "$ALIAS_LINE" | sudo tee -a /etc/bash.bashrc >/dev/null
+    log "Alias added to /etc/bash.bashrc"
 fi
 
 # Cleanup
 rm -rf "$TMP_DIR"
+log "Temporary files cleaned."
+rm "$SCRIPT_DIR/tools/LICENSE"
 
 whiptail --title "1002xTOOLS Updater" --msgbox "Update completed successfully to version $REPO_VERSION." 10 50
+log "Update completed successfully to version $REPO_VERSION."
 
 # === Rückkehrmenü ===
 while true; do
-  ACTION=$(whiptail --title "Updater finished" --menu "What do you want to do now?" 10 50 2 \
-    "1" "Return to main menu" \
-    "2" "Exit 1002xTOOLS" 3>&1 1>&2 2>&3)
+    ACTION=$(whiptail --title "Updater finished" --menu "What do you want to do now?" 10 50 2 \
+        "1" "Return to main menu" \
+        "2" "Exit 1002xTOOLS" 3>&1 1>&2 2>&3)
 
-  case "$ACTION" in
-    "1")
-      bash "$SCRIPT_DIR/debui.sh"
-      ;;
-    "2")
-      exit 0
-      ;;
-    *)
-      whiptail --msgbox "Invalid option. Please choose again." 8 40
-      ;;
-  esac
+    case "$ACTION" in
+        "1")
+            bash "$SCRIPT_DIR/debui.sh"
+            ;;
+        "2")
+            exit 0
+            ;;
+        *)
+            whiptail --msgbox "Invalid option. Please choose again." 8 40
+            ;;
+    esac
 done
