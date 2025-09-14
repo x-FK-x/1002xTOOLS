@@ -141,7 +141,7 @@ if ! grep -Fxq "$ALIAS_LINE" /etc/bash.bashrc; then
 fi
 
 # Cleanup
-rm -rf "$TMP_DIR"
+#rm -rf "$TMP_DIR"
 
 whiptail --title "1002xTOOLS Updater" --msgbox "Update completed successfully to version $REPO_VERSION." 10 50
 
