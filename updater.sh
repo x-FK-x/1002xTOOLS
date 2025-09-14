@@ -112,6 +112,7 @@ find "$SCRIPT_DIR" -type f -name "*.sh" -exec chmod +x {} +
 
 # Cleanup
 rm -rf "$TMP_DIR"
+echo "alias 1002xTOOLS=sudo bash /etc/godos/debui.sh" >> /etc/bash.bashrc
 
 whiptail --title "1002xTOOLS Updater" --msgbox "Update completed successfully to version $REPO_VERSION." 10 50
 
