@@ -50,7 +50,7 @@ log "OS version: $OS_VERSION"
 
 if [ "$OS_VERSION" = "1" ]; then
     log "Version 1"
-    whiptail --title "Updater Error" --msgbox "V1 installed. Continue." 10 50
+    whiptail --title "Updater" --msgbox "V1 installed. Continue." 10 50
 elif [ "$OS_VERSION" = "2" ]; then
     log "Version 2"
   elif [ "$OS_VERSION" = "3" ]; then
