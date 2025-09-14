@@ -2,13 +2,13 @@
 
 # === Version Detection ===
 if [[ -d /etc/godos ]]; then
-  VERSION="godos"
+  VERSION="GODOS"
   SCRIPT_DIR="/etc/godos"
 elif [[ -d /etc/modos ]]; then
-  VERSION="modos"
+  VERSION="MODOS"
   SCRIPT_DIR="/etc/modos"
 elif [[ -d /etc/wodos ]]; then
-  VERSION="WODOS"
+  VERSION="VERSION"
   SCRIPT_DIR="/etc/wodos"
 else
   whiptail --title "Updater Error" --msgbox "No valid version directory detected. Exiting." 10 50
@@ -23,6 +23,8 @@ chmod -R 777 "$SCRIPT_DIR"/tools/*.sh 2>/dev/null
 
 sudo rm "/etc/resolv.conf"
 sudo cp "$SCRIPT_DIR/tools/resolv.conf" "/etc/resolv.conf"
+sudo cp "$SCRIPT_DIR/tools/motd" "/etc/motd"
+
 
 LOCAL_DEV_FILE="$SCRIPT_DIR/dev.txt"
 LOCAL_VERSION=""
@@ -47,7 +49,7 @@ EOF
 fi
 
 # === Main Menu ===
-CHOICE=$(whiptail --title "1002xTOOLS Menu ($VERSION VERNO $LOCAL_VERSION)" \
+CHOICE=$(whiptail --title "1002xTOOLS Menu ($VERSION VERNO 1.$LOCAL_VERSION)" \
   --menu "Choose a tool to launch:" 20 60 8 \
   "1" "Updater of 1002xTOOLS" \
   "2" "Installer of Software" \
