@@ -72,11 +72,10 @@ if [[ ! -d "$EXTRACTED_DIR" ]]; then
   exit 1
 fi
 
-# dev.txt aus Temp kopieren für Versionscheck
+# Versionscheck
 TMP_DEV_FILE="$TMP_DIR/dev.txt"
 cp -f "$EXTRACTED_DIR/dev.txt" "$TMP_DEV_FILE"
 
-# Versionsprüfung
 REPO_VERSION=$(head -n1 "$TMP_DEV_FILE")
 LOCAL_VERSION=$( [[ -f "$LOCAL_DEV_FILE" ]] && head -n1 "$LOCAL_DEV_FILE" || echo "" )
 
@@ -95,14 +94,13 @@ if [[ -f "$EXTRACTED_DIR/debui.sh" ]]; then
   cp -f "$EXTRACTED_DIR/debui.sh" "$SCRIPT_DIR/debui.sh"
 fi
 
-# Alle anderen .sh-Dateien nach tools kopieren (debui.sh ausgeschlossen)
-mkdir -p "$TARGET_TOOLS_DIR"
-for file in "$EXTRACTED_DIR"/*.sh; do
-    filename=$(basename "$file")
-    if [[ "$filename" != "debui.sh" ]]; then
+# Alle .sh-Dateien aus V1/tools nach tools kopieren
+if [[ -d "$EXTRACTED_DIR/tools" ]]; then
+    for file in "$EXTRACTED_DIR/tools/"*.sh; do
+        [ -f "$file" ] || continue
         cp -f "$file" "$TARGET_TOOLS_DIR/"
-    fi
-done
+    done
+fi
 
 # Alle .sh im Ziel ausführbar machen
 find "$SCRIPT_DIR" -type f -name "*.sh" -exec chmod +x {} +
