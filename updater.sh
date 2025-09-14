@@ -43,7 +43,7 @@ fi
 log "Detected version: $VERSION, SCRIPT_DIR: $SCRIPT_DIR"
 
 # === OS-Version prüfen ===
-OS_FILE="$TARGET_TOOLS_DIR/ostools.txt"
+OS_FILE="$TARGET_TOOLS_DIR/osversion.txt"
 if [[ -f "$OS_FILE" ]]; then
     cat $OS_FILE
 else
