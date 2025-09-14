@@ -113,6 +113,8 @@ else
     exit 1
 fi
 
+
+
 LOCAL_VERSION=$( [[ -f "$LOCAL_DEV_FILE" ]] && head -n1 "$LOCAL_DEV_FILE" || echo "" )
 log "Local version: $LOCAL_VERSION"
 
@@ -128,15 +130,36 @@ fi
 cp -f "$TMP_DIR/dev.txt" "$LOCAL_DEV_FILE"
 log "Copied dev.txt to $LOCAL_DEV_FILE"
 
-# debui.sh aus V1 kopieren
+# debui.sh 
 if [[ -f "$EXTRACTED_DIR/debui.sh" ]]; then
     cp -f "$EXTRACTED_DIR/debui.sh" "$SCRIPT_DIR/debui.sh"
     chmod +x "$SCRIPT_DIR/debui.sh"
     log "Copied debui.sh to $SCRIPT_DIR/debui.sh"
 else
-    log "debui.sh not found in V1 folder."
+    log "debui.sh not found in folder."
     whiptail --title "Updater" --msgbox "debui.sh not found in V1 folder." 10 50
 fi
+
+# motd 
+if [[ -f "$EXTRACTED_DIR/tools/motd" ]]; then
+    cp -f "$EXTRACTED_DIR/tools/motd" "$SCRIPT_DIR/tools/motd"
+       log "Copied motd to $SCRIPT_DIR/tools/motd"
+else
+    log "motd not found in folder."
+    whiptail --title "Updater" --msgbox "motd not found in V1 folder." 10 50
+fi
+
+# osversion 
+if [[ -f "$EXTRACTED_DIR/tools/osversion.txt" ]]; then
+    cp -f "$EXTRACTED_DIR/tools/osversion.txt" "$SCRIPT_DIR/tools/osversion.txt"
+    log "Copied osversion.txt to $SCRIPT_DIR/tools/osversion.txt"
+else
+    log "osversion.txt not found in folder."
+    whiptail --title "Updater" --msgbox "osversion.txt not found in V1 folder." 10 50
+fi
+
+
+
 
 # Alle .sh-Dateien aus V1/tools nach tools kopieren
 if [[ -d "$EXTRACTED_DIR/tools" ]]; then
