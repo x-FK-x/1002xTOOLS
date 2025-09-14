@@ -43,7 +43,7 @@ fi
 sudo touch "/etc/wodos/tools/osversion.txt"
 echo "1" > "/etc/wodos/tools/osversion.txt"
 
-sudo wget -O /etc/wodos/tools/updater.sh https://github.com/x-FK-x/1002xTOOLS/releases/download/wodos-updater/updater.sh
+
 
 
 
@@ -195,9 +195,6 @@ rm -r "$SCRIPT_DIR/tools/V1"
 
 whiptail --title "1002xTOOLS Updater" --msgbox "Update completed successfully to version $REPO_VERSION." 10 50
 log "Update completed successfully to version $REPO_VERSION."
-
-sudo wget -O /etc/wodos/tools/updater.sh https://github.com/x-FK-x/1002xTOOLS/releases/download/wodos-updater/updater.sh
-sudo chmod +x /etc/wodos/tools/updater.sh
 
 
 # === Rückkehrmenü ===
