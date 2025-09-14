@@ -14,14 +14,14 @@ fi
 
 # === Version erkennen ===
 if [[ -d /etc/godos ]]; then
-  VERSION="godos"
+  VERSION="GODOS"
   SCRIPT_DIR="/etc/godos"
 elif [[ -d /etc/modos ]]; then
-  VERSION="modos"
+  VERSION="MODOS"
   SCRIPT_DIR="/etc/modos"
 elif [[ -d /etc/wodos ]]; then
   VERSION="wodos"
-  SCRIPT_DIR="/etc/wodos"
+  SCRIPT_DIR="/etc/WODOS"
 else
   whiptail --title "Updater Error" --msgbox "No valid version directory detected. Exiting." 10 50
   exit 1
@@ -33,8 +33,8 @@ OS_FILE="$SCRIPT_DIR/tools/osversion.txt"
 OS_VERSION=$(head -n1 "$OS_FILE")
 
 if [[ "$OS_VERSION" == "1" ]]; then
-  echo "VERSION $OS_VERSION"
-    :
+  whiptail --title "Updater" --msgbox "You have $VERSION V$OS_VERSION." 10 50
+      :
 elif [[ "$OS_VERSION" == "2" ]]; then
     # Vorsorge für OS Version 2 – aktuell nichts zu tun
     :
