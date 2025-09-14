@@ -41,15 +41,26 @@ else
 fi
 
 log "Detected version: $VERSION, SCRIPT_DIR: $SCRIPT_DIR"
-
-# === OS-Version prüfen ===
-OS_FILE="$SCRIPT_DIR/tools/osversion.txt"
-if [[ -f "$OS_FILE" ]]; then
-    OS_VERSION=$(head -n1 "$OS_FILE")
-else
-    OS_VERSION="Unknown"
-fi
+OS_VERSION=$(head -n1 "/etc/godos/tools/osversion.txt")
+echo "$OS_VERSION"
 log "OS version: $OS_VERSION"
+
+OS_VERSION=$(head -n1 "/etc/godos/tools/osversion.txt")
+log "OS version: $OS_VERSION"
+
+if [ "$OS_VERSION" = "1" ]; then
+    log "Version 1"
+    whiptail --title "Updater Error" --msgbox "V1 installed. Continue." 10 50
+elif [ "$OS_VERSION" = "2" ]; then
+    log "Version 2"
+  elif [ "$OS_VERSION" = "3" ]; then
+    log "Version 3"
+else
+    log "Unkown Version: $OS_VERSION"
+    exit 0
+fi
+
+
 
 # === Repo & Temp ===
 REPO="x-FK-x/1002xTOOLS"
