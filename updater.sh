@@ -33,14 +33,15 @@ OS_FILE="$SCRIPT_DIR/tools/osversion.txt"
 OS_VERSION=$(head -n1 "$OS_FILE")
 
 if [[ "$OS_VERSION" == "1" ]]; then
-  whiptail --title "Updater" --msgbox "You have $VERSION V$OS_VERSION." 10 50
-      :
+    whiptail --title "Updater" --msgbox "You have $VERSION V$OS_VERSION." 10 50
 elif [[ "$OS_VERSION" == "2" ]]; then
     # Vorsorge für OS Version 2 – aktuell nichts zu tun
     :
 else
+    whiptail --title "Updater" --msgbox "Unknown OS version: $OS_VERSION" 10 50
     # optional: exit 1
 fi
+
 
 
 
