@@ -10,8 +10,7 @@ if ! command -v whiptail &> /dev/null; then
   fi
 fi
 
-OS_FILE="$SCRIPT_DIR/tools/osversion.txt"
-OS_VERSION=$(head -n1 "$TMP_DEV_FILE")
+
 
 # === Version erkennen ===
 if [[ -d /etc/godos ]]; then
@@ -28,8 +27,22 @@ else
   exit 1
 fi
 
+
+
 OS_FILE="$SCRIPT_DIR/tools/osversion.txt"
 OS_VERSION=$(head -n1 "$OS_FILE")
+
+if [[ "$OS_VERSION" == "1" ]]; then
+  echo "VERSION $OS_VERSION"
+    :
+elif [[ "$OS_VERSION" == "2" ]]; then
+    # Vorsorge für OS Version 2 – aktuell nichts zu tun
+    :
+else
+    # optional: exit 1
+fi
+
+
 
 REPO="x-FK-x/1002xTOOLS"
 BRANCH="$VERSION"
