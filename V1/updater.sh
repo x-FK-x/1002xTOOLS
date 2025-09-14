@@ -1,4 +1,6 @@
 #!/bin/bash
+
+# === Prüfen ob whiptail installiert ist ===
 if ! command -v whiptail &> /dev/null; then
   echo "Whiptail is not installed. Installing..."
   sudo apt update && sudo apt install -y whiptail
@@ -8,8 +10,7 @@ if ! command -v whiptail &> /dev/null; then
   fi
 fi
 
-
-# Version erkennen
+# === Version erkennen ===
 if [[ -d /etc/godos ]]; then
   VERSION="godos"
   SCRIPT_DIR="/etc/godos"
@@ -29,6 +30,7 @@ BRANCH="$VERSION"
 TARGET_DIR="$SCRIPT_DIR/tools"
 TMP_DIR="$HOME/.1002xtools_temp"
 LOCAL_DEV_FILE="$SCRIPT_DIR/dev.txt"
+FOLDER="V1"   # Ordner, der aus dem Repo extrahiert werden soll
 
 mkdir -p "$TMP_DIR"
 mkdir -p "$TARGET_DIR"
@@ -53,12 +55,8 @@ if [[ $? -ne 0 ]]; then
   exit 1
 fi
 
-# Debug: Zeige Inhalt des Temp-Ordners
-echo "Contents of $TMP_DIR:"
-ls -l "$TMP_DIR"
-
+# Ordner im Temp-Verzeichnis ermitteln
 EXTRACTED_DIR=$(find "$TMP_DIR" -maxdepth 1 -type d -name "1002xTOOLS*" | head -n 1)
-
 if [[ ! -d "$EXTRACTED_DIR" ]]; then
   whiptail --title "1002xTOOLS Updater" --msgbox "Extracted folder not found." 10 50
   rm -rf "$TMP_DIR"
@@ -87,36 +85,41 @@ if [[ "$LOCAL_VERSION" == "$REPO_VERSION" ]]; then
   exit 0
 fi
 
-whiptail --title "1002xTOOLS Updater" --infobox "Copying files to $TARGET_DIR ..." 8 50
+whiptail --title "1002xTOOLS Updater" --infobox "Copying $FOLDER to $TARGET_DIR ..." 8 50
 
-# Alte .sh Dateien löschen im Zielordner (optional, aber sicher)
-find "$TARGET_DIR" -type f -name "*.sh" -exec rm -f {} +
+# Nur den Unterordner V1 kopieren
+if [[ -d "$EXTRACTED_DIR/$FOLDER" ]]; then
+    # Alte .sh Dateien im Zielordner löschen
+    find "$TARGET_DIR" -type f -name "*.sh" -exec rm -f {} +
 
-# Kopiere den kompletten Inhalt aus dem entpackten Ordner (das entspricht dem tools-Ordner im Repo)
-cp -r "$EXTRACTED_DIR/"* "$TARGET_DIR/"
+    # Nur den Inhalt von V1 kopieren
+    cp -r "$EXTRACTED_DIR/$FOLDER/"* "$TARGET_DIR/"
 
-# Verschiebe debui.sh nach $SCRIPT_DIR/../ und setze Rechte
-if [[ -f "$TARGET_DIR/debui.sh" ]]; then
-  mv "$TARGET_DIR/debui.sh" "$SCRIPT_DIR/debui.sh"
-  chmod 777 "$SCRIPT_DIR/debui.sh"
+    # debui.sh verschieben und Rechte setzen, falls vorhanden
+    if [[ -f "$TARGET_DIR/debui.sh" ]]; then
+        mv "$TARGET_DIR/debui.sh" "$SCRIPT_DIR/debui.sh"
+        chmod 777 "$SCRIPT_DIR/debui.sh"
+    fi
+
+    # Alle .sh im Zielordner ausführbar machen
+    find "$TARGET_DIR" -type f -name "*.sh" -exec chmod +x {} +
+
+    # "Licence" und dev.txt aus Zielordner entfernen
+    find "$TARGET_DIR" -type f \( -iname "Licence" -o -iname "dev.txt" \) -exec rm -f {} +
 else
-  whiptail --title "1002xTOOLS Updater" --msgbox "debui.sh not found in tools folder after copy." 10 50
+    whiptail --title "1002xTOOLS Updater" --msgbox "Folder $FOLDER not found in the repo." 10 50
+    rm -rf "$TMP_DIR"
+    exit 1
 fi
-
-# Alle .sh im Zielordner ausführbar machen
-find "$TARGET_DIR" -type f -name "*.sh" -exec chmod +x {} +
-
-# Entferne "Licence" und dev.txt aus Zielordner falls vorhanden
-find "$TARGET_DIR" -type f \( -iname "Licence" -o -iname "dev.txt" \) -exec rm -f {} +
 
 # Aktualisierte Version speichern
 echo "$REPO_VERSION" > "$LOCAL_DEV_FILE"
 
 whiptail --title "1002xTOOLS Updater" --msgbox "Update completed successfully to version $REPO_VERSION." 10 50
 
+# Temp aufräumen
 rm -rf "$TMP_DIR"
-rm "$SCRIPT_DIR/LICENSE"
-
+rm -f "$SCRIPT_DIR/LICENSE"
 
 # === Rückkehrmenü ===
 while true; do
@@ -126,7 +129,7 @@ while true; do
 
   case "$ACTION" in
     "1")
-      bash /etc/godos/debui.sh
+      bash "$SCRIPT_DIR/debui.sh"
       ;;
     "2")
       exit 0
