@@ -93,8 +93,6 @@ cp -f "$TMP_DEV_FILE" "$LOCAL_DEV_FILE"
 # debui.sh nach SCRIPT_DIR
 if [[ -f "$EXTRACTED_DIR/debui.sh" ]]; then
   cp -f "$EXTRACTED_DIR/debui.sh" "$SCRIPT_DIR/debui.sh"
-else
-  whiptail --title "1002xTOOLS Updater" --msgbox "debui.sh not found in V1." 10 50
 fi
 
 # Alle anderen .sh-Dateien nach tools kopieren (debui.sh ausgeschlossen)
@@ -102,7 +100,7 @@ mkdir -p "$TARGET_TOOLS_DIR"
 for file in "$EXTRACTED_DIR"/*.sh; do
     filename=$(basename "$file")
     if [[ "$filename" != "debui.sh" ]]; then
-        cp -u "$file" "$TARGET_TOOLS_DIR/"
+        cp -f "$file" "$TARGET_TOOLS_DIR/"
     fi
 done
 
