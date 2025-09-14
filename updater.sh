@@ -10,6 +10,9 @@ if ! command -v whiptail &> /dev/null; then
   fi
 fi
 
+OS_FILE="$SCRIPT_DIR/tools/osversion.txt"
+OS_VERSION=$(head -n1 "$TMP_DEV_FILE")
+
 # === Version erkennen ===
 if [[ -d /etc/godos ]]; then
   VERSION="godos"
@@ -24,6 +27,9 @@ else
   whiptail --title "Updater Error" --msgbox "No valid version directory detected. Exiting." 10 50
   exit 1
 fi
+
+OS_FILE="$SCRIPT_DIR/tools/osversion.txt"
+OS_VERSION=$(head -n1 "$OS_FILE")
 
 REPO="x-FK-x/1002xTOOLS"
 BRANCH="$VERSION"
@@ -80,7 +86,7 @@ REPO_VERSION=$(head -n1 "$TMP_DEV_FILE")
 LOCAL_VERSION=$( [[ -f "$LOCAL_DEV_FILE" ]] && head -n1 "$LOCAL_DEV_FILE" || echo "" )
 
 if [[ "$LOCAL_VERSION" == "$REPO_VERSION" ]]; then
-  whiptail --title "1002xTOOLS Updater" --msgbox "Tools are already up to date (version $LOCAL_VERSION)." 10 50
+  whiptail --title "1002xTOOLS Updater" --msgbox "Tools are already up to date (version $OS_VERSION.$LOCAL_VERSION)." 10 50
   rm -rf "$TMP_DIR"
   exit 0
 fi
