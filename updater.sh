@@ -109,8 +109,8 @@ fi
 cp -f "$TMP_DEV_FILE" "$LOCAL_DEV_FILE"
 
 # debui.sh nach SCRIPT_DIR
-if [[ -f "$$TMP_DIR/debui.sh" ]]; then
-  cp -f "$$TMP_DIR/debui.sh" "$SCRIPT_DIR/debui.sh"
+if [[ -f "$EXTRACTED_DIR/debui.sh" ]]; then
+  cp -f "$EXTRACTED_DIR/debui.sh" "$SCRIPT_DIR/debui.sh"
 fi
 
 # Alle .sh-Dateien aus V1/tools nach tools kopieren
