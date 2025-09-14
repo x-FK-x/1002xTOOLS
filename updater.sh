@@ -28,7 +28,7 @@ fi
 REPO="x-FK-x/1002xTOOLS"
 BRANCH="$VERSION"
 TMP_DIR="$HOME/.1002xtools_temp"
-FOLDER="V1"   # Ordner, der aus dem Repo extrahiert werden soll
+FOLDER="V1"
 TARGET_TOOLS_DIR="$SCRIPT_DIR/tools"
 LOCAL_DEV_FILE="$SCRIPT_DIR/dev.txt"
 
@@ -65,19 +65,19 @@ if [[ ! -d "$EXTRACTED_ROOT" ]]; then
 fi
 
 # Ordner V1 unter Root
-EXTRACTED_DIR="$EXTRACTED_ROOT/$FOLDER"
+EXTRACTED_DIR="$EXTRACTED_ROOT/V1"
 if [[ ! -d "$EXTRACTED_DIR" ]]; then
-  whiptail --title "1002xTOOLS Updater" --msgbox "Folder $FOLDER not found in the repo." 10 50
-  rm -rf "$TMP_DIR"
-  exit 1
+    whiptail --title "1002xTOOLS Updater" --msgbox "Folder V1 not found in the repo." 10 50
+    rm -rf "$TMP_DIR"
+    exit 1
 fi
 
 # Versionsprüfung
 REPO_DEV_FILE="$EXTRACTED_DIR/dev.txt"
 if [[ ! -f "$REPO_DEV_FILE" ]]; then
-  whiptail --title "1002xTOOLS Updater" --msgbox "dev.txt not found in $FOLDER. Cannot verify version." 10 50
-  rm -rf "$TMP_DIR"
-  exit 1
+    whiptail --title "1002xTOOLS Updater" --msgbox "dev.txt not found in V1. Cannot verify version." 10 50
+    rm -rf "$TMP_DIR"
+    exit 1
 fi
 
 REPO_VERSION=$(head -n1 "$REPO_DEV_FILE")
@@ -97,22 +97,27 @@ cp -f "$REPO_DEV_FILE" "$LOCAL_DEV_FILE"
 if [[ -f "$EXTRACTED_DIR/debui.sh" ]]; then
   cp -f "$EXTRACTED_DIR/debui.sh" "$SCRIPT_DIR/debui.sh"
 else
-  whiptail --title "1002xTOOLS Updater" --msgbox "debui.sh not found in $FOLDER." 10 50
+  whiptail --title "1002xTOOLS Updater" --msgbox "debui.sh not found in V1." 10 50
 fi
 
-# Alles aus V1/tools nach SCRIPT_DIR/tools kopieren (bestehende Dateien überschreiben/ergänzen)
+# Alles aus V1/tools nach SCRIPT_DIR/tools kopieren (überschreiben/ergänzen)
 if [[ -d "$EXTRACTED_DIR/tools" ]]; then
   cp -ru "$EXTRACTED_DIR/tools/"* "$TARGET_TOOLS_DIR/"
 else
-  whiptail --title "1002xTOOLS Updater" --msgbox "No tools folder found in $FOLDER." 10 50
+  whiptail --title "1002xTOOLS Updater" --msgbox "No tools folder found in V1." 10 50
 fi
 
 # Alle .sh im Ziel ausführbar machen
 find "$SCRIPT_DIR" -type f -name "*.sh" -exec chmod +x {} +
 
+# Alias für alle User setzen
+ALIAS_LINE='alias 1002xTOOLS="sudo bash '"$SCRIPT_DIR"'/debui.sh"'
+if ! grep -Fxq "$ALIAS_LINE" /etc/bash.bashrc; then
+    echo "$ALIAS_LINE" | sudo tee -a /etc/bash.bashrc >/dev/null
+fi
+
 # Cleanup
 rm -rf "$TMP_DIR"
-echo "alias 1002xTOOLS=sudo bash /etc/godos/debui.sh" >> /etc/bash.bashrc
 
 whiptail --title "1002xTOOLS Updater" --msgbox "Update completed successfully to version $REPO_VERSION." 10 50
 
