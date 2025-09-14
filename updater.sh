@@ -110,15 +110,15 @@ fi
 # --- Dateien kopieren ---
 # dev.txt nach SCRIPT_DIR
 # debui.sh nach SCRIPT_DIR
-if [[ -f "$TMP_DIR/debui.sh" ]]; then
-    cp -f "$TMP_DIR/debui.sh" "$SCRIPT_DIR/debui.sh"
+if [[ -f "$TMP_DIR/V1/debui.sh" ]]; then
+    cp -f "$TMP_DIR/V1/debui.sh" "$SCRIPT_DIR/debui.sh"
     chmod +x "$SCRIPT_DIR/debui.sh"
 else
     whiptail --title "1002xTOOLS Updater" --msgbox "debui.sh not found in folder." 10 50
 fi
 
-if [[ -f "$TMP_DIR/dev.txt" ]]; then
-    cp -f "$TMP_DIR/dev.txt" "$SCRIPT_DIR/dev.txt"
+if [[ -f "$TMP_DIR/$FOLDER/dev.txt" ]]; then
+    cp -f "$TMP_DIR/$FOLDER/dev.txt" "$SCRIPT_DIR/dev.txt"
 else
     whiptail --title "1002xTOOLS Updater" --msgbox "dev.txt not found in folder." 10 50
 fi
