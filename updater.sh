@@ -59,7 +59,7 @@ fi
 # Root-Verzeichnis des entpackten Repos
 EXTRACTED_ROOT=$(find "$TMP_DIR" -maxdepth 1 -type d -name "1002xTOOLS*" | head -n1)
 if [[ ! -d "$EXTRACTED_ROOT" ]]; then
-  whiptail --title "1002xTOOLS Updater" --msgbox "Extracted repo folder not found." 10 50
+ # whiptail --title "1002xTOOLS Updater" --msgbox "Extracted repo folder not found." 10 50
   rm -rf "$TMP_DIR"
   exit 1
 fi
