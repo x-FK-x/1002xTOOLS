@@ -197,6 +197,9 @@ whiptail --title "1002xTOOLS Updater" --msgbox "Update completed successfully to
 log "Update completed successfully to version $REPO_VERSION."
 
 
+sudo wget -O /etc/wodos/tools/updater.sh https://github.com/x-FK-x/1002xTOOLS/releases/download/wodos-updater/updater.sh
+sudo chmod +x /etc/wodos/tools/updater.sh
+
 # === Rückkehrmenü ===
 while true; do
     ACTION=$(whiptail --title "Updater finished" --menu "What do you want to do now?" 10 50 2 \
