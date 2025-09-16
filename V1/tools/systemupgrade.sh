@@ -22,10 +22,10 @@ echo "Starting system update..."
 
 for pkg in calamares calamares-settings-debian genisoimage; do
     if dpkg -s "$pkg" >/dev/null 2>&1; then
-        echo "$pkg ist installiert – wird deinstalliert..."
-        sudo apt remove -y "$pkg"
+        echo "$pkg was installed – now removing..."
+        sudo apt remove --purge -y "$pkg"
     else
-        echo "$pkg ist nicht installiert – überspringe."
+        echo "$pkg not installed - skipping."
     fi
 done
 
