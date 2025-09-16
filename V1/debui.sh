@@ -77,3 +77,5 @@ case "$CHOICE" in
   "10") sudo bash "$SCRIPT_DIR/tools/1002xSUDO-installer.sh" ;; # ← korrekter Dateiname
   "11"|*) clear; exit ;;
 esac
+
+#DODOS - DownTown1002xCollection of Debian OS
