@@ -55,3 +55,4 @@ fi
 
 # === Abschlussmeldung ===
 whiptail --title "User Config" --msgbox "Configuration complete.\nUser: $USERNAME\nAutologin: $AUTOLOGIN\nSudo-Rights: $SUDO" 10 50
+#DODOS - DownTown1002xCollection of Debian OS
