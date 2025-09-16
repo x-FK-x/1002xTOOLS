@@ -192,8 +192,8 @@ if ! grep -Fxq "$ALIAS_LINE" /etc/bash.bashrc; then
 fi
 
 ALIAS_LINE2='alias 1002xTOOLS="sudo bash '"$SCRIPT_DIR"'/debui.sh"'
-if ! grep -Fxq "$ALIAS_LINE" /etc/bash.bashrc; then
-    echo "$ALIAS_LINE" | sudo tee -a /etc/bash.bashrc >/dev/null
+if ! grep -Fxq "$ALIAS_LINE2" /etc/bash.bashrc; then
+    echo "$ALIAS_LINE2" | sudo tee -a /etc/bash.bashrc >/dev/null
     log "Alias added to /etc/bash.bashrc"
 fi
 
