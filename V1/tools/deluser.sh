@@ -33,3 +33,5 @@ sudo deluser --remove-home "$USERNAME"
 
 # === Abschlussmeldung ===
 whiptail --title "User Deleted" --msgbox "User '$USERNAME' has been removed successfully (including home directory and possible autologin)." 10 50
+#DODOS - DownTown1002xCollection of Debian OS
+
