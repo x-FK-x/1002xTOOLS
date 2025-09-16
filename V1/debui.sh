@@ -74,6 +74,7 @@ case "$CHOICE" in
   "7") sudo dpkg-reconfigure locales  ;;
   "8") sudo dpkg-reconfigure keyboard-configuration  ;;
   "9") sudo bash "$SCRIPT_DIR/tools/1002xCMD-installer.sh" ;; 
-  "10") sudo bash "$SCRIPT_DIR/tools/1002xSUDO-installer.sh" ;; # ← korrekter Dateiname
+  "10") sudo bash "$SCRIPT_DIR/tools/1002xSUDO-installer.sh" ;;
   "11"|*) clear; exit ;;
 esac
+#DODOS - DownTown1002xCollection of Debian OS
