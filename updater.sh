@@ -40,16 +40,8 @@ else
     exit 1
 fi
 
-sudo touch "/etc/wodos/tools/osversion.txt"
-echo "1" > "/etc/wodos/tools/osversion.txt"
-
-sudo wget -O /etc/wodos/tools/updater.sh https://github.com/x-FK-x/1002xTOOLS/releases/download/wodos-updater/updater.sh
-sudo chmod +x /etc/wodos/tools/updater.sh
-
-
-
 log "Detected version: $VERSION, SCRIPT_DIR: $SCRIPT_DIR"
-OS_VERSION=$(head -n1 "/etc/godos/tools/osversion.txt")
+OS_VERSION=$(head -n1 "/etc/wodos/tools/osversion.txt")
 echo "$OS_VERSION"
 log "OS version: $OS_VERSION"
 
@@ -64,6 +56,8 @@ else
     log "Unkown Version: $OS_VERSION"
     exit 0
 fi
+
+
 
 # === Repo & Temp ===
 REPO="x-FK-x/1002xTOOLS"
@@ -144,6 +138,15 @@ fi
 cp -f "$TMP_DIR/dev.txt" "$LOCAL_DEV_FILE"
 log "Copied dev.txt to $LOCAL_DEV_FILE"
 
+# debui.sh 
+if [[ -f "$EXTRACTED_DIR/debui.sh" ]]; then
+    cp -f "$EXTRACTED_DIR/debui.sh" "$SCRIPT_DIR/debui.sh"
+    chmod +x "$SCRIPT_DIR/debui.sh"
+    log "Copied debui.sh to $SCRIPT_DIR/debui.sh"
+else
+    log "debui.sh not found in folder."
+    whiptail --title "Updater" --msgbox "debui.sh not found in folder." 10 50
+fi
 
 # motd 
 if [[ -f "$EXTRACTED_DIR/tools/motd" ]]; then
@@ -188,6 +191,14 @@ if ! grep -Fxq "$ALIAS_LINE" /etc/bash.bashrc; then
     log "Alias added to /etc/bash.bashrc"
 fi
 
+ALIAS_LINE2='alias 1002xTOOLS="sudo bash '"$SCRIPT_DIR"'/debui.sh"'
+if ! grep -Fxq "$ALIAS_LINE" /etc/bash.bashrc; then
+    echo "$ALIAS_LINE" | sudo tee -a /etc/bash.bashrc >/dev/null
+    log "Alias added to /etc/bash.bashrc"
+fi
+
+sudo source /etc/bash.bashrc
+
 # Cleanup
 rm -rf "$TMP_DIR"
 log "Temporary files cleaned."
@@ -196,10 +207,6 @@ rm -r "$SCRIPT_DIR/tools/V1"
 
 whiptail --title "1002xTOOLS Updater" --msgbox "Update completed successfully to version $REPO_VERSION." 10 50
 log "Update completed successfully to version $REPO_VERSION."
-
-
-sudo wget -O /etc/wodos/tools/updater.sh https://github.com/x-FK-x/1002xTOOLS/releases/download/wodos-updater/updater.sh
-sudo chmod +x /etc/wodos/tools/updater.sh
 
 # === Rückkehrmenü ===
 while true; do
@@ -219,3 +226,5 @@ while true; do
             ;;
     esac
 done
+
+#DODOS - DownTown1002xCollection of Debian OS
