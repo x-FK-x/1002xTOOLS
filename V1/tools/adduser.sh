@@ -17,6 +17,9 @@ if [[ "$SUDO" == "yes" ]]; then
  sudo adduser $USERNAME sudo
 fi
 
+rm /etc/sddm.conf.d/autologin.conf
+sudo rm -f /etc/sddm.conf.d/autologin.conf
+
 
 
 # === Autologin fragen ===
@@ -48,10 +51,9 @@ if [[ "$AUTOLOGIN" == "yes" ]]; then
 else
   # Autologin deaktivieren
   sudo rm -f /etc/lightdm/lightdm.conf.d/50-autologin.conf
-  sudo rm -f /etc/sddm.conf.d/autologin.conf
+  sudo rm -f /etc/sddm.conf.d/10-autologin.conf
 fi
 
 # === Abschlussmeldung ===
 whiptail --title "User Config" --msgbox "Configuration complete.\nUser: $USERNAME\nAutologin: $AUTOLOGIN\nSudo-Rights: $SUDO" 10 50
 #DODOS - DownTown1002xCollection of Debian OS
-
