@@ -34,3 +34,5 @@ sudo rm -rf /temp
 sudo rm $ZIP_FILE
 
 echo "[✓] 1002xCMD installation complete."
+
+#DODOS - DownTown1002xCollection of Debian OS
