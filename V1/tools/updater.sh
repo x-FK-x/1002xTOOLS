@@ -197,8 +197,6 @@ if ! grep -Fxq "$ALIAS_LINE2" /etc/bash.bashrc; then
     log "Alias added to /etc/bash.bashrc"
 fi
 
-sudo source /etc/bash.bashrc
-
 # Cleanup
 rm -rf "$TMP_DIR"
 log "Temporary files cleaned."
