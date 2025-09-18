@@ -5,3 +5,4 @@ winehq-stable
 synaptic
 gnome-system-tools
 keepass2
+gimp
