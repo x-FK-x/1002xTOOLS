@@ -157,15 +157,6 @@ else
     whiptail --title "Updater" --msgbox "motd not found in folder." 10 50
 fi
 
-# motd 
-if [[ -f "$EXTRACTED_DIR/tools/list.txt" ]]; then
-    cp -f "$EXTRACTED_DIR/tools/list.txt" "$SCRIPT_DIR/tools/list.txt"
-       log "Copied motd to $SCRIPT_DIR/tools/motd"
-else
-    log "list not found in folder."
-    whiptail --title "Updater" --msgbox "motd not found in folder." 10 50
-fi
-
 # osversion 
 if [[ -f "$EXTRACTED_DIR/tools/osversion.txt" ]]; then
     cp -f "$EXTRACTED_DIR/tools/osversion.txt" "$SCRIPT_DIR/tools/osversion.txt"
