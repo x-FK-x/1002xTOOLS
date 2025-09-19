@@ -41,7 +41,7 @@ else
 fi
 
 log "Detected version: $VERSION, SCRIPT_DIR: $SCRIPT_DIR"
-OS_VERSION=$(head -n1 "/etc/godos/tools/osversion.txt")
+OS_VERSION=$(head -n1 "/etc/wodos/tools/osversion.txt")
 echo "$OS_VERSION"
 log "OS version: $OS_VERSION"
 
@@ -166,6 +166,15 @@ else
     whiptail --title "Updater" --msgbox "osversion.txt not found in folder." 10 50
 fi
 
+# list 
+if [[ -f "$EXTRACTED_DIR/tools/list.txt" ]]; then
+    cp -f "$EXTRACTED_DIR/tools/list.txt" "$SCRIPT_DIR/tools/list.txt"
+    log "Copied list.txt to $SCRIPT_DIR/tools/list.txt"
+else
+    log "osversion.txt not found in folder."
+    whiptail --title "Updater" --msgbox "osversion.txt not found in folder." 10 50
+fi
+
 
 
 
@@ -192,11 +201,10 @@ if ! grep -Fxq "$ALIAS_LINE" /etc/bash.bashrc; then
 fi
 
 ALIAS_LINE2='alias 1002xTOOLS="sudo bash '"$SCRIPT_DIR"'/debui.sh"'
-if ! grep -Fxq "$ALIAS_LINE" /etc/bash.bashrc; then
-    echo "$ALIAS_LINE" | sudo tee -a /etc/bash.bashrc >/dev/null
+if ! grep -Fxq "$ALIAS_LINE2" /etc/bash.bashrc; then
+    echo "$ALIAS_LINE2" | sudo tee -a /etc/bash.bashrc >/dev/null
     log "Alias added to /etc/bash.bashrc"
 fi
-
 
 # Cleanup
 rm -rf "$TMP_DIR"
@@ -225,4 +233,5 @@ while true; do
             ;;
     esac
 done
+
 #DODOS - DownTown1002xCollection of Debian OS
