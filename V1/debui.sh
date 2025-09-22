@@ -73,12 +73,14 @@ while true; do
         --menu "Choose a tool to launch:" 20 60 5 \
         "1" "Updater of 1002xTOOLS" \
         "2" "Debian Upgrades" \
-        "3" "Back" \
+        "3" "Firmware Installer" \
+        "4" "Back" \
         3>&1 1>&2 2>&3)
       case "$CHOICE" in
         "1") sudo bash "$SCRIPT_DIR/tools/updater.sh" ;;
         "2") sudo bash "$SCRIPT_DIR/tools/systemupgrade.sh" ;;
-        "3" | *) continue ;;  # Zurück ins Hauptmenü
+        "3") sudo bash "$SCRIPT_DIR/tools/firmware.sh" ;;
+        "4" | *) continue ;;  # Zurück ins Hauptmenü
       esac
       ;;
     "2")
@@ -139,8 +141,7 @@ while true; do
       ;;
     "6")
       # Exit
-      clear
-      exit
+      exit 0
       ;;
     *)
       clear
