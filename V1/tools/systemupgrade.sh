@@ -19,16 +19,11 @@ function run_cmd() {
 }
 
 echo "Starting system update..."
-
-for pkg in calamares calamares-settings-debian genisoimage; do
-    if dpkg -s "$pkg" >/dev/null 2>&1; then
-        echo "$pkg was installed – now removing..."
-        sudo apt remove --purge -y "$pkg"
-    else
-        echo "$pkg not installed - skipping."
-    fi
-done
-
+# Entferne MX Linux Repo nur, wenn vorhanden
+if [[ -f /etc/apt/sources.list.d/mx.list ]]; then
+  run_cmd rm /etc/apt/sources.list.d/mx.list
+  run_cmd apt remove --purge mx-snapshot -y
+fi
 
 run_cmd apt update
 run_cmd apt upgrade -y
