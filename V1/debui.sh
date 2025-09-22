@@ -51,17 +51,19 @@ fi
 #!/bin/bash
 
 # === Main Menu ===
-VERSION="1.0"  # Beispielversion
-LOCAL_VERSION="0"  # Beispiel-Local-Version
+#!/bin/bash
+
+# === Main Menu ===
 
 while true; do
-  CHOICE=$(whiptail --title "1002xTOOLS Menu ($VERSION VERNO 1.$LOCAL_VERSION)" \
-    --menu "Choose a category:" 20 60 5 \
+  CHOICE=$(whiptail --title "1002xTOOLS Menu" \
+    --menu "Choose a category:" 20 60 6 \
     "1" "Updates" \
     "2" "Software" \
     "3" "Language" \
     "4" "User Management" \
     "5" "My Another Tools" \
+    "6" "Exit" \
     3>&1 1>&2 2>&3)
 
   case "$CHOICE" in
@@ -135,11 +137,15 @@ while true; do
         "3" | *) continue ;;  # Zurück ins Hauptmenü
       esac
       ;;
+    "6")
+      # Exit
+      clear
+      exit
+      ;;
     *)
       clear
       exit
       ;;
   esac
 done
-
 #DODOS - DownTown1002xCollection of Debian OS
