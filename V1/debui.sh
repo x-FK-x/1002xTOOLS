@@ -73,7 +73,7 @@ while true; do
         --menu "Choose a tool to launch:" 20 60 5 \
         "1" "Updater of 1002xTOOLS" \
         "2" "Debian Upgrades" \
-        "3" "Firmware Installer" \
+        "3" "Firmware Scanner" \
         "4" "Back" \
         3>&1 1>&2 2>&3)
       case "$CHOICE" in
