@@ -25,11 +25,14 @@ if [[ -f /etc/sddm.conf.d/10-autologin.conf ]] && grep -q "User=$USERNAME" /etc/
 fi
 
 # === Sudo-Rechte entfernen ===
-sudo deluser "$USERNAME" sudo &>/dev/null
 sudo sed -i "/^$USERNAME\s\+ALL=(ALL:ALL) ALL$/d" /etc/sudoers
 
 # === Benutzer löschen ===
-sudo deluser --remove-home "$USERNAME"
+sudo deluser "$USERNAME"
+
+
+#Home entfernen 
+sudo rm -r /home/$USERNAME
 
 # === Abschlussmeldung ===
 whiptail --title "User Deleted" --msgbox "User '$USERNAME' has been removed successfully (including home directory and possible autologin)." 10 50
