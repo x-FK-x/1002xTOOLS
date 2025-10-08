@@ -100,7 +100,7 @@ while true; do
         3>&1 1>&2 2>&3)
       case "$CHOICE" in
         "1") sudo dpkg-reconfigure locales ;;
-        "2") sudo dpkg-reconfigure keyboard-configuration && sudo setupcon;;
+        "2") sudo dpkg-reconfigure keyboard-configuration && sudo setupcon ;;
         "3" | *) continue ;;  # Zurück ins Hauptmenü
       esac
       ;;
