@@ -2,8 +2,8 @@
 
 # === Variablen ===
 
-ZIP_URL="https://github.com/x-FK-x/1002xCMD/releases/download/v0.2/1002xCMD-0.2.zip"
-ZIP_FILE="1002xCMD-0.2.zip"
+ZIP_URL="https://github.com/x-FK-x/1002xCMD/releases/download/v0.5/v0.5.zip"
+ZIP_FILE="1002xCMD-0.5.zip"
 
 
 # === Herunterladen ===
@@ -34,4 +34,5 @@ sudo rm -rf /temp
 sudo rm $ZIP_FILE
 
 echo "[✓] 1002xCMD installation complete."
+
 #DODOS - DownTown1002xCollection of Debian OS
