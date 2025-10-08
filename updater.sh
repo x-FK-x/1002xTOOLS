@@ -205,7 +205,11 @@ if ! grep -Fxq "$ALIAS_LINE2" /etc/bash.bashrc; then
     echo "$ALIAS_LINE2" | sudo tee -a /etc/bash.bashrc >/dev/null
     log "Alias added to /etc/bash.bashrc"
 fi
-
+ALIAS_LINE3='alias 1002xDNS="sudo rm /etc/resolv.conf && sudo cp '"$SCRIPT_DIR"'/tools/resolv.conf /etc"'
+if ! grep -Fxq "$ALIAS_LINE3" /etc/bash.bashrc; then
+    echo "$ALIAS_LINE3" | sudo tee -a /etc/bash.bashrc >/dev/null
+    log "Alias added to /etc/bash.bashrc"
+fi
 # Cleanup
 rm -rf "$TMP_DIR"
 log "Temporary files cleaned."
