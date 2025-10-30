@@ -45,13 +45,13 @@ OS_VERSION=$(head -n1 "/etc/modos/tools/osversion.txt")
 echo "$OS_VERSION"
 log "OS version: $OS_VERSION"
 
-if [ "$OS_VERSION" = "1" ]; then
+if [ "$OS_VERSION" = "0" ]; then
+    log "Version 0"
+    whiptail --title "Updater" --msgbox "V0 installed. Continue." 10 50
+elif [ "$OS_VERSION" = "1" ]; then
     log "Version 1"
-    whiptail --title "Updater" --msgbox "V1 installed. Continue." 10 50
-elif [ "$OS_VERSION" = "2" ]; then
+  elif [ "$OS_VERSION" = "2" ]; then
     log "Version 2"
-  elif [ "$OS_VERSION" = "3" ]; then
-    log "Version 3"
 else
     log "Unkown Version: $OS_VERSION"
     exit 0
@@ -63,7 +63,7 @@ fi
 REPO="x-FK-x/1002xTOOLS"
 BRANCH="$VERSION"
 TMP_DIR="$HOME/.1002xtools_temp"
-FOLDER="V1"
+FOLDER="V0"
 LOCAL_DEV_FILE="$SCRIPT_DIR/dev.txt"
 
 mkdir -p "$TMP_DIR"
@@ -107,7 +107,7 @@ if [[ ! -d "$EXTRACTED_DIR" ]]; then
     rm -rf "$TMP_DIR"
     exit 1
 fi
-log "Using V1 folder: $EXTRACTED_DIR"
+log "Using V0 folder: $EXTRACTED_DIR"
 
 # Versionscheck
 if [[ -f "$EXTRACTED_DIR/dev.txt" ]]; then
@@ -115,8 +115,8 @@ if [[ -f "$EXTRACTED_DIR/dev.txt" ]]; then
     REPO_VERSION=$(head -n1 "$TMP_DIR/dev.txt")
     log "Repo version: $REPO_VERSION"
 else
-    log "dev.txt not found in V1 folder."
-    whiptail --title "Updater" --msgbox "dev.txt not found in V1 folder." 10 50
+    log "dev.txt not found in V0 folder."
+    whiptail --title "Updater" --msgbox "dev.txt not found in V0 folder." 10 50
     rm -rf "$TMP_DIR"
     exit 1
 fi
@@ -178,7 +178,7 @@ fi
 
 
 
-# Alle .sh-Dateien aus V1/tools nach tools kopieren
+# Alle .sh-Dateien aus V0/tools nach tools kopieren
 if [[ -d "$EXTRACTED_DIR/tools" ]]; then
     for file in "$EXTRACTED_DIR/tools/"*.sh; do
         [ -f "$file" ] || continue
@@ -187,7 +187,7 @@ if [[ -d "$EXTRACTED_DIR/tools" ]]; then
         log "Copied $file to $TARGET_TOOLS_DIR/"
     done
 else
-    log "No tools folder found in V1"
+    log "No tools folder found in V0"
 fi
 
 # Alle .sh im Ziel ausführbar machen
@@ -214,7 +214,7 @@ fi
 rm -rf "$TMP_DIR"
 log "Temporary files cleaned."
 rm "$SCRIPT_DIR/tools/LICENSE"
-rm -r "$SCRIPT_DIR/tools/V1"
+rm -r "$SCRIPT_DIR/tools/V0"
 
 whiptail --title "1002xTOOLS Updater" --msgbox "Update completed successfully to version $REPO_VERSION." 10 50
 log "Update completed successfully to version $REPO_VERSION."
