@@ -94,7 +94,8 @@ while true; do
       case "$CHOICE" in
         "1") sudo bash "$SCRIPT_DIR/tools/installer.sh" ;;
         "2") sudo bash "$SCRIPT_DIR/tools/remover.sh" ;;
-        "3" | *) continue ;;  # Zurück ins Hauptmenü
+        "3") sudo bash "$SCRIPT_DIR/tools/icons.sh" ;;
+        "4" | *) continue ;;  # Zurück ins Hauptmenü
       esac
       ;;
     "3")
