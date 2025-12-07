@@ -89,12 +89,14 @@ while true; do
         --menu "Choose a tool to launch:" 20 60 5 \
         "1" "Installer of Software" \
         "2" "Remover of Software" \
-        "3" "Back" \
+        "3" "Edit Desktop Icons" \
+        "4" "Back" \
         3>&1 1>&2 2>&3)
       case "$CHOICE" in
         "1") sudo bash "$SCRIPT_DIR/tools/installer.sh" ;;
         "2") sudo bash "$SCRIPT_DIR/tools/remover.sh" ;;
-        "3" | *) continue ;;  # Zurück ins Hauptmenü
+        "3") sudo bash "$SCRIPT_DIR/tools/icons.sh" ;;
+        "4" | *) continue ;;  # Zurück ins Hauptmenü
       esac
       ;;
     "3")
