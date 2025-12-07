@@ -1,10 +1,14 @@
 #!/bin/bash
 
+# === Logged-in user HOME detection ===
+REALUSER=$(logname 2>/dev/null || echo "$SUDO_USER")
+USERHOME=$(eval echo "~$REALUSER")
+
 LIST="/etc/wodos/tools/list.txt"
-DESKTOP_DIR="$HOME/Desktop"
+DESKTOP_DIR="$USERHOME/Desktop"
 
 if [[ ! -f "$LIST" ]]; then
-    whiptail --title "Error" --msgbox "The file list.txt was not found!" 10 50
+    whiptail --title "Error" --msgbox "The file /etc/wodos/tools/list.txt was not found!" 10 50
     exit 1
 fi
 
@@ -63,7 +67,7 @@ find_icon() {
         fi
     done
 
-    # Fallback
+    # Fallback icon
     [[ -z "$ICON" ]] && ICON="utilities-terminal"
 
     echo "$ICON"
@@ -88,7 +92,9 @@ Categories=Utility;
 EOF
 
     chmod +x "$FILE"
+    chown "$REALUSER":"$REALUSER" "$FILE"
 }
+
 
 # === Process selected items ===
 for TOOL in $SELECTIONS; do
