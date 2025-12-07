@@ -4,7 +4,7 @@
 REALUSER=$(logname 2>/dev/null || echo "$SUDO_USER")
 USERHOME=$(eval echo "~$REALUSER")
 
-LIST="/etc/wodos/tools/list.txt"
+LIST="/etc/modos/tools/list.txt"
 DESKTOP_DIR="$USERHOME/Desktop"
 
 if [[ ! -f "$LIST" ]]; then
