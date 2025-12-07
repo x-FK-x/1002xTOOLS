@@ -6,3 +6,4 @@ synaptic
 gnome-system-tools
 keepass2
 gimp
+caja
