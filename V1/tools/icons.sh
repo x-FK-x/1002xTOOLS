@@ -1,6 +1,6 @@
 #!/bin/bash
 
-LIST="list.txt"
+LIST="/etc/wodos/tools/list.txt"
 DESKTOP_DIR="$HOME/Desktop"
 
 if [[ ! -f "$LIST" ]]; then
