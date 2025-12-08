@@ -86,7 +86,7 @@ cat <<EOF > "$FILE"
 Name=$NAME
 Exec=$NAME
 Icon=$ICON
-Terminal=true
+Terminal=false
 Type=Application
 Categories=Utility;
 EOF
