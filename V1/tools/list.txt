@@ -1,6 +1,6 @@
 firefox-esr
 vlc
-libreoffice-common
+libreoffice
 wine
 synaptic
 gnome-system-tools
