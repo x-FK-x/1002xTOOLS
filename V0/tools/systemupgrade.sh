@@ -20,9 +20,9 @@ function run_cmd() {
 
 echo "Starting system update..."
 # Entferne MX Linux Repo nur, wenn vorhanden
-if [[ -f /etc/apt/sources.list.d/mx.list ]]; then
-  run_cmd rm /etc/apt/sources.list.d/mx.list
-  run_cmd apt remove --purge mx-snapshot -y
+# Prüfe, ob /home/linux-live existiert und lösche ihn rekursiv
+if [[ -d /home/linux-live ]]; then
+  run_cmd rm -rf /home/linux-live
 fi
 
 run_cmd apt update
