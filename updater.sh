@@ -45,13 +45,13 @@ OS_VERSION=$(head -n1 "/etc/wodos/tools/osversion.txt")
 echo "$OS_VERSION"
 log "OS version: $OS_VERSION"
 
-if [ "$OS_VERSION" = "1" ]; then
+if [ "$OS_VERSION" = "DEB13" ]; then
+    log "Version 0"
+    whiptail --title "Updater" --msgbox "DEB13 installed. Continue." 10 50
+elif [ "$OS_VERSION" = "DEB14" ]; then
     log "Version 1"
-    whiptail --title "Updater" --msgbox "V1 installed. Continue." 10 50
-elif [ "$OS_VERSION" = "2" ]; then
+  elif [ "$OS_VERSION" = "DEB15" ]; then
     log "Version 2"
-  elif [ "$OS_VERSION" = "3" ]; then
-    log "Version 3"
 else
     log "Unkown Version: $OS_VERSION"
     exit 0
@@ -63,7 +63,7 @@ fi
 REPO="x-FK-x/1002xTOOLS"
 BRANCH="$VERSION"
 TMP_DIR="$HOME/.1002xtools_temp"
-FOLDER="V1"
+FOLDER="DEB13"
 LOCAL_DEV_FILE="$SCRIPT_DIR/dev.txt"
 
 mkdir -p "$TMP_DIR"
@@ -107,7 +107,7 @@ if [[ ! -d "$EXTRACTED_DIR" ]]; then
     rm -rf "$TMP_DIR"
     exit 1
 fi
-log "Using V1 folder: $EXTRACTED_DIR"
+log "Using folder: $EXTRACTED_DIR"
 
 # Versionscheck
 if [[ -f "$EXTRACTED_DIR/dev.txt" ]]; then
@@ -115,8 +115,8 @@ if [[ -f "$EXTRACTED_DIR/dev.txt" ]]; then
     REPO_VERSION=$(head -n1 "$TMP_DIR/dev.txt")
     log "Repo version: $REPO_VERSION"
 else
-    log "dev.txt not found in V1 folder."
-    whiptail --title "Updater" --msgbox "dev.txt not found in V1 folder." 10 50
+    log "dev.txt not found in folder."
+    whiptail --title "Updater" --msgbox "dev.txt not found in DEB13 folder." 10 50
     rm -rf "$TMP_DIR"
     exit 1
 fi
@@ -158,12 +158,12 @@ else
 fi
 
 # osversion 
-if [[ -f "$EXTRACTED_DIR/tools/osversion.txt" ]]; then
-    cp -f "$EXTRACTED_DIR/tools/osversion.txt" "$SCRIPT_DIR/tools/osversion.txt"
-    log "Copied osversion.txt to $SCRIPT_DIR/tools/osversion.txt"
+if [[ -f "$EXTRACTED_DIR/tools/1002xSHELL-installer.sh" ]]; then
+    cp -f "$EXTRACTED_DIR/tools/1002xSHELL-installer.sh" "$SCRIPT_DIR/tools/1002xSHELL-installer.sh"
+    log "Copied 1002xSHELL-installer.sh to $SCRIPT_DIR/tools/1002xSHELL-installer.sh"
 else
-    log "osversion.txt not found in folder."
-    whiptail --title "Updater" --msgbox "osversion.txt not found in folder." 10 50
+    log "1002xSHELL-installer.sh not found in folder."
+    whiptail --title "Updater" --msgbox "1002xSHELL-installer.sh not found in folder." 10 50
 fi
 
 # list 
@@ -178,7 +178,7 @@ fi
 
 
 
-# Alle .sh-Dateien aus V1/tools nach tools kopieren
+# Alle .sh-Dateien aus DEB13/tools nach tools kopieren
 if [[ -d "$EXTRACTED_DIR/tools" ]]; then
     for file in "$EXTRACTED_DIR/tools/"*.sh; do
         [ -f "$file" ] || continue
@@ -187,7 +187,7 @@ if [[ -d "$EXTRACTED_DIR/tools" ]]; then
         log "Copied $file to $TARGET_TOOLS_DIR/"
     done
 else
-    log "No tools folder found in V1"
+    log "No tools folder found in DEB13"
 fi
 
 # Alle .sh im Ziel ausführbar machen
@@ -214,7 +214,7 @@ fi
 rm -rf "$TMP_DIR"
 log "Temporary files cleaned."
 rm "$SCRIPT_DIR/tools/LICENSE"
-rm -r "$SCRIPT_DIR/tools/V1"
+rm -r "$SCRIPT_DIR/tools/DEB13"
 
 whiptail --title "1002xTOOLS Updater" --msgbox "Update completed successfully to version $REPO_VERSION." 10 50
 log "Update completed successfully to version $REPO_VERSION."
