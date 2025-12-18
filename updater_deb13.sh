@@ -46,7 +46,7 @@ echo "$OS_VERSION"
 log "OS version: $OS_VERSION"
 
 if [ "$OS_VERSION" = "DEBIAN13" ]; then
-    log "DEBIAN 13 0"
+    log "DEBIAN 13"
     whiptail --title "Updater" --msgbox "DEBIAN13 installed. Continue." 10 50
 elif [ "$OS_VERSION" = "DEBIAN14" ]; then
     log "DEBIAN 14"
