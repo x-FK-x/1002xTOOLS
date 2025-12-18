@@ -238,4 +238,4 @@ while true; do
     esac
 done
 
-#DODOS - DownTown1002xCollection of DEBIANian OS
+#DODOS - DownTown1002xCollection of DEBIAN OS
