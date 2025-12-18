@@ -68,6 +68,10 @@ EOF
     chown "$REALUSER":"$REALUSER" "$USER_SHORTCUT"
 fi
 
+
+
+#---------------------------------------------------------------------------------------------
+internal Shell:
 if [[ ! -d /etc/1002xSHELL || ! $(grep -q "1002xSHELL" /etc/bash.bashrc) ]]; then
 # === Release Version (ANPASSEN) ===
 RELEASE_VERSION="0"          # 0 … 999
@@ -135,6 +139,8 @@ rm -f "$ZIP_FILE"
 
 echo "[✓] 1002xSHELL V${RELEASE_VERSION} installed successfully"
 fi
+--------------------------------------------------------------------------
+
 
 # === Main Menu ===
 while true; do
