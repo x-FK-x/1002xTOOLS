@@ -68,6 +68,10 @@ EOF
     chown "$REALUSER":"$REALUSER" "$USER_SHORTCUT"
 fi
 
+if [[ ! -d /etc/1002xSHELL || ! $(grep -q "1002xSHELL" /etc/bash.bashrc) ]]; then
+    sudo bash "$VERSION_DIR/tools/1002xSHELL-installer"
+fi
+
 # === Main Menu ===
 while true; do
   CHOICE=$(whiptail --title "1002xTOOLS Menu ($VERSION VERNO 0.$LOCAL_VERSION)" \
