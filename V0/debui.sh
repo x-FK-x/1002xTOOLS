@@ -71,7 +71,7 @@ fi
 
 
 #---------------------------------------------------------------------------------------------
-internal Shell:
+#internal Shell:
 if [[ ! -d /etc/1002xSHELL || ! $(grep -q "1002xSHELL" /etc/bash.bashrc) ]]; then
 # === Release Version (ANPASSEN) ===
 RELEASE_VERSION="0"          # 0 … 999
