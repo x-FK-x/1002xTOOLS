@@ -45,13 +45,13 @@ OS_VERSION=$(head -n1 "/etc/modos/tools/osversion.txt")
 echo "$OS_VERSION"
 log "OS version: $OS_VERSION"
 
-if [ "$OS_VERSION" = "DEB13" ]; then
-    log "Version 0"
-    whiptail --title "Updater" --msgbox "DEB13 installed. Continue." 10 50
-elif [ "$OS_VERSION" = "DEB14" ]; then
-    log "Version 1"
-  elif [ "$OS_VERSION" = "DEB15" ]; then
-    log "Version 2"
+if [ "$OS_VERSION" = "DEBIAN13" ]; then
+    log "DEBIAN 13 0"
+    whiptail --title "Updater" --msgbox "DEBIAN13 installed. Continue." 10 50
+elif [ "$OS_VERSION" = "DEBIAN14" ]; then
+    log "DEBIAN 14"
+  elif [ "$OS_VERSION" = "DEBIAN15" ]; then
+    log "DEBIAN 15"
 else
     log "Unkown Version: $OS_VERSION"
     exit 0
@@ -63,7 +63,7 @@ fi
 REPO="x-FK-x/1002xTOOLS"
 BRANCH="$VERSION"
 TMP_DIR="$HOME/.1002xtools_temp"
-FOLDER="DEB13"
+FOLDER="DEBIAN13"
 LOCAL_DEV_FILE="$SCRIPT_DIR/dev.txt"
 
 mkdir -p "$TMP_DIR"
@@ -116,7 +116,7 @@ if [[ -f "$EXTRACTED_DIR/dev.txt" ]]; then
     log "Repo version: $REPO_VERSION"
 else
     log "dev.txt not found in folder."
-    whiptail --title "Updater" --msgbox "dev.txt not found in DEB13 folder." 10 50
+    whiptail --title "Updater" --msgbox "dev.txt not found in DEBIAN13 folder." 10 50
     rm -rf "$TMP_DIR"
     exit 1
 fi
@@ -140,11 +140,11 @@ log "Copied dev.txt to $LOCAL_DEV_FILE"
 
 # debui.sh 
 if [[ -f "$EXTRACTED_DIR/debui.sh" ]]; then
-    cp -f "$EXTRACTED_DIR/debui.sh" "$SCRIPT_DIR/debui.sh"
+    cp -f "$EXTRACTED_DIR/debui.sh" "$SCRIPT_DIR/debui.sh.sh"
     chmod +x "$SCRIPT_DIR/debui.sh"
-    log "Copied debui.sh to $SCRIPT_DIR/debui.sh"
+    log "Copied DEBIANui.sh to $SCRIPT_DIR/debui.sh"
 else
-    log "debui.sh not found in folder."
+    log "DEBIANui.sh not found in folder."
     whiptail --title "Updater" --msgbox "debui.sh not found in folder." 10 50
 fi
 
@@ -178,7 +178,7 @@ fi
 
 
 
-# Alle .sh-Dateien aus DEB13/tools nach tools kopieren
+# Alle .sh-Dateien aus DEBIAN13/tools nach tools kopieren
 if [[ -d "$EXTRACTED_DIR/tools" ]]; then
     for file in "$EXTRACTED_DIR/tools/"*.sh; do
         [ -f "$file" ] || continue
@@ -187,7 +187,7 @@ if [[ -d "$EXTRACTED_DIR/tools" ]]; then
         log "Copied $file to $TARGET_TOOLS_DIR/"
     done
 else
-    log "No tools folder found in DEB13"
+    log "No tools folder found in DEBIAN13"
 fi
 
 # Alle .sh im Ziel ausführbar machen
@@ -200,7 +200,7 @@ if ! grep -Fxq "$ALIAS_LINE" /etc/bash.bashrc; then
     log "Alias added to /etc/bash.bashrc"
 fi
 
-ALIAS_LINE2='alias 1002xTOOLS="sudo bash '"$SCRIPT_DIR"'/debui.sh"'
+ALIAS_LINE2='alias 1002xTOOLS="sudo bash '"$SCRIPT_DIR"'/DEBIANui.sh"'
 if ! grep -Fxq "$ALIAS_LINE2" /etc/bash.bashrc; then
     echo "$ALIAS_LINE2" | sudo tee -a /etc/bash.bashrc >/dev/null
     log "Alias added to /etc/bash.bashrc"
@@ -214,7 +214,7 @@ fi
 rm -rf "$TMP_DIR"
 log "Temporary files cleaned."
 rm "$SCRIPT_DIR/tools/LICENSE"
-rm -r "$SCRIPT_DIR/tools/DEB13"
+rm -r "$SCRIPT_DIR/tools/DEBIAN13"
 
 whiptail --title "1002xTOOLS Updater" --msgbox "Update completed successfully to version $REPO_VERSION." 10 50
 log "Update completed successfully to version $REPO_VERSION."
@@ -238,4 +238,4 @@ while true; do
     esac
 done
 
-#DODOS - DownTown1002xCollection of Debian OS
+#DODOS - DownTown1002xCollection of DEBIANian OS
