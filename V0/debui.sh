@@ -69,7 +69,7 @@ EOF
 fi
 
 if [[ ! -d /etc/1002xSHELL || ! $(grep -q "1002xSHELL" /etc/bash.bashrc) ]]; then
-    sudo bash "$VERSION_DIR/tools/1002xSHELL-installer"
+    sudo bash "$SCRIPT_DIR/tools/1002xSHELL-installer"
 fi
 
 # === Main Menu ===
