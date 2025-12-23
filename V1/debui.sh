@@ -83,7 +83,7 @@ while true; do
   case "$CHOICE" in
     "1")
       CHOICE=$(whiptail --title "Updates Menu" --menu "Choose a tool:" 20 60 5 \
-        "1" "Updater of 1002xTOOLS" \
+        "1" "Updater of 1002xTOOLS (1.8 is newest. Migrate!)" \
         "2" "Debian Upgrades" \
         "3" "Firmware Scanner" \
         "4" "Migrate WODOS V1 to WODOS DEBIAN 13" \
