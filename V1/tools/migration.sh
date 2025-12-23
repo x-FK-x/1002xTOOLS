@@ -16,16 +16,27 @@ TOOLS_DIR="$BASE_DIR/tools"
 OSVERSION_FILE="$TOOLS_DIR/osversion.txt"
 UPDATER_FILE="$TOOLS_DIR/updater.sh"
 UPDATER_URL="https://raw.githubusercontent.com/x-FK-x/1002xTOOLS/refs/heads/wodos/DEBIAN13/tools/updater.sh"
+TARGET_VERSION="DEBIAN13"
+
+# === Check current OS version ===
+if [[ -f "$OSVERSION_FILE" ]]; then
+  CURRENT_VERSION=$(head -n1 "$OSVERSION_FILE" | tr -d '[:space:]')
+else
+  CURRENT_VERSION=""
+fi
+
+if [[ "$CURRENT_VERSION" == "$TARGET_VERSION" ]]; then
+  echo "System already on $TARGET_VERSION. No migration needed."
+  exit 0
+fi
 
 # === Update osversion.txt ===
-echo "DEBIAN13" > "$OSVERSION_FILE"
+echo "$TARGET_VERSION" > "$OSVERSION_FILE"
 
 # === Replace updater.sh ===
-if [[ -f "$UPDATER_FILE" ]]; then
-  rm -f "$UPDATER_FILE"
-fi
+rm -f "$UPDATER_FILE"
 
 curl -fsSL "$UPDATER_URL" -o "$UPDATER_FILE"
 chmod +x "$UPDATER_FILE"
 
-echo "Migration to DEBIAN13 completed successfully."
+echo "Migration completed: $CURRENT_VERSION -> $TARGET_VERSION"
