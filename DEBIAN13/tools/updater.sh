@@ -89,15 +89,12 @@ cp -f "$EXTRACTED_DIR/tools/motd" "$SCRIPT_DIR/tools/motd"
 # === list.txt ===
 cp -f "$EXTRACTED_DIR/tools/list.txt" "$SCRIPT_DIR/tools/list.txt"
 
-# === 1002xSHELL-installer.sh ===
-cp -f "$EXTRACTED_DIR/tools/1002xSHELL-installer.sh" \
-      "$SCRIPT_DIR/tools/1002xSHELL-installer.sh"
-chmod +x "$SCRIPT_DIR/tools/1002xSHELL-installer.sh"
 
-# === 1002xSHELL.sh (EXPLIZIT!) ===
-if [[ -f "$EXTRACTED_DIR/tools/1002xSHELL.sh" ]]; then
-    cp -f "$EXTRACTED_DIR/tools/1002xSHELL.sh" "$SCRIPT_DIR/tools/1002xSHELL.sh"
-    chmod +x "$SCRIPT_DIR/tools/1002xSHELL.sh"
+
+# === 1002xSHELL-installer.sh (EXPLIZIT!) ===
+if [[ -f "$EXTRACTED_DIR/tools/1002xSHELL-installer.sh" ]]; then
+    cp -f "$EXTRACTED_DIR/tools/1002xSHELL-installer.sh" "$SCRIPT_DIR/tools/1002xSHELL-installer.sh"
+    chmod +x "$SCRIPT_DIR/tools/1002xSHELL-installer.sh"
     log "Copied 1002xSHELL.sh explicitly to tools"
 else
     log "1002xSHELL.sh not found in zip"
