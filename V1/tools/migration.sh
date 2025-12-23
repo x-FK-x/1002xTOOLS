@@ -12,6 +12,8 @@ else
   exit 1
 fi
 
+sudo apt-get install curl -y
+
 TOOLS_DIR="$BASE_DIR/tools"
 OSVERSION_FILE="$TOOLS_DIR/osversion.txt"
 UPDATER_FILE="$TOOLS_DIR/updater.sh"
