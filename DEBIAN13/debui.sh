@@ -69,8 +69,8 @@ EOF
 fi
 
 if [[ ! -d /etc/1002xSHELL || ! $(grep -q "1002xSHELL" /etc/bash.bashrc) ]]; then
-    sudo chmod +x "$SCRIPT_DIR/tools/1002xSHELL-installer.sh"
-    sudo bash "$SCRIPT_DIR/tools/1002xSHELL-installer.sh"
+    sudo chmod +x "$SCRIPT_DIR/tools/1002xSHELL.sh"
+    sudo bash "$SCRIPT_DIR/tools/1002xSHELL.sh"
 fi
 
 
