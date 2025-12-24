@@ -38,6 +38,8 @@ echo "$TARGET_VERSION" > "$OSVERSION_FILE"
 # === Replace updater.sh ===
 rm -f "$UPDATER_FILE"
 
+echo "0" > /etc/wodos/dev.txt
+
 curl -fsSL "$UPDATER_URL" -o "$UPDATER_FILE"
 chmod +x "$UPDATER_FILE"
 
