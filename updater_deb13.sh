@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # === Ziel & Logfile ===
-TARGET_TOOLS_DIR="/etc/wodos/tools"
+TARGET_TOOLS_DIR="/etc/godos/tools"
 LOG_FILE="$TARGET_TOOLS_DIR/1002xTOOLS_updater.log"
 
 mkdir -p "$TARGET_TOOLS_DIR"
