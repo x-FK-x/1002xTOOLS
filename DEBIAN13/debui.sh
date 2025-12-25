@@ -11,7 +11,7 @@ elif [[ -d /etc/wodos ]]; then
   VERSION="WODOS"
   SCRIPT_DIR="/etc/wodos"
 else
-  whiptail --title "Updater Error" --msgbox "No valid version directory detected. Exiting." 10 50
+  whiptail --title "1002xTOOLS Error" --msgbox "No valid version directory detected. Exiting." 10 50
   exit 1
 fi
 
