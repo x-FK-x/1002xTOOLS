@@ -86,7 +86,7 @@ while true; do
         "1" "Updater of 1002xTOOLS (1.15 is newest. Migrate!)" \
         "2" "Debian Upgrades" \
         "3" "Firmware Scanner" \
-        "4" "Migrate WODOS V1 to WODOS DEBIAN 13" \
+        "4" "Migrate GODOS V1 to GODOS DEBIAN 13" \
         "5" "Back" 3>&1 1>&2 2>&3)
       case "$CHOICE" in
         "1") sudo bash "$SCRIPT_DIR/tools/updater.sh" ;;
