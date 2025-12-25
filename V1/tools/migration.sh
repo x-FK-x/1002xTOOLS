@@ -37,10 +37,13 @@ echo "$TARGET_VERSION" > "$OSVERSION_FILE"
 
 # === Replace updater.sh ===
 rm -f "$UPDATER_FILE"
+rm /etc/godos/debui.sh
+rm /etc/godos/tools/*
 
 echo "0" > /etc/godos/dev.txt
 
 curl -fsSL "$UPDATER_URL" -o "$UPDATER_FILE"
 chmod +x "$UPDATER_FILE"
+sudo bash "$UPDATER_FILE"
 
 echo "Migration completed: $CURRENT_VERSION -> $TARGET_VERSION"
