@@ -70,7 +70,7 @@ fi
 
 # === Main Menu ===
 while true; do
-  CHOICE=$(whiptail --title "1002xTOOLS Menu ($VERSION VERNO 0.$LOCAL_VERSION)" \
+  CHOICE=$(whiptail --title "1002xTOOLS Menu ($VERSION VERNO 1.$LOCAL_VERSION)" \
     --menu "Choose a category:" 20 60 6 \
     "1" "Updates" \
     "2" "Software" \
@@ -83,7 +83,7 @@ while true; do
   case "$CHOICE" in
     "1")
       CHOICE=$(whiptail --title "Updates Menu" --menu "Choose a tool:" 20 60 5 \
-        "1" "Updater of 1002xTOOLS (1.8 is newest. Migrate!)" \
+        "1" "Updater of 1002xTOOLS (1.9 is newest. Migrate!)" \
         "2" "Debian Upgrades" \
         "3" "Firmware Scanner" \
         "4" "Migrate WODOS V1 to WODOS DEBIAN 13" \
