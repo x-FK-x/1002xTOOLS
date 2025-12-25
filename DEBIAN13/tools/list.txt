@@ -1,0 +1,9 @@
+firefox-esr
+vlc
+winehq-stable
+steam
+libreoffice-base
+lutris
+plasma-discover
+keepass2
+gimp
