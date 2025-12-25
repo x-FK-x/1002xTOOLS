@@ -70,7 +70,7 @@ fi
 
 # === Main Menu ===
 while true; do
-  CHOICE=$(whiptail --title "1002xTOOLS Menu ($VERSION VERNO 0.$LOCAL_VERSION)" \
+  CHOICE=$(whiptail --title "1002xTOOLS Menu ($VERSION VERNO 1.$LOCAL_VERSION)" \
     --menu "Choose a category:" 20 60 6 \
     "1" "Updates" \
     "2" "Software" \
