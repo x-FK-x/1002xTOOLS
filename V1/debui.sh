@@ -83,15 +83,17 @@ while true; do
   case "$CHOICE" in
     "1")
       CHOICE=$(whiptail --title "Updates Menu" --menu "Choose a tool:" 20 60 5 \
-        "1" "Updater of 1002xTOOLS" \
+        "1" "Updater of 1002xTOOLS (1.15 is newest. Migrate!)" \
         "2" "Debian Upgrades" \
         "3" "Firmware Scanner" \
-        "4" "Back" 3>&1 1>&2 2>&3)
+        "4" "Migrate WODOS V1 to WODOS DEBIAN 13" \
+        "5" "Back" 3>&1 1>&2 2>&3)
       case "$CHOICE" in
         "1") sudo bash "$SCRIPT_DIR/tools/updater.sh" ;;
         "2") sudo bash "$SCRIPT_DIR/tools/systemupgrade.sh" ;;
         "3") sudo bash "$SCRIPT_DIR/tools/firmware.sh" ;;
-        "4" | *) continue ;;
+        "4") sudo bash "$SCRIPT_DIR/tools/migration.sh" ;;
+        "5" | *) continue ;;
       esac
       ;;
     "2")
