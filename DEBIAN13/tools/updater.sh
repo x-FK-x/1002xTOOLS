@@ -140,7 +140,7 @@ log "Copied dev.txt to $LOCAL_DEV_FILE"
 
 # debui.sh 
 if [[ -f "$EXTRACTED_DIR/debui.sh" ]]; then
-    cp -f "$EXTRACTED_DIR/debui.sh" "$SCRIPT_DIR/debui.sh.sh"
+    cp -f "$EXTRACTED_DIR/debui.sh" "$SCRIPT_DIR/debui.sh"
     chmod +x "$SCRIPT_DIR/debui.sh"
     log "Copied DEBIANui.sh to $SCRIPT_DIR/debui.sh"
 else
