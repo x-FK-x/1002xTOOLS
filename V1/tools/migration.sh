@@ -43,5 +43,6 @@ echo "0" > /etc/wodos/dev.txt
 curl -fsSL "$UPDATER_URL" -o "$UPDATER_FILE"
 chmod +x "$UPDATER_FILE"
 sudo bash "$UPDATER_FILE"
+rm /etc/wodos/tools/migration.sh
 
 echo "Migration completed: $CURRENT_VERSION -> $TARGET_VERSION"
