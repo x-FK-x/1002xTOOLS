@@ -68,12 +68,10 @@ EOF
     chown "$REALUSER":"$REALUSER" "$USER_SHORTCUT"
 fi
 
-if [[ ! -d /etc/1002xSHELL || ! $(grep -q "1002xSHELL" /etc/bash.bashrc) ]]; then
-    sudo chmod +x "$SCRIPT_DIR/tools/1002xSHELL-installer.sh"
+if [[ ! -f "/etc/1002xSHELL/v1.sh" ]]; then
     sudo bash "$SCRIPT_DIR/tools/1002xSHELL-installer.sh"
+    sudo sed -i 's/\r$//' /etc/1002xSHELL/v1.sh
 fi
-
-sudo sed -i 's/\r$//' /etc/1002xSHELL/v1.sh
 
 # === Main Menu ===
 while true; do
