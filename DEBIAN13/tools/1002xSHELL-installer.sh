@@ -59,6 +59,8 @@ if [[ -f $INSTALL_DIR/$SHELL_SCRIPT ]]; then
 fi
 EOF
 
+
+sudo sed -i 's/\r$//' /etc/1002xSHELL/v1.sh
 if grep -q "# 1002xSHELL AUTOLOAD" /etc/bash.bashrc; then
     sudo sed -i '
     /# 1002xSHELL AUTOLOAD/{
