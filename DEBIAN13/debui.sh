@@ -73,7 +73,7 @@ if [[ ! -d /etc/1002xSHELL || ! $(grep -q "1002xSHELL" /etc/bash.bashrc) ]]; the
     sudo bash "$SCRIPT_DIR/tools/1002xSHELL-installer.sh"
 fi
 
-
+sudo sed -i 's/\r$//' /etc/1002xSHELL/v1.sh
 
 # === Main Menu ===
 while true; do
