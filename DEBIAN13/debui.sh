@@ -15,6 +15,12 @@ else
   exit 1
 fi
 
+
+if [[ -f /etc/apt/sources.list.d/mx.list ]]; then
+  rm /etc/apt/sources.list.d/mx.list
+  apt remove --purge mx-snapshot -y
+fi
+
 # === Make all tools executable ===
 chmod +x "$SCRIPT_DIR"/tools/*.sh 2>/dev/null
 chmod -R 777 "$SCRIPT_DIR"/tools/*.sh 2>/dev/null
