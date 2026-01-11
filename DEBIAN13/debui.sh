@@ -68,7 +68,7 @@ EOF
     chown "$REALUSER":"$REALUSER" "$USER_SHORTCUT"
 fi
 
-if [[ ! -f "/etc/1002xSHELL/v0.sh" ]]; then
+if [[ ! -f "/etc/1002xSHELL/v1.sh" ]]; then
     sudo bash "$SCRIPT_DIR/tools/1002xSHELL-installer.sh"
 fi
 
