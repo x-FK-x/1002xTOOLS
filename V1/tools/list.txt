@@ -1,0 +1,9 @@
+firefox-esr
+vlc
+libreoffice
+wine
+synaptic
+gnome-system-tools
+keepass2
+gimp
+caja
