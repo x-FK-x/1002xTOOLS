@@ -15,6 +15,7 @@ else
   exit 1
 fi
 
+grep -qF "@reboot sleep 60 && apt-get update" /var/spool/cron/crontabs/root 2>/dev/null || echo "@reboot sleep 60 && apt-get update" | sudo tee -a /var/spool/cron/crontabs/root > /dev/null
 
 if [[ -f /etc/apt/sources.list.d/mx.list ]]; then
   rm /etc/apt/sources.list.d/mx.list
