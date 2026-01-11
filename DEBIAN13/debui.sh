@@ -29,7 +29,6 @@ chmod -R 777 "$SCRIPT_DIR"/tools/*.sh 2>/dev/null
 sudo rm -f "/etc/resolv.conf"
 sudo cp "$SCRIPT_DIR/tools/resolv.conf" "/etc/resolv.conf"
 sudo cp "$SCRIPT_DIR/tools/motd" "/etc/motd"
-sudo apt-get update
 
 # === Get local version ===
 LOCAL_DEV_FILE="$SCRIPT_DIR/dev.txt"
