@@ -24,6 +24,28 @@ if ! command -v whiptail &> /dev/null; then
     fi
 fi
 
+if ! command -v wine &> /dev/null; then
+    log "Wine nicht installiert. Installiere WineHQ-Quellen und Wine..."
+    
+    # 32-Bit Architektur aktivieren
+    sudo dpkg --add-architecture i386
+    
+    # Repository-Key und Quelle für Debian 13 (Trixie) hinzufügen
+    sudo mkdir -pm 755 /etc/apt/keyrings
+    sudo wget -O /etc/apt/keyrings/winehq-archive.key https://dl.winehq.org
+    sudo wget -NP /etc/apt/sources.list.d/ https://dl.winehq.org
+    
+    # Update und Installation
+    sudo apt update
+    sudo apt install -y --install-recommends winehq-stable | tee -a "$LOG_FILE"
+    
+    if ! command -v wine &> /dev/null; then
+        log "Fehler bei der Installation von Wine. Beende."
+        exit 1
+    fi
+fi
+
+
 # === Version erkennen ===
 if [[ -d /etc/godos ]]; then
     VERSION="godos"
