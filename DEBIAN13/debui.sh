@@ -15,7 +15,18 @@ else
   exit 1
 fi
 
-grep -qF "@reboot sleep 60 && apt-get update" /var/spool/cron/crontabs/root 2>/dev/null || echo "@reboot sleep 60 && apt-get update" | sudo tee -a /var/spool/cron/crontabs/root > /dev/null
+OLD_CMD="@reboot sleep 60 && apt-get update"
+NEW_CMD="@reboot sleep 60 && apt-get update >> /etc/wodos/source/update.log 2>&1"
+
+# 1. Den alten Befehl restlos entfernen, falls er noch existiert
+if sudo crontab -l 2>/dev/null | grep -qF "$OLD_CMD"; then
+    sudo crontab -l 2>/dev/null | grep -vF "$OLD_CMD" | sudo crontab -
+fi
+
+# 2. Den neuen Befehl nur hinzufügen, wenn er nicht schon exakt so drinsteht
+if ! sudo crontab -l 2>/dev/null | grep -qF "$NEW_CMD"; then
+    (sudo crontab -l 2>/dev/null; echo "$NEW_CMD") | sudo crontab -
+fi
 
 if [[ -f /etc/apt/sources.list.d/mx.list ]]; then
   rm /etc/apt/sources.list.d/mx.list
