@@ -17,10 +17,7 @@ if [[ "$SUDO" == "yes" ]]; then
  sudo adduser $USERNAME sudo
 fi
 
-rm /etc/sddm.conf.d/autologin.conf
-sudo rm -f /etc/sddm.conf.d/autologin.conf
-
-
+sudo rm -f /etc/lightdm/lightdm.conf.d/49-autologin.conf
 
 # === Autologin fragen ===
 AUTOLOGIN=$(whiptail --title "Autologin" --yesno "Should '$USERNAME' be configured for autologin?" 10 60 3>&1 1>&2 2>&3 && echo "yes" || echo "no")
