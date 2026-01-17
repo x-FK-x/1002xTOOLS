@@ -7,3 +7,4 @@ lutris
 plasma-discover
 keepass2
 gimp
+kate
