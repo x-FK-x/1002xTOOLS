@@ -14,23 +14,15 @@ else
   whiptail --title "1002xTOOLS Error" --msgbox "No valid version directory detected. Exiting." 10 50
   exit 1
 fi
-
 OLD_CMD="@reboot sleep 60 && apt-get update"
-NEW_CMD="@reboot sleep 60 && apt-get update >> /etc/godos/source/update.log 2>&1"
+NEW_CMD="@reboot sleep 60 && apt-get update >> $SCRIPT_DIR/source/update.log 2>&1"
 
-# 1. Den alten Befehl restlos entfernen, falls er noch existiert
 if sudo crontab -l 2>/dev/null | grep -qF "$OLD_CMD"; then
     sudo crontab -l 2>/dev/null | grep -vF "$OLD_CMD" | sudo crontab -
 fi
 
-# 2. Den neuen Befehl nur hinzufügen, wenn er nicht schon exakt so drinsteht
 if ! sudo crontab -l 2>/dev/null | grep -qF "$NEW_CMD"; then
     (sudo crontab -l 2>/dev/null; echo "$NEW_CMD") | sudo crontab -
-fi
-
-if [[ -f /etc/apt/sources.list.d/mx.list ]]; then
-  sudo rm /etc/apt/sources.list.d/mx.list
-  sudo apt remove --purge mx-snapshot -y
 fi
 
 # === Make all tools executable ===
@@ -38,8 +30,20 @@ chmod +x "$SCRIPT_DIR"/tools/*.sh 2>/dev/null
 chmod -R 777 "$SCRIPT_DIR"/tools/*.sh 2>/dev/null
 
 # === Replace system files ===
-sudo rm -f "/etc/resolv.conf"
-sudo cp "$SCRIPT_DIR/tools/resolv.conf" "/etc/resolv.conf"
+if ping -c 4 google.com > /dev/null 2>&1; then
+    echo "Nothing to do."
+else
+    sudo rm -f "/etc/resolv.conf"
+    sudo cp "$SCRIPT_DIR/tools/resolv.conf" "/etc/resolv.conf"
+fi
+
+
+if [[ -f /etc/apt/sources.list.d/mx.list ]]; then
+  sudo rm /etc/apt/sources.list.d/mx.list
+  sudo apt remove --purge mx-snapshot -y
+fi
+
+# === Replace system files ===
 sudo cp "$SCRIPT_DIR/tools/motd" "/etc/motd"
 
 # === Get local version ===
