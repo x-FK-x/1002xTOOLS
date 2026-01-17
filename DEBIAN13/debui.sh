@@ -14,6 +14,7 @@ else
   whiptail --title "1002xTOOLS Error" --msgbox "No valid version directory detected. Exiting." 10 50
   exit 1
 fi
+
 OLD_CMD="@reboot sleep 60 && apt-get update"
 NEW_CMD="@reboot sleep 60 && apt-get update >> $SCRIPT_DIR/source/update.log 2>&1"
 
