@@ -16,7 +16,7 @@ else
 fi
 
 OLD_CMD="@reboot sleep 60 && apt-get update"
-NEW_CMD="@reboot sleep 60 && apt-get update >> /etc/wodos/source/update.log 2>&1"
+NEW_CMD="@reboot sleep 60 && apt-get update >> /etc/godos/source/update.log 2>&1"
 
 # 1. Den alten Befehl restlos entfernen, falls er noch existiert
 if sudo crontab -l 2>/dev/null | grep -qF "$OLD_CMD"; then
