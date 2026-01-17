@@ -15,7 +15,7 @@ else
   exit 1
 fi
 
-grep -qF "@reboot sleep 60 && apt-get update" /var/spool/cron/crontabs/root 2>/dev/null || echo "@reboot sleep 60 && apt-get update" | sudo tee -a /var/spool/cron/crontabs/root > /dev/null
+sudo crontab -l 2>/dev/null | grep -vF "@reboot sleep 60 && apt-get update" | sudo crontab -
 
 # === Make all tools executable ===
 chmod +x "$SCRIPT_DIR"/tools/*.sh 2>/dev/null
