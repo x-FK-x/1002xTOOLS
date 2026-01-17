@@ -1,36 +1,7 @@
 #!/bin/bash
-if ! command -v dos2unix &> /dev/null; then
-    log "dos2unix not installed. Installing..."
-    sudo apt update && sudo apt install -y dos2unix | tee -a "$LOG_FILE"
-    if ! command -v dos2unix &> /dev/null; then
-        log "Failed to install dos2unix. Exiting."
-        exit 1
-    fi
-fi
-
-
-# === Version erkennen ===
-if [[ -d /etc/godos ]]; then
-    VERSION="godos"
-    SCRIPT_DIR="/etc/godos"
-elif [[ -d /etc/modos ]]; then
-    VERSION="modos"
-    SCRIPT_DIR="/etc/modos"
-elif [[ -d /etc/wodos ]]; then
-    VERSION="wodos"
-    SCRIPT_DIR="/etc/wodos"
-else
-    log "No valid version directory detected. Exiting."
-    whiptail --title "Updater Error" --msgbox "No valid version directory detected. Exiting." 10 50
-    exit 1
-fi
-
-
-dos2unix /$SCRIPT_DIR/debui.sh
-dos2unix /$SCRIPT_DIR/tools/*
 
 # Logfile im tools-Ordner
-TARGET_TOOLS_DIR="/$SCRIPT_DIR/tools"
+TARGET_TOOLS_DIR="/etc/wodos/tools"
 LOG_FILE="$TARGET_TOOLS_DIR/1002xTOOLS_updater.log"
 
 mkdir -p "$TARGET_TOOLS_DIR"
@@ -53,8 +24,26 @@ if ! command -v whiptail &> /dev/null; then
     fi
 fi
 
+
+
+# === Version erkennen ===
+if [[ -d /etc/godos ]]; then
+    VERSION="godos"
+    SCRIPT_DIR="/etc/godos"
+elif [[ -d /etc/modos ]]; then
+    VERSION="modos"
+    SCRIPT_DIR="/etc/modos"
+elif [[ -d /etc/wodos ]]; then
+    VERSION="wodos"
+    SCRIPT_DIR="/etc/wodos"
+else
+    log "No valid version directory detected. Exiting."
+    whiptail --title "Updater Error" --msgbox "No valid version directory detected. Exiting." 10 50
+    exit 1
+fi
+
 log "Detected version: $VERSION, SCRIPT_DIR: $SCRIPT_DIR"
-OS_VERSION=$(head -n1 "/$SCRIPT_DIR/tools/osversion.txt")
+OS_VERSION=$(head -n1 "/etc/godos/tools/osversion.txt")
 echo "$OS_VERSION"
 log "OS version: $OS_VERSION"
 
@@ -69,6 +58,7 @@ else
     log "Unkown Version: $OS_VERSION"
     exit 0
 fi
+
 
 
 # === Repo & Temp ===
@@ -251,4 +241,3 @@ while true; do
 done
 
 #DODOS - DownTown1002xCollection of DEBIAN OS
-
