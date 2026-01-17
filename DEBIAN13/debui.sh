@@ -16,7 +16,7 @@ else
 fi
 
 OLD_CMD="@reboot sleep 60 && apt-get update"
-NEW_CMD="@reboot sleep 60 && apt-get update >> /$SCRIPT_DIR/source/update.log 2>&1"
+NEW_CMD="@reboot sleep 60 && apt-get update >> $SCRIPT_DIR/source/update.log 2>&1"
 
 if sudo crontab -l 2>/dev/null | grep -qF "$OLD_CMD"; then
     sudo crontab -l 2>/dev/null | grep -vF "$OLD_CMD" | sudo crontab -
