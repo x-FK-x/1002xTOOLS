@@ -16,14 +16,12 @@ else
 fi
 
 OLD_CMD="@reboot sleep 60 && apt-get update"
-NEW_CMD="@reboot sleep 60 && apt-get update >> /etc/wodos/source/update.log 2>&1"
+NEW_CMD="@reboot sleep 60 && apt-get update >> /$SCRIPT_DIR/source/update.log 2>&1"
 
-# 1. Den alten Befehl restlos entfernen, falls er noch existiert
 if sudo crontab -l 2>/dev/null | grep -qF "$OLD_CMD"; then
     sudo crontab -l 2>/dev/null | grep -vF "$OLD_CMD" | sudo crontab -
 fi
 
-# 2. Den neuen Befehl nur hinzufügen, wenn er nicht schon exakt so drinsteht
 if ! sudo crontab -l 2>/dev/null | grep -qF "$NEW_CMD"; then
     (sudo crontab -l 2>/dev/null; echo "$NEW_CMD") | sudo crontab -
 fi
@@ -33,8 +31,14 @@ chmod +x "$SCRIPT_DIR"/tools/*.sh 2>/dev/null
 chmod -R 777 "$SCRIPT_DIR"/tools/*.sh 2>/dev/null
 
 # === Replace system files ===
-sudo rm -f "/etc/resolv.conf"
-sudo cp "$SCRIPT_DIR/tools/resolv.conf" "/etc/resolv.conf"
+if ping -c 4 google.com > /dev/null 2>&1; then
+    echo "Nothing to do."
+else
+    sudo rm -f "/etc/resolv.conf"
+    sudo cp "$SCRIPT_DIR/tools/resolv.conf" "/etc/resolv.conf"
+fi
+
+
 sudo cp "$SCRIPT_DIR/tools/motd" "/etc/motd"
 
 # === Get local version ===
@@ -83,9 +87,8 @@ fi
 
 if [[ ! -f "/etc/1002xSHELL/v1.sh" ]]; then
     sudo bash "$SCRIPT_DIR/tools/1002xSHELL-installer.sh"
+    sudo sed -i 's/\r$//' /etc/1002xSHELL/v1.sh
 fi
-
-
 
 # === Main Menu ===
 while true; do
