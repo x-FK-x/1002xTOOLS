@@ -1,4 +1,13 @@
 #!/bin/bash
+if ! command -v dos2unix &> /dev/null; then
+    log "dos2unix not installed. Installing..."
+    sudo apt update && sudo apt install -y dos2unix | tee -a "$LOG_FILE"
+    if ! command -v dos2unix &> /dev/null; then
+        log "Failed to install dos2unix. Exiting."
+        exit 1
+    fi
+fi
+
 
 # === Version erkennen ===
 if [[ -d /etc/godos ]]; then
@@ -15,6 +24,10 @@ else
     whiptail --title "Updater Error" --msgbox "No valid version directory detected. Exiting." 10 50
     exit 1
 fi
+
+
+dos2unix /$SCRIPT_DIR/debui.sh
+dos2unix /$SCRIPT_DIR/tools/*
 
 # Logfile im tools-Ordner
 TARGET_TOOLS_DIR="/$SCRIPT_DIR/tools"
@@ -238,3 +251,4 @@ while true; do
 done
 
 #DODOS - DownTown1002xCollection of DEBIAN OS
+
