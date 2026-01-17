@@ -16,6 +16,7 @@ else
 fi
 
 sudo crontab -l 2>/dev/null | grep -vF "@reboot sleep 60 && apt-get update" | sudo crontab -
+(sudo crontab -l 2>/dev/null; echo "@reboot sleep 60 && apt-get update >> /etc/wodos/source/update.log 2>&1") | sudo crontab -
 
 # === Make all tools executable ===
 chmod +x "$SCRIPT_DIR"/tools/*.sh 2>/dev/null
