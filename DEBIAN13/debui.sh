@@ -15,8 +15,18 @@ else
   exit 1
 fi
 
-sudo crontab -l 2>/dev/null | grep -vF "@reboot sleep 60 && apt-get update" | sudo crontab -
-(sudo crontab -l 2>/dev/null; echo "@reboot sleep 60 && apt-get update >> /etc/wodos/source/update.log 2>&1") | sudo crontab -
+OLD_CMD="@reboot sleep 60 && apt-get update"
+NEW_CMD="@reboot sleep 60 && apt-get update >> /etc/wodos/source/update.log 2>&1"
+
+# 1. Den alten Befehl restlos entfernen, falls er noch existiert
+if sudo crontab -l 2>/dev/null | grep -qF "$OLD_CMD"; then
+    sudo crontab -l 2>/dev/null | grep -vF "$OLD_CMD" | sudo crontab -
+fi
+
+# 2. Den neuen Befehl nur hinzufügen, wenn er nicht schon exakt so drinsteht
+if ! sudo crontab -l 2>/dev/null | grep -qF "$NEW_CMD"; then
+    (sudo crontab -l 2>/dev/null; echo "$NEW_CMD") | sudo crontab -
+fi
 
 # === Make all tools executable ===
 chmod +x "$SCRIPT_DIR"/tools/*.sh 2>/dev/null
