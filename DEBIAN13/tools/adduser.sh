@@ -17,7 +17,6 @@ if [[ "$SUDO" == "yes" ]]; then
  sudo adduser $USERNAME sudo
 fi
 
-rm /etc/sddm.conf.d/autologin.conf
 sudo rm -f /etc/sddm.conf.d/autologin.conf
 
 
