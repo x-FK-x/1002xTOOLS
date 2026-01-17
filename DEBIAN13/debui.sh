@@ -29,8 +29,8 @@ if ! sudo crontab -l 2>/dev/null | grep -qF "$NEW_CMD"; then
 fi
 
 if [[ -f /etc/apt/sources.list.d/mx.list ]]; then
-  rm /etc/apt/sources.list.d/mx.list
-  apt remove --purge mx-snapshot -y
+  sudo rm /etc/apt/sources.list.d/mx.list
+  sudo apt remove --purge mx-snapshot -y
 fi
 
 # === Make all tools executable ===
