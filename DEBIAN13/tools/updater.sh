@@ -1,7 +1,23 @@
 #!/bin/bash
 
+# === Version erkennen ===
+if [[ -d /etc/godos ]]; then
+    VERSION="godos"
+    SCRIPT_DIR="/etc/godos"
+elif [[ -d /etc/modos ]]; then
+    VERSION="modos"
+    SCRIPT_DIR="/etc/modos"
+elif [[ -d /etc/wodos ]]; then
+    VERSION="wodos"
+    SCRIPT_DIR="/etc/wodos"
+else
+    log "No valid version directory detected. Exiting."
+    whiptail --title "Updater Error" --msgbox "No valid version directory detected. Exiting." 10 50
+    exit 1
+fi
+
 # Logfile im tools-Ordner
-TARGET_TOOLS_DIR="/etc/wodos/tools"
+TARGET_TOOLS_DIR="/etc/godos/tools"
 LOG_FILE="$TARGET_TOOLS_DIR/1002xTOOLS_updater.log"
 
 mkdir -p "$TARGET_TOOLS_DIR"
@@ -24,46 +40,8 @@ if ! command -v whiptail &> /dev/null; then
     fi
 fi
 
-if ! command -v wine &> /dev/null; then
-    log "Wine nicht installiert. Installiere WineHQ-Quellen und Wine..."
-    
-    # 32-Bit Architektur aktivieren
-    sudo dpkg --add-architecture i386
-    
-    # Repository-Key und Quelle für Debian 13 (Trixie) hinzufügen
-    sudo mkdir -pm 755 /etc/apt/keyrings
-    sudo wget -O /etc/apt/keyrings/winehq-archive.key https://dl.winehq.org
-    sudo wget -NP /etc/apt/sources.list.d/ https://dl.winehq.org
-    
-    # Update und Installation
-    sudo apt update
-    sudo apt install -y --install-recommends winehq-stable | tee -a "$LOG_FILE"
-    
-    if ! command -v wine &> /dev/null; then
-        log "Fehler bei der Installation von Wine. Beende."
-        exit 1
-    fi
-fi
-
-
-# === Version erkennen ===
-if [[ -d /etc/godos ]]; then
-    VERSION="godos"
-    SCRIPT_DIR="/etc/godos"
-elif [[ -d /etc/modos ]]; then
-    VERSION="modos"
-    SCRIPT_DIR="/etc/modos"
-elif [[ -d /etc/wodos ]]; then
-    VERSION="wodos"
-    SCRIPT_DIR="/etc/wodos"
-else
-    log "No valid version directory detected. Exiting."
-    whiptail --title "Updater Error" --msgbox "No valid version directory detected. Exiting." 10 50
-    exit 1
-fi
-
 log "Detected version: $VERSION, SCRIPT_DIR: $SCRIPT_DIR"
-OS_VERSION=$(head -n1 "/etc/wodos/tools/osversion.txt")
+OS_VERSION=$(head -n1 "/$SCRIPT_DIR/tools/osversion.txt")
 echo "$OS_VERSION"
 log "OS version: $OS_VERSION"
 
@@ -78,7 +56,6 @@ else
     log "Unkown Version: $OS_VERSION"
     exit 0
 fi
-
 
 
 # === Repo & Temp ===
@@ -164,7 +141,7 @@ log "Copied dev.txt to $LOCAL_DEV_FILE"
 if [[ -f "$EXTRACTED_DIR/debui.sh" ]]; then
     cp -f "$EXTRACTED_DIR/debui.sh" "$SCRIPT_DIR/debui.sh"
     chmod +x "$SCRIPT_DIR/debui.sh"
-    log "Copied DEBIANui.sh to $SCRIPT_DIR/debui.sh"
+    log "Copied debui.sh to $SCRIPT_DIR/debui.sh"
 else
     log "DEBIANui.sh not found in folder."
     whiptail --title "Updater" --msgbox "debui.sh not found in folder." 10 50
