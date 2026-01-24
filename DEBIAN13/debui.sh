@@ -38,13 +38,12 @@ else
     sudo cp "$SCRIPT_DIR/tools/resolv.conf" "/etc/resolv.conf"
 fi
 
-
 if [[ -f /etc/apt/sources.list.d/mx.list ]]; then
   sudo rm /etc/apt/sources.list.d/mx.list
   sudo apt remove --purge mx-snapshot -y
 fi
 
-# === Replace system files ===
+
 sudo cp "$SCRIPT_DIR/tools/motd" "/etc/motd"
 
 # === Get local version ===
