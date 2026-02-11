@@ -1,35 +1,44 @@
 #!/bin/bash
 
-# Prüfen, ob als root ausgeführt
-if [[ $EUID -ne 0 ]]; then
-   echo "[!] Dieses Skript muss mit sudo ausgeführt werden."
-   exit 1
+# === Variables ===
+ZIP_URL="https://github.com"
+
+# === Preparation ===
+# Create a secure temporary directory
+TMP_DIR=$(mktemp -d)
+echo "[*] Created temp directory: $TMP_DIR"
+
+# === Download ===
+echo "[*] Downloading 1002xCMD..."
+# Download directly into the temp folder
+wget -q -O "$TMP_DIR/v0.5.zip" "$ZIP_URL"
+
+if [ $? -ne 0 ]; then
+  echo "[!] Download failed!"
+  exit 1
 fi
 
-ZIP_URL="https://github.com/x-FK-x/1002xCMD/releases/download/v0.5/v0.5.zip"
-TMP_DIR=$(mktemp -d) # Sicherer temporärer Ordner
-
-# Download
-echo "[*] Downloading..."
-wget -q -O "$TMP_DIR/v0.5.zip" "$ZIP_URL" || exit 1
-
-# Entpacken
-echo "[*] Extracting..."
+# === Extraction ===
+echo "[*] Extracting archive..."
 unzip -q "$TMP_DIR/v0.5.zip" -d "$TMP_DIR"
 
-# Dynamisch den Ordner finden (GitHub zips haben oft den Namen des Repos + Version)
-EXTRACTED_DIR=$(find "$TMP_DIR" -mindepth 1 -maxdepth 1 -type d | head -n 1)
+# Move into the directory to execute the files
+cd "$TMP_DIR" || exit 1
 
-if [[ -z "$EXTRACTED_DIR" ]]; then
-    echo "[!] Folder was not found."
-    rm -rf "$TMP_DIR"
-    exit 1
+# === Execution ===
+if [[ -f "installer.sh" ]]; then
+  echo "[*] Running installer..."
+  chmod +x "installer.sh"
+  sudo bash "installer.sh"
+else
+  echo "[!] Error: installer.sh not found in ZIP root!"
+  ls -F
+  exit 1
 fi
 
-# Ausführen
-chmod +x "$EXTRACTED_DIR/installer.sh"
-bash "$EXTRACTED_DIR/installer.sh"
-
-# Aufräumen
+# === Cleanup ===
+echo "[*] Cleaning up..."
+cd ~ # Leave the directory before deleting it
 rm -rf "$TMP_DIR"
-echo "[✓] Installation complete."
+
+echo "[✓] 1002xCMD installation complete."
