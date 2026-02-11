@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Logfile im tools-Ordner
-TARGET_TOOLS_DIR="/etc/dodos/tools"
+TARGET_TOOLS_DIR="/etc/godos/tools"
 LOG_FILE="$TARGET_TOOLS_DIR/1002xTOOLS_updater.log"
 
 mkdir -p "$TARGET_TOOLS_DIR"
@@ -24,6 +24,18 @@ if ! command -v whiptail &> /dev/null; then
     fi
 fi
 
+
+# === Prüfen ob pluma installiert ist ===
+if ! command -v pluma &> /dev/null; then
+    log "Pluma not installed. Installing..."
+    sudo apt update && sudo apt install -y pluma | tee -a "$LOG_FILE"
+    if ! command -v whiptail &> /dev/null; then
+        log "Failed to install pluma. Exiting."
+        exit 1
+    fi
+fi
+
+
 # === Version erkennen ===
 if [[ -d /etc/godos ]]; then
     VERSION="godos"
@@ -44,7 +56,7 @@ else
 fi
 
 log "Detected version: $VERSION, SCRIPT_DIR: $SCRIPT_DIR"
-OS_VERSION=$(head -n1 "/etc/dodos/tools/osversion.txt")
+OS_VERSION=$(head -n1 "/etc/godos/tools/osversion.txt")
 echo "$OS_VERSION"
 log "OS version: $OS_VERSION"
 
@@ -149,6 +161,15 @@ if [[ -f "$EXTRACTED_DIR/debui.sh" ]]; then
 else
     log "DEBIANui.sh not found in folder."
     whiptail --title "Updater" --msgbox "debui.sh not found in folder." 10 50
+fi
+
+# motd 
+if [[ -f "$EXTRACTED_DIR/tools/motd" ]]; then
+    cp -f "$EXTRACTED_DIR/tools/motd" "$SCRIPT_DIR/tools/motd"
+       log "Copied motd to $SCRIPT_DIR/tools/motd"
+else
+    log "motd not found in folder."
+    whiptail --title "Updater" --msgbox "motd not found in folder." 10 50
 fi
 
 # osversion 
