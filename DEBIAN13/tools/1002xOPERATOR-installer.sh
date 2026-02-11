@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # ==========================================
-# 1002xOPERATOR Extractor & Installer
+# 1002xOPERATOR Extractor & Installer (FIXED)
 # ==========================================
 
 ZIP_URL="https://github.com/x-FK-x/1002xOPERATOR/archive/refs/heads/main.zip"
@@ -50,20 +50,23 @@ rm -rf "$TEMP_DIR"
 mkdir -p "$TEMP_DIR"
 unzip -q "$ZIP_FILE" -d "$TEMP_DIR"
 
-EXTRACTED_DIR=$(find "$TEMP_DIR" -maxdepth 1 -type d -name "1002xOPERATOR*" | head -n 1)
+# Finde den automatisch erstellten Unterordner (meist 1002xOPERATOR-main)
+EXTRACTED_SUBDIR=$(find "$TEMP_DIR" -maxdepth 1 -type d -name "1002xOPERATOR*" | head -n 1)
 
-if [[ -z "$EXTRACTED_DIR" ]]; then
-    echo "[!] Extraction failed."
+if [[ -z "$EXTRACTED_SUBDIR" ]]; then
+    echo "[!] Extraction failed: Subdirectory not found."
     exit 1
 fi
 
 # ==========================
 # COPY TO /etc
 # ==========================
-echo "[*] Copying to $INSTALL_DIR ..."
+echo "[*] Copying files to $INSTALL_DIR ..."
 sudo rm -rf "$INSTALL_DIR"
 sudo mkdir -p "$INSTALL_DIR"
-sudo cp -r "$EXTRACTED_DIR"/* "$INSTALL_DIR"
+
+# FIX: Kopiere den INHALT des Unterordners direkt nach /etc/1002xOPERATOR
+sudo cp -r "$EXTRACTED_SUBDIR"/. "$INSTALL_DIR/"
 sudo chmod -R 755 "$INSTALL_DIR"
 
 # ==========================
@@ -83,4 +86,5 @@ rm -f "$ZIP_FILE"
 echo
 echo "[✓] 1002xOPERATOR installation complete."
 echo "Installed to: $INSTALL_DIR"
-echo "Log out and back in to activate the alias."
+echo "Alias points to: $INSTALL_DIR/menu.sh"
+echo "Log out and back in or run 'source $BASHRC' to activate the alias."
