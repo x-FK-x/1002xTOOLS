@@ -21,7 +21,7 @@ unzip -q "$TMP_DIR/v0.5.zip" -d "$TMP_DIR"
 EXTRACTED_DIR=$(find "$TMP_DIR" -mindepth 1 -maxdepth 1 -type d | head -n 1)
 
 if [[ -z "$EXTRACTED_DIR" ]]; then
-    echo "[!] Installations-Ordner nicht gefunden."
+    echo "[!] Folder was not found."
     rm -rf "$TMP_DIR"
     exit 1
 fi
