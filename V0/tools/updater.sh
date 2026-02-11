@@ -200,23 +200,29 @@ fi
 # Alle .sh im Ziel ausführbar machen
 find "$SCRIPT_DIR" -type f -name "*.sh" -exec chmod +x {} +
 
-# Alias für alle User setzen
-ALIAS_LINE='alias 1002xUPDATES="sudo bash '"$SCRIPT_DIR"'/tools/updater.sh"'
+
+# --- Alias für alle User setzen ---
+ALIAS_LINE="alias 1002xUPDATES='sudo bash $SCRIPT_DIR/tools/updater.sh'"
+ALIAS_LINE2="alias 1002xTOOLS='sudo bash $SCRIPT_DIR/debui.sh'"
+ALIAS_LINE3="alias 1002xDNS='sudo rm /etc/resolv.conf && sudo cp $SCRIPT_DIR/tools/resolv.conf /etc'"
+
 if ! grep -Fxq "$ALIAS_LINE" /etc/bash.bashrc; then
     echo "$ALIAS_LINE" | sudo tee -a /etc/bash.bashrc >/dev/null
-    log "Alias added to /etc/bash.bashrc"
+    log "Alias 1002xUPDATES added to /etc/bash.bashrc"
 fi
 
-ALIAS_LINE2='alias 1002xTOOLS="sudo bash '"$SCRIPT_DIR"'/DEBIANui.sh"'
 if ! grep -Fxq "$ALIAS_LINE2" /etc/bash.bashrc; then
     echo "$ALIAS_LINE2" | sudo tee -a /etc/bash.bashrc >/dev/null
-    log "Alias added to /etc/bash.bashrc"
+    log "Alias 1002xTOOLS added to /etc/bash.bashrc"
 fi
-ALIAS_LINE3='alias 1002xDNS="sudo rm /etc/resolv.conf && sudo cp '"$SCRIPT_DIR"'/tools/resolv.conf /etc"'
+
 if ! grep -Fxq "$ALIAS_LINE3" /etc/bash.bashrc; then
     echo "$ALIAS_LINE3" | sudo tee -a /etc/bash.bashrc >/dev/null
-    log "Alias added to /etc/bash.bashrc"
+    log "Alias 1002xDNS added to /etc/bash.bashrc"
 fi
+
+
+
 # Cleanup
 rm -rf "$TMP_DIR"
 log "Temporary files cleaned."
