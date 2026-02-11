@@ -31,7 +31,7 @@ sudo bash "$EXTRACTED_DIR/installer.sh"
 
 # === Aufräumen ===
 echo "[*] Cleaning up..."
-sudo rm -rf /temp
+#sudo rm -rf /temp
 rm -f "$ZIP_FILE"
 
 echo "[✓] 1002xCMD installation complete."
