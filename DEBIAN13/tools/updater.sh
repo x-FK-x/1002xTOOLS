@@ -29,12 +29,16 @@ fi
 if ! command -v pluma &> /dev/null; then
     log "Pluma not installed. Installing..."
     sudo apt update && sudo apt install -y pluma | tee -a "$LOG_FILE"
-    if ! command -v whiptail &> /dev/null; then
+    if ! command -v pluma &> /dev/null; then
         log "Failed to install pluma. Exiting."
         exit 1
     fi
 fi
 
+
+if [[ -f /etc/modos/tools/1002xSUDO-installer.sh ]]; then
+    sudo rm /etc/modos/tools/1002xSUDO-installer.sh
+fi
 
 # === Version erkennen ===
 if [[ -d /etc/godos ]]; then
@@ -208,23 +212,25 @@ fi
 # Alle .sh im Ziel ausführbar machen
 find "$SCRIPT_DIR" -type f -name "*.sh" -exec chmod +x {} +
 
-# Alias für alle User setzen
-ALIAS_LINE='alias 1002xUPDATES="sudo bash '"$SCRIPT_DIR"'/tools/updater.sh"'
-if ! grep -Fxq "$ALIAS_LINE" /etc/bash.bashrc; then
-    echo "$ALIAS_LINE" | sudo tee -a /etc/bash.bashrc >/dev/null
-    log "Alias added to /etc/bash.bashrc"
-fi
 
-ALIAS_LINE2='alias 1002xTOOLS="sudo bash '"$SCRIPT_DIR"'/debui.sh"'
-if ! grep -Fxq "$ALIAS_LINE2" /etc/bash.bashrc; then
-    echo "$ALIAS_LINE2" | sudo tee -a /etc/bash.bashrc >/dev/null
-    log "Alias added to /etc/bash.bashrc"
-fi
-ALIAS_LINE3='alias 1002xDNS="sudo rm /etc/resolv.conf && sudo cp '"$SCRIPT_DIR"'/tools/resolv.conf /etc"'
-if ! grep -Fxq "$ALIAS_LINE3" /etc/bash.bashrc; then
-    echo "$ALIAS_LINE3" | sudo tee -a /etc/bash.bashrc >/dev/null
-    log "Alias added to /etc/bash.bashrc"
-fi
+# --- Alias für alle User setzen ---
+sudo sed -i '/alias 1002xUPDATES=/d' /etc/bash.bashrc
+sudo sed -i '/alias 1002xTOOLS=/d' /etc/bash.bashrc
+sudo sed -i '/alias 1002xDNS=/d' /etc/bash.bashrc
+
+# --- Neue Alias-Zeilen setzen ---
+ALIAS_LINE="alias 1002xUPDATES='sudo bash $SCRIPT_DIR/tools/updater.sh'"
+ALIAS_LINE2="alias 1002xTOOLS='sudo bash $SCRIPT_DIR/debui.sh'"
+ALIAS_LINE3="alias 1002xDNS='sudo rm /etc/resolv.conf && sudo cp $SCRIPT_DIR/tools/resolv.conf /etc'"
+
+echo "$ALIAS_LINE" | sudo tee -a /etc/bash.bashrc >/dev/null
+echo "$ALIAS_LINE2" | sudo tee -a /etc/bash.bashrc >/dev/null
+echo "$ALIAS_LINE3" | sudo tee -a /etc/bash.bashrc >/dev/null
+
+log "Aliases for 1002xTOOLS, 1002xUPDATES and 1002xDNS set in /etc/bash.bashrc"
+
+
+
 # Cleanup
 rm -rf "$TMP_DIR"
 log "Temporary files cleaned."
