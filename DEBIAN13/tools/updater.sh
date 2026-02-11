@@ -36,6 +36,15 @@ if ! command -v pluma &> /dev/null; then
 fi
 
 
+if [[ -f /etc/apt/sources.list.d/mx.list ]]; then
+  sudo rm /etc/apt/sources.list.d/mx.list
+  sudo apt remove --purge mx-snapshot -y
+fi
+
+if [[ -f /etc/godos/tools/1002xSUDO-installer.sh ]]; then
+    sudo rm /etc/godos/tools/1002xSUDO-installer.sh
+fi
+
 # === Version erkennen ===
 if [[ -d /etc/godos ]]; then
     VERSION="godos"
