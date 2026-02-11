@@ -24,6 +24,18 @@ if ! command -v whiptail &> /dev/null; then
     fi
 fi
 
+
+# === Prüfen ob pluma installiert ist ===
+if ! command -v pluma &> /dev/null; then
+    log "Pluma not installed. Installing..."
+    sudo apt update && sudo apt install -y pluma | tee -a "$LOG_FILE"
+    if ! command -v whiptail &> /dev/null; then
+        log "Failed to install pluma. Exiting."
+        exit 1
+    fi
+fi
+
+
 # === Version erkennen ===
 if [[ -d /etc/godos ]]; then
     VERSION="godos"
@@ -34,6 +46,9 @@ elif [[ -d /etc/modos ]]; then
 elif [[ -d /etc/wodos ]]; then
     VERSION="wodos"
     SCRIPT_DIR="/etc/wodos"
+elif [[ -d /etc/dodos ]]; then
+    VERSION="dodos"
+    SCRIPT_DIR="/etc/dodos"
 else
     log "No valid version directory detected. Exiting."
     whiptail --title "Updater Error" --msgbox "No valid version directory detected. Exiting." 10 50
@@ -128,7 +143,7 @@ log "Local version: $LOCAL_VERSION"
 
 if [[ "$LOCAL_VERSION" == "$REPO_VERSION" ]]; then
     log "Tools are already up to date."
-    whiptail --title "Updater" --msgbox "Tools are already up to date (version $OS_VERSION.$LOCAL_VERSION)." 10 50
+    whiptail --title "Updater" --msgbox "Tools are already up to date (version $OS_VERSION Rev. $LOCAL_VERSION)." 10 50
     rm -rf "$TMP_DIR"
     exit 0
 fi
@@ -140,9 +155,9 @@ log "Copied dev.txt to $LOCAL_DEV_FILE"
 
 # debui.sh 
 if [[ -f "$EXTRACTED_DIR/debui.sh" ]]; then
-    cp -f "$EXTRACTED_DIR/debui.sh" "$SCRIPT_DIR/debui.sh.sh"
+    cp -f "$EXTRACTED_DIR/debui.sh" "$SCRIPT_DIR/debui.sh"
     chmod +x "$SCRIPT_DIR/debui.sh"
-    log "Copied DEBIANui.sh to $SCRIPT_DIR/debui.sh"
+    log "Copied debui.sh to $SCRIPT_DIR/debui.sh"
 else
     log "DEBIANui.sh not found in folder."
     whiptail --title "Updater" --msgbox "debui.sh not found in folder." 10 50
@@ -200,7 +215,7 @@ if ! grep -Fxq "$ALIAS_LINE" /etc/bash.bashrc; then
     log "Alias added to /etc/bash.bashrc"
 fi
 
-ALIAS_LINE2='alias 1002xTOOLS="sudo bash '"$SCRIPT_DIR"'/DEBIANui.sh"'
+ALIAS_LINE2='alias 1002xTOOLS="sudo bash '"$SCRIPT_DIR"'/debui.sh"'
 if ! grep -Fxq "$ALIAS_LINE2" /etc/bash.bashrc; then
     echo "$ALIAS_LINE2" | sudo tee -a /etc/bash.bashrc >/dev/null
     log "Alias added to /etc/bash.bashrc"
