@@ -10,9 +10,23 @@ elif [[ -d /etc/modos ]]; then
 elif [[ -d /etc/wodos ]]; then
   VERSION="WODOS"
   SCRIPT_DIR="/etc/wodos"
+elif [[ -d /etc/dodos ]]; then
+  VERSION="DODOS"
+  SCRIPT_DIR="/etc/dodos"
 else
-  whiptail --title "Updater Error" --msgbox "No valid version directory detected. Exiting." 10 50
+  whiptail --title "1002xTOOLS Error" --msgbox "No valid version directory detected. Exiting." 10 50
   exit 1
+fi
+
+OLD_CMD="@reboot sleep 60 && apt-get update"
+NEW_CMD="@reboot sleep 60 && apt-get update >> $SCRIPT_DIR/source/update.log 2>&1"
+
+if sudo crontab -l 2>/dev/null | grep -qF "$OLD_CMD"; then
+    sudo crontab -l 2>/dev/null | grep -vF "$OLD_CMD" | sudo crontab -
+fi
+
+if ! sudo crontab -l 2>/dev/null | grep -qF "$NEW_CMD"; then
+    (sudo crontab -l 2>/dev/null; echo "$NEW_CMD") | sudo crontab -
 fi
 
 # === Make all tools executable ===
@@ -20,8 +34,13 @@ chmod +x "$SCRIPT_DIR"/tools/*.sh 2>/dev/null
 chmod -R 777 "$SCRIPT_DIR"/tools/*.sh 2>/dev/null
 
 # === Replace system files ===
-sudo rm -f "/etc/resolv.conf"
-sudo cp "$SCRIPT_DIR/tools/resolv.conf" "/etc/resolv.conf"
+if ping -c 4 google.com > /dev/null 2>&1; then
+    echo "Nothing to do."
+else
+    sudo rm -f "/etc/resolv.conf"
+    sudo cp "$SCRIPT_DIR/tools/resolv.conf" "/etc/resolv.conf"
+fi
+
 sudo cp "$SCRIPT_DIR/tools/motd" "/etc/motd"
 
 # === Get local version ===
@@ -68,83 +87,14 @@ EOF
     chown "$REALUSER":"$REALUSER" "$USER_SHORTCUT"
 fi
 
-
-
-#---------------------------------------------------------------------------------------------
-#internal Shell:
-if [[ ! -d /etc/1002xSHELL || ! $(grep -q "1002xSHELL" /etc/bash.bashrc) ]]; then
-# === Release Version (ANPASSEN) ===
-RELEASE_VERSION="0"          # 0 … 999
-SHELL_SCRIPT="v${RELEASE_VERSION}.sh"
-
-# === URLs ===
-ZIP_URL="https://github.com/x-FK-x/1002xSHELL/releases/download/v${RELEASE_VERSION}/v${RELEASE_VERSION}.zip"
-ZIP_FILE="1002xSHELL-v${RELEASE_VERSION}.zip"
-
-# === Paths ===
-INSTALL_DIR="/etc/1002xSHELL"
-TEMP_DIR="/tmp/1002xSHELL-install"
-BASHRC_FILE="/etc/bash.bashrc"
-BASHRC_TAG="# 1002xSHELL AUTOLOAD"
-
-# === Download ===
-echo "[*] Downloading 1002xSHELL V${RELEASE_VERSION}..."
-wget -q -O "$ZIP_FILE" "$ZIP_URL"
-
-if [[ $? -ne 0 || ! -f "$ZIP_FILE" ]]; then
-    echo "[!] Failed to download archive"
-    exit 1
+if [[ ! -f "/etc/1002xSHELL/v1.sh" ]]; then
+    sudo bash "$SCRIPT_DIR/tools/1002xSHELL-installer.sh"
+    sudo sed -i 's/\r$//' /etc/1002xSHELL/v1.sh
 fi
-
-# === Prepare temp directory ===
-echo "[*] Preparing temporary directory..."
-sudo rm -rf "$TEMP_DIR"
-sudo mkdir -p "$TEMP_DIR"
-
-# === Extract ===
-echo "[*] Extracting archive..."
-sudo unzip -q "$ZIP_FILE" -d "$TEMP_DIR"
-
-# === Validate shell script ===
-if ! find "$TEMP_DIR" -type f -name "$SHELL_SCRIPT" | grep -q .; then
-    echo "[!] $SHELL_SCRIPT not found in archive"
-    exit 1
-fi
-
-echo "[*] Detected shell script: $SHELL_SCRIPT"
-
-# === Install ===
-echo "[*] Installing shell..."
-sudo mkdir -p "$INSTALL_DIR"
-sudo cp "$TEMP_DIR/$SHELL_SCRIPT" "$INSTALL_DIR/$SHELL_SCRIPT"
-sudo chmod +x "$INSTALL_DIR/$SHELL_SCRIPT"
-
-# === Update bash.bashrc ===
-echo "[*] Updating global shell loader..."
-
-sudo sed -i "/$BASHRC_TAG/,+5d" "$BASHRC_FILE"
-
-sudo tee -a "$BASHRC_FILE" > /dev/null <<EOF
-
-$BASHRC_TAG
-if [[ -f $INSTALL_DIR/$SHELL_SCRIPT ]]; then
-    source $INSTALL_DIR/$SHELL_SCRIPT
-fi
-EOF
-
-# === Cleanup ===
-echo "[*] Cleaning up..."
-sudo rm -rf "$TEMP_DIR"
-rm -f "$ZIP_FILE"
-
-echo "[✓] 1002xSHELL V${RELEASE_VERSION} installed successfully"
-fi
-#--------------------------------------------------------------------------
-
 
 # === Main Menu ===
 while true; do
-  CHOICE=$(whiptail --title "1002xTOOLS Menu ($VERSION VERNO 0.$LOCAL_VERSION)" \
+  CHOICE=$(whiptail --title "1002xTOOLS Menu ($VERSION Rev. $LOCAL_VERSION)" \
     --menu "Choose a category:" 20 60 6 \
     "1" "Updates" \
     "2" "Software" \
@@ -206,7 +156,7 @@ while true; do
     "5")
       CHOICE=$(whiptail --title "Another Tools Menu" --menu "Choose a tool:" 20 60 5 \
         "1" "1002xCMD Installer" \
-        "2" "1002xEASYCOMMAND Installer" \
+        "2" "1002xSUDO Installer" \
         "3" "Back" 3>&1 1>&2 2>&3)
       case "$CHOICE" in
         "1") sudo bash "$SCRIPT_DIR/tools/1002xCMD-installer.sh" ;;
