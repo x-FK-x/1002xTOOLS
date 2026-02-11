@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Logfile im tools-Ordner
-TARGET_TOOLS_DIR="/etc/modos/tools"
+TARGET_TOOLS_DIR="/etc/wodos/tools"
 LOG_FILE="$TARGET_TOOLS_DIR/1002xTOOLS_updater.log"
 
 mkdir -p "$TARGET_TOOLS_DIR"
@@ -56,7 +56,7 @@ else
 fi
 
 log "Detected version: $VERSION, SCRIPT_DIR: $SCRIPT_DIR"
-OS_VERSION=$(head -n1 "/etc/modos/tools/osversion.txt")
+OS_VERSION=$(head -n1 "/etc/wodos/tools/osversion.txt")
 echo "$OS_VERSION"
 log "OS version: $OS_VERSION"
 
