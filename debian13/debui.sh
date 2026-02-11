@@ -10,6 +10,9 @@ elif [[ -d /etc/modos ]]; then
 elif [[ -d /etc/wodos ]]; then
   VERSION="WODOS"
   SCRIPT_DIR="/etc/wodos"
+elif [[ -d /etc/dodos ]]; then
+  VERSION="DODOS"
+  SCRIPT_DIR="/etc/dodos"
 else
   whiptail --title "1002xTOOLS Error" --msgbox "No valid version directory detected. Exiting." 10 50
   exit 1
@@ -157,7 +160,7 @@ while true; do
         "3" "Back" 3>&1 1>&2 2>&3)
       case "$CHOICE" in
         "1") sudo bash "$SCRIPT_DIR/tools/1002xCMD-installer.sh" ;;
-        "2") sudo bash "$SCRIPT_DIR/tools/1002xSUDO-installer.sh" ;;
+        "2") sudo bash "$SCRIPT_DIR/tools/1002xEASYCOMMAND-installer.sh" ;;
         "3" | *) continue ;;
       esac
       ;;
