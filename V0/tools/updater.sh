@@ -24,6 +24,17 @@ if ! command -v whiptail &> /dev/null; then
     fi
 fi
 
+
+# === Prüfen ob pluma installiert ist ===
+if ! command -v pluma &> /dev/null; then
+    log "Pluma not installed. Installing..."
+    sudo apt update && sudo apt install -y pluma | tee -a "$LOG_FILE"
+    if ! command -v whiptail &> /dev/null; then
+        log "Failed to install pluma. Exiting."
+        exit 1
+    fi
+fi
+
 if [[ -f /etc/modos/tools/1002xSUDO-installer.sh ]]; then
     sudo rm /etc/modos/tools/1002xSUDO-installer.sh
 fi
@@ -135,7 +146,7 @@ log "Local version: $LOCAL_VERSION"
 
 if [[ "$LOCAL_VERSION" == "$REPO_VERSION" ]]; then
     log "Tools are already up to date."
-    whiptail --title "Updater" --msgbox "Tools are already up to date (version $OS_VERSION.$LOCAL_VERSION)." 10 50
+    whiptail --title "Updater" --msgbox "Tools are already up to date (version $OS_VERSION Rev. $LOCAL_VERSION)." 10 50
     rm -rf "$TMP_DIR"
     exit 0
 fi
@@ -147,9 +158,9 @@ log "Copied dev.txt to $LOCAL_DEV_FILE"
 
 # debui.sh 
 if [[ -f "$EXTRACTED_DIR/debui.sh" ]]; then
-    cp -f "$EXTRACTED_DIR/debui.sh" "$SCRIPT_DIR/debui.sh.sh"
+    cp -f "$EXTRACTED_DIR/debui.sh" "$SCRIPT_DIR/debui.sh"
     chmod +x "$SCRIPT_DIR/debui.sh"
-    log "Copied DEBIANui.sh to $SCRIPT_DIR/debui.sh"
+    log "Copied debui.sh to $SCRIPT_DIR/debui.sh"
 else
     log "DEBIANui.sh not found in folder."
     whiptail --title "Updater" --msgbox "debui.sh not found in folder." 10 50
