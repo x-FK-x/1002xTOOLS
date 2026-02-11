@@ -1,11 +1,11 @@
 #!/bin/bash
 
 # ==========================================
-# 1002xOPERATOR Extractor & Installer (FIXED)
+# 1002xOPERATOR Extractor & Installer (CURL FIX)
 # ==========================================
 
 ZIP_URL="https://github.com"
-ZIP_FILE="1002xOPERATOR-main.zip"
+ZIP_FILE="/tmp/1002xOPERATOR-main.zip"
 TEMP_DIR="/tmp/1002xOPERATOR_extract"
 INSTALL_DIR="/etc/1002xOPERATOR"
 BASHRC="/etc/bash.bashrc"
@@ -21,24 +21,14 @@ if ! sudo -v 2>/dev/null; then
 fi
 
 # ==========================
-# UNINSTALL
+# DOWNLOAD WITH CURL
 # ==========================
-if [[ "$1" == "uninstall" ]]; then
-    echo "[*] Removing 1002xOPERATOR..."
-    sudo rm -rf "$INSTALL_DIR"
-    sudo sed -i '/alias 1002xOPERATOR=/d' "$BASHRC"
-    echo "[✓] 1002xOPERATOR removed and alias deleted."
-    exit 0
-fi
+echo "[*] Downloading archive via curl..."
+# -L folgt Redirects, -s für Silent (entfernt für Fehlersuche falls nötig)
+sudo curl -L "$ZIP_URL" -o "$ZIP_FILE"
 
-# ==========================
-# DOWNLOAD
-# ==========================
-echo "[*] Downloading archive..."
-wget -q -O "$ZIP_FILE" "$ZIP_URL"
-
-if [[ $? -ne 0 || ! -f "$ZIP_FILE" ]]; then
-    echo "[!] Failed to download archive."
+if [[ $? -ne 0 || ! -s "$ZIP_FILE" ]]; then
+    echo "[!] Download failed. Please check your internet connection."
     exit 1
 fi
 
@@ -50,27 +40,26 @@ rm -rf "$TEMP_DIR"
 mkdir -p "$TEMP_DIR"
 unzip -q "$ZIP_FILE" -d "$TEMP_DIR"
 
-# Finde den Pfad zum Unterordner (z.B. /tmp/.../1002xOPERATOR-main)
-EXTRACTED_SUBDIR=$(find "$TEMP_DIR" -maxdepth 1 -type d -name "1002xOPERATOR*" | head -n 1)
-
-if [[ -z "$EXTRACTED_SUBDIR" ]]; then
-    echo "[!] Extraction failed: Subdirectory not found."
+if [[ $? -ne 0 ]]; then
+    echo "[!] Extraction failed. The zip file might be corrupt."
+    rm -f "$ZIP_FILE"
     exit 1
 fi
 
+# Unterordner identifizieren (z.B. 1002xOPERATOR-main)
+EXTRACTED_SUBDIR=$(find "$TEMP_DIR" -maxdepth 1 -type d -name "1002xOPERATOR*" | head -n 1)
+
 # ==========================
-# COPY TO /etc
+# COPY TO /etc (FLAT COPY)
 # ==========================
 echo "[*] Copying files to $INSTALL_DIR ..."
-# Vorher sauber löschen, damit keine alten Strukturen stören
 sudo rm -rf "$INSTALL_DIR"
 sudo mkdir -p "$INSTALL_DIR"
 
-# FIX: In den Unterordner wechseln und alles von dort flach kopieren
+# Wechselt in den Unterordner und kopiert den Inhalt direkt nach /etc/1002xOPERATOR
 cd "$EXTRACTED_SUBDIR" || exit 1
 sudo cp -rf . "$INSTALL_DIR/"
 
-# Rechte setzen
 sudo chmod -R 755 "$INSTALL_DIR"
 
 # ==========================
@@ -88,9 +77,12 @@ rm -rf "$TEMP_DIR"
 rm -f "$ZIP_FILE"
 
 echo
-echo "[✓] 1002xOPERATOR installation complete."
-echo "-----------------------------------------"
-echo "Check: ls -l $INSTALL_DIR/menu.sh"
-ls -l "$INSTALL_DIR/menu.sh"
-echo "-----------------------------------------"
-echo "Log out and back in or run: source $BASHRC"
+if [[ -f "$INSTALL_DIR/menu.sh" ]]; then
+    echo "[✓] 1002xOPERATOR installation complete."
+    echo "-----------------------------------------"
+    echo "Location: $INSTALL_DIR/menu.sh"
+    echo "-----------------------------------------"
+    echo "Run 'source $BASHRC' or log in again to use the alias."
+else
+    echo "[!] ERROR: menu.sh was not found in $INSTALL_DIR after copy."
+fi
