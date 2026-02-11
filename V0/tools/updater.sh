@@ -24,6 +24,18 @@ if ! command -v whiptail &> /dev/null; then
     fi
 fi
 
+
+# === Prüfen ob pluma installiert ist ===
+if ! command -v pluma &> /dev/null; then
+    log "Pluma not installed. Installing..."
+    sudo apt update && sudo apt install -y pluma | tee -a "$LOG_FILE"
+    if ! command -v whiptail &> /dev/null; then
+        log "Failed to install pluma. Exiting."
+        exit 1
+    fi
+fi
+
+
 # === Version erkennen ===
 if [[ -d /etc/godos ]]; then
     VERSION="godos"
@@ -34,6 +46,9 @@ elif [[ -d /etc/modos ]]; then
 elif [[ -d /etc/wodos ]]; then
     VERSION="wodos"
     SCRIPT_DIR="/etc/wodos"
+elif [[ -d /etc/dodos ]]; then
+    VERSION="dodos"
+    SCRIPT_DIR="/etc/dodos"
 else
     log "No valid version directory detected. Exiting."
     whiptail --title "Updater Error" --msgbox "No valid version directory detected. Exiting." 10 50
@@ -45,13 +60,13 @@ OS_VERSION=$(head -n1 "/etc/modos/tools/osversion.txt")
 echo "$OS_VERSION"
 log "OS version: $OS_VERSION"
 
-if [ "$OS_VERSION" = "0" ]; then
-    log "Version 0"
-    whiptail --title "Updater" --msgbox "V0 installed. Continue." 10 50
-elif [ "$OS_VERSION" = "1" ]; then
-    log "Version 1"
-  elif [ "$OS_VERSION" = "2" ]; then
-    log "Version 2"
+if [ "$OS_VERSION" = "DEBIAN13" ]; then
+    log "DEBIAN 13"
+    whiptail --title "Updater" --msgbox "DEBIAN13 installed. Continue." 10 50
+elif [ "$OS_VERSION" = "DEBIAN14" ]; then
+    log "DEBIAN 14"
+  elif [ "$OS_VERSION" = "DEBIAN15" ]; then
+    log "DEBIAN 15"
 else
     log "Unkown Version: $OS_VERSION"
     exit 0
@@ -63,7 +78,7 @@ fi
 REPO="x-FK-x/1002xTOOLS"
 BRANCH="$VERSION"
 TMP_DIR="$HOME/.1002xtools_temp"
-FOLDER="V0"
+FOLDER="DEBIAN13"
 LOCAL_DEV_FILE="$SCRIPT_DIR/dev.txt"
 
 mkdir -p "$TMP_DIR"
@@ -107,7 +122,7 @@ if [[ ! -d "$EXTRACTED_DIR" ]]; then
     rm -rf "$TMP_DIR"
     exit 1
 fi
-log "Using V0 folder: $EXTRACTED_DIR"
+log "Using folder: $EXTRACTED_DIR"
 
 # Versionscheck
 if [[ -f "$EXTRACTED_DIR/dev.txt" ]]; then
@@ -115,8 +130,8 @@ if [[ -f "$EXTRACTED_DIR/dev.txt" ]]; then
     REPO_VERSION=$(head -n1 "$TMP_DIR/dev.txt")
     log "Repo version: $REPO_VERSION"
 else
-    log "dev.txt not found in V0 folder."
-    whiptail --title "Updater" --msgbox "dev.txt not found in V0 folder." 10 50
+    log "dev.txt not found in folder."
+    whiptail --title "Updater" --msgbox "dev.txt not found in DEBIAN13 folder." 10 50
     rm -rf "$TMP_DIR"
     exit 1
 fi
@@ -128,7 +143,7 @@ log "Local version: $LOCAL_VERSION"
 
 if [[ "$LOCAL_VERSION" == "$REPO_VERSION" ]]; then
     log "Tools are already up to date."
-    whiptail --title "Updater" --msgbox "Tools are already up to date (version $OS_VERSION.$LOCAL_VERSION)." 10 50
+    whiptail --title "Updater" --msgbox "Tools are already up to date (version $OS_VERSION Rev. $LOCAL_VERSION)." 10 50
     rm -rf "$TMP_DIR"
     exit 0
 fi
@@ -144,7 +159,7 @@ if [[ -f "$EXTRACTED_DIR/debui.sh" ]]; then
     chmod +x "$SCRIPT_DIR/debui.sh"
     log "Copied debui.sh to $SCRIPT_DIR/debui.sh"
 else
-    log "debui.sh not found in folder."
+    log "DEBIANui.sh not found in folder."
     whiptail --title "Updater" --msgbox "debui.sh not found in folder." 10 50
 fi
 
@@ -158,12 +173,12 @@ else
 fi
 
 # osversion 
-if [[ -f "$EXTRACTED_DIR/tools/osversion.txt" ]]; then
-    cp -f "$EXTRACTED_DIR/tools/osversion.txt" "$SCRIPT_DIR/tools/osversion.txt"
-    log "Copied osversion.txt to $SCRIPT_DIR/tools/osversion.txt"
+if [[ -f "$EXTRACTED_DIR/tools/1002xSHELL-installer.sh" ]]; then
+    cp -f "$EXTRACTED_DIR/tools/1002xSHELL-installer.sh" "$SCRIPT_DIR/tools/1002xSHELL-installer.sh"
+    log "Copied 1002xSHELL-installer.sh to $SCRIPT_DIR/tools/1002xSHELL-installer.sh"
 else
-    log "osversion.txt not found in folder."
-    whiptail --title "Updater" --msgbox "osversion.txt not found in folder." 10 50
+    log "1002xSHELL-installer.sh not found in folder."
+    whiptail --title "Updater" --msgbox "1002xSHELL-installer.sh not found in folder." 10 50
 fi
 
 # list 
@@ -178,7 +193,7 @@ fi
 
 
 
-# Alle .sh-Dateien aus V0/tools nach tools kopieren
+# Alle .sh-Dateien aus DEBIAN13/tools nach tools kopieren
 if [[ -d "$EXTRACTED_DIR/tools" ]]; then
     for file in "$EXTRACTED_DIR/tools/"*.sh; do
         [ -f "$file" ] || continue
@@ -187,7 +202,7 @@ if [[ -d "$EXTRACTED_DIR/tools" ]]; then
         log "Copied $file to $TARGET_TOOLS_DIR/"
     done
 else
-    log "No tools folder found in V0"
+    log "No tools folder found in DEBIAN13"
 fi
 
 # Alle .sh im Ziel ausführbar machen
@@ -214,7 +229,7 @@ fi
 rm -rf "$TMP_DIR"
 log "Temporary files cleaned."
 rm "$SCRIPT_DIR/tools/LICENSE"
-rm -r "$SCRIPT_DIR/tools/V0"
+rm -r "$SCRIPT_DIR/tools/DEBIAN13"
 
 whiptail --title "1002xTOOLS Updater" --msgbox "Update completed successfully to version $REPO_VERSION." 10 50
 log "Update completed successfully to version $REPO_VERSION."
@@ -238,4 +253,4 @@ while true; do
     esac
 done
 
-#DODOS - DownTown1002xCollection of Debian OS
+#DODOS - DownTown1002xCollection of DEBIAN OS
