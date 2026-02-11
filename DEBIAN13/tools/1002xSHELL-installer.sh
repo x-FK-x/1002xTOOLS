@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # === Release Version (ANPASSEN) ===
-RELEASE_VERSION="1"          # 0 … 999
+RELEASE_VERSION="2"          # 0 … 999
 SHELL_SCRIPT="v${RELEASE_VERSION}.sh"
 
 # === URLs ===
@@ -60,21 +60,21 @@ fi
 EOF
 
 
-sudo sed -i 's/\r$//' /etc/1002xSHELL/v1.sh
+sudo sed -i 's/\r$//' /etc/1002xSHELL/v2.sh
 if grep -q "# 1002xSHELL AUTOLOAD" /etc/bash.bashrc; then
     sudo sed -i '
     /# 1002xSHELL AUTOLOAD/{
         n
-        s|/etc/1002xSHELL/v[0-9]\+\.sh|/etc/1002xSHELL/v1.sh|
+        s|/etc/1002xSHELL/v[0-9]\+\.sh|/etc/1002xSHELL/v2.sh|
         n
-        s|/etc/1002xSHELL/v[0-9]\+\.sh|/etc/1002xSHELL/v1.sh|
+        s|/etc/1002xSHELL/v[0-9]\+\.sh|/etc/1002xSHELL/v2.sh|
     }' /etc/bash.bashrc
 else
     sudo tee -a /etc/bash.bashrc > /dev/null <<'EOF'
 
 # 1002xSHELL AUTOLOAD
-if [[ -f /etc/1002xSHELL/v1.sh ]]; then
-    source /etc/1002xSHELL/v1.sh
+if [[ -f /etc/1002xSHELL/v2.sh ]]; then
+    source /etc/1002xSHELL/v2.sh
 fi
 EOF
 fi
