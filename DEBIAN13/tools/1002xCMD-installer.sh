@@ -1,38 +1,35 @@
 #!/bin/bash
 
-# === Variablen ===
-
-ZIP_URL="https://github.com/x-FK-x/1002xCMD/releases/download/v0.5/v0.5.zip"
-ZIP_FILE="1002xCMD-0.5.zip"
-
-
-# === Herunterladen ===
-echo "[*] Downloading 1002xCMD..."
-wget -q -O "$ZIP_FILE" "$ZIP_URL"
-
-if [[ $? -ne 0 || ! -f "$ZIP_FILE" ]]; then
-  echo "[!] Failed to download archive from $ZIP_URL"
-  exit 1
+# Prüfen, ob als root ausgeführt
+if [[ $EUID -ne 0 ]]; then
+   echo "[!] Dieses Skript muss mit sudo ausgeführt werden."
+   exit 1
 fi
 
-# === Entpacken ===
-echo "[*] Extracting archive..."
-sudo mkdir /temp
-sudo unzip -q "$ZIP_FILE" -d /temp
+ZIP_URL="https://github.com/x-FK-x/1002xCMD/releases/download/v0.5/v0.5.zip"
+TMP_DIR=$(mktemp -d) # Sicherer temporärer Ordner
 
-EXTRACTED_DIR=$(find /temp -maxdepth 1 -type d -name "1002xCMD*" | head -n 1)
+# Download
+echo "[*] Downloading..."
+wget -q -O "$TMP_DIR/v0.5.zip" "$ZIP_URL" || exit 1
 
+# Entpacken
+echo "[*] Extracting..."
+unzip -q "$TMP_DIR/v0.5.zip" -d "$TMP_DIR"
 
-# === Ausführen ===
-echo "[*] Running installer..."
-sudo chmod +x "$EXTRACTED_DIR/installer.sh"
-sudo bash "$EXTRACTED_DIR/installer.sh"
+# Dynamisch den Ordner finden (GitHub zips haben oft den Namen des Repos + Version)
+EXTRACTED_DIR=$(find "$TMP_DIR" -mindepth 1 -maxdepth 1 -type d | head -n 1)
 
-# === Aufräumen ===
-echo "[*] Cleaning up..."
-sudo rm -rf /temp
-sudo rm $ZIP_FILE
+if [[ -z "$EXTRACTED_DIR" ]]; then
+    echo "[!] Installations-Ordner nicht gefunden."
+    rm -rf "$TMP_DIR"
+    exit 1
+fi
 
-echo "[✓] 1002xCMD installation complete."
+# Ausführen
+chmod +x "$EXTRACTED_DIR/installer.sh"
+bash "$EXTRACTED_DIR/installer.sh"
 
-#DODOS - DownTown1002xCollection of Debian OS
+# Aufräumen
+rm -rf "$TMP_DIR"
+echo "[✓] Installation complete."
