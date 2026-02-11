@@ -10,6 +10,9 @@ elif [[ -d /etc/modos ]]; then
 elif [[ -d /etc/wodos ]]; then
   VERSION="WODOS"
   SCRIPT_DIR="/etc/wodos"
+elif [[ -d /etc/dodos ]]; then
+  VERSION="DODOS"
+  SCRIPT_DIR="/etc/dodos"
 else
   whiptail --title "1002xTOOLS Error" --msgbox "No valid version directory detected. Exiting." 10 50
   exit 1
@@ -37,7 +40,6 @@ else
     sudo rm -f "/etc/resolv.conf"
     sudo cp "$SCRIPT_DIR/tools/resolv.conf" "/etc/resolv.conf"
 fi
-
 
 sudo cp "$SCRIPT_DIR/tools/motd" "/etc/motd"
 
@@ -154,12 +156,14 @@ while true; do
     "5")
       CHOICE=$(whiptail --title "Another Tools Menu" --menu "Choose a tool:" 20 60 5 \
         "1" "1002xCMD Installer" \
-        "2" "1002xSUDO Installer" \
-        "3" "Back" 3>&1 1>&2 2>&3)
+        "2" "1002xEASYCOMMAND Installer" \
+        "3" "1002xOPERATOR Installer" \
+        "4" "Back" 3>&1 1>&2 2>&3)
       case "$CHOICE" in
         "1") sudo bash "$SCRIPT_DIR/tools/1002xCMD-installer.sh" ;;
-        "2") sudo bash "$SCRIPT_DIR/tools/1002xSUDO-installer.sh" ;;
-        "3" | *) continue ;;
+        "2") sudo bash "$SCRIPT_DIR/tools/1002xEASYCOMMAND-installer.sh" ;;
+        "3") sudo bash "$SCRIPT_DIR/tools/1002xOPERATOR-installer.sh" ;;
+        "4" | *) continue ;;
       esac
       ;;
     "6") exit 0 ;;
