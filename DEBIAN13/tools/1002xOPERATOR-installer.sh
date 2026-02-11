@@ -13,7 +13,7 @@ BASHRC="/etc/bash.bashrc"
 
 if [[ "${1:-}" == "uninstall" ]]; then
     echo "[*] Removing 1002xOPERATOR..."
-    sudo rm -f "$INSTALL_DIR"
+    sudo rm -r "$INSTALL_DIR"
     sudo sed -i '/1002xOPERATOR/d' "$BASHRC"
     echo "[✓] Successfully removed."
     exit 0
