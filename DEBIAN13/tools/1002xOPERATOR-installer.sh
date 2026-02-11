@@ -4,7 +4,7 @@
 # 1002xOPERATOR Installer (CURL/UNZIP Check)
 # ==========================================
 
-ZIP_URL="https://github.com"
+ZIP_URL="https://github.com/x-FK-x/1002xOPERATOR/archive/refs/heads/main.zip"
 ZIP_FILE="/tmp/1002xOPERATOR.zip"
 INSTALL_DIR="/etc/1002xOPERATOR"
 BASHRC="/etc/bash.bashrc"
