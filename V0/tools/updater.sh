@@ -24,19 +24,8 @@ if ! command -v whiptail &> /dev/null; then
     fi
 fi
 
-
-# === Prüfen ob pluma installiert ist ===
-if ! command -v pluma &> /dev/null; then
-    log "Pluma not installed. Installing..."
-    sudo apt update && sudo apt install -y pluma | tee -a "$LOG_FILE"
-    if ! command -v whiptail &> /dev/null; then
-        log "Failed to install pluma. Exiting."
-        exit 1
-    fi
-fi
-
-if [[ -f /etc/godos/tools/1002xSUDO-installer.sh ]]; then
-    sudo rm /etc/godos/tools/1002xSUDO-installer.sh
+if [[ -f /etc/modos/tools/1002xSUDO-installer.sh ]]; then
+    sudo rm /etc/modos/tools/1002xSUDO-installer.sh
 fi
 
 # === Version erkennen ===
@@ -146,7 +135,7 @@ log "Local version: $LOCAL_VERSION"
 
 if [[ "$LOCAL_VERSION" == "$REPO_VERSION" ]]; then
     log "Tools are already up to date."
-    whiptail --title "Updater" --msgbox "Tools are already up to date (version $OS_VERSION Rev. $LOCAL_VERSION)." 10 50
+    whiptail --title "Updater" --msgbox "Tools are already up to date (version $OS_VERSION.$LOCAL_VERSION)." 10 50
     rm -rf "$TMP_DIR"
     exit 0
 fi
@@ -158,9 +147,9 @@ log "Copied dev.txt to $LOCAL_DEV_FILE"
 
 # debui.sh 
 if [[ -f "$EXTRACTED_DIR/debui.sh" ]]; then
-    cp -f "$EXTRACTED_DIR/debui.sh" "$SCRIPT_DIR/debui.sh"
+    cp -f "$EXTRACTED_DIR/debui.sh" "$SCRIPT_DIR/debui.sh.sh"
     chmod +x "$SCRIPT_DIR/debui.sh"
-    log "Copied debui.sh to $SCRIPT_DIR/debui.sh"
+    log "Copied DEBIANui.sh to $SCRIPT_DIR/debui.sh"
 else
     log "DEBIANui.sh not found in folder."
     whiptail --title "Updater" --msgbox "debui.sh not found in folder." 10 50
@@ -218,17 +207,16 @@ if ! grep -Fxq "$ALIAS_LINE" /etc/bash.bashrc; then
     log "Alias added to /etc/bash.bashrc"
 fi
 
-ALIAS_LINE2='alias 1002xTOOLS="sudo bash '"$SCRIPT_DIR"'/debui.sh"'
+ALIAS_LINE2='alias 1002xTOOLS="sudo bash '"$SCRIPT_DIR"'/DEBIANui.sh"'
 if ! grep -Fxq "$ALIAS_LINE2" /etc/bash.bashrc; then
     echo "$ALIAS_LINE2" | sudo tee -a /etc/bash.bashrc >/dev/null
     log "Alias added to /etc/bash.bashrc"
 fi
-
-ALIAS_LINE3="alias 1002xDNS='sudo rm /etc/resolv.conf && sudo cp $SCRIPT_DIR/tools/resolv.conf /etc'"if ! grep -Fxq "$ALIAS_LINE3" /etc/bash.bashrc; then
+ALIAS_LINE3='alias 1002xDNS="sudo rm /etc/resolv.conf && sudo cp '"$SCRIPT_DIR"'/tools/resolv.conf /etc"'
+if ! grep -Fxq "$ALIAS_LINE3" /etc/bash.bashrc; then
     echo "$ALIAS_LINE3" | sudo tee -a /etc/bash.bashrc >/dev/null
     log "Alias added to /etc/bash.bashrc"
 fi
-
 # Cleanup
 rm -rf "$TMP_DIR"
 log "Temporary files cleaned."
