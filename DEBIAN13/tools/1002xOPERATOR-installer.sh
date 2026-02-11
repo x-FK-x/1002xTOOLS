@@ -9,6 +9,16 @@ ZIP_FILE="/tmp/1002xOPERATOR.zip"
 INSTALL_DIR="/etc/1002xOPERATOR"
 BASHRC="/etc/bash.bashrc"
 
+
+
+if [[ "${1:-}" == "uninstall" ]]; then
+    echo "[*] Removing 1002xOPERATOR..."
+    sudo rm -f "$INSTALL_DIR"
+    sudo sed -i '/1002xOPERATOR/d' "$BASHRC"
+    echo "[✓] Successfully removed."
+    exit 0
+fi
+
 echo "========================================="
 echo "      1002xOPERATOR Installer"
 echo "========================================="
