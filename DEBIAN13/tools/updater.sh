@@ -24,18 +24,6 @@ if ! command -v whiptail &> /dev/null; then
     fi
 fi
 
-
-# === Prüfen ob pluma installiert ist ===
-if ! command -v pluma &> /dev/null; then
-    log "Pluma not installed. Installing..."
-    sudo apt update && sudo apt install -y pluma | tee -a "$LOG_FILE"
-    if ! command -v whiptail &> /dev/null; then
-        log "Failed to install pluma. Exiting."
-        exit 1
-    fi
-fi
-
-
 # === Version erkennen ===
 if [[ -d /etc/godos ]]; then
     VERSION="godos"
@@ -46,6 +34,9 @@ elif [[ -d /etc/modos ]]; then
 elif [[ -d /etc/wodos ]]; then
     VERSION="wodos"
     SCRIPT_DIR="/etc/wodos"
+elif [[ -d /etc/dodos ]]; then
+    VERSION="dodos"
+    SCRIPT_DIR="/etc/dodos"
 else
     log "No valid version directory detected. Exiting."
     whiptail --title "Updater Error" --msgbox "No valid version directory detected. Exiting." 10 50
