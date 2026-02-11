@@ -4,7 +4,7 @@
 # 1002xOPERATOR Extractor & Installer (FIXED)
 # ==========================================
 
-ZIP_URL="https://github.com/x-FK-x/1002xOPERATOR/archive/refs/heads/main.zip"
+ZIP_URL="https://github.com"
 ZIP_FILE="1002xOPERATOR-main.zip"
 TEMP_DIR="/tmp/1002xOPERATOR_extract"
 INSTALL_DIR="/etc/1002xOPERATOR"
@@ -50,7 +50,7 @@ rm -rf "$TEMP_DIR"
 mkdir -p "$TEMP_DIR"
 unzip -q "$ZIP_FILE" -d "$TEMP_DIR"
 
-# Finde den automatisch erstellten Unterordner (meist 1002xOPERATOR-main)
+# Finde den Pfad zum Unterordner (z.B. /tmp/.../1002xOPERATOR-main)
 EXTRACTED_SUBDIR=$(find "$TEMP_DIR" -maxdepth 1 -type d -name "1002xOPERATOR*" | head -n 1)
 
 if [[ -z "$EXTRACTED_SUBDIR" ]]; then
@@ -62,11 +62,15 @@ fi
 # COPY TO /etc
 # ==========================
 echo "[*] Copying files to $INSTALL_DIR ..."
+# Vorher sauber löschen, damit keine alten Strukturen stören
 sudo rm -rf "$INSTALL_DIR"
 sudo mkdir -p "$INSTALL_DIR"
 
-# FIX: Kopiere den INHALT des Unterordners direkt nach /etc/1002xOPERATOR
-sudo cp -r "$EXTRACTED_SUBDIR"/. "$INSTALL_DIR/"
+# FIX: In den Unterordner wechseln und alles von dort flach kopieren
+cd "$EXTRACTED_SUBDIR" || exit 1
+sudo cp -rf . "$INSTALL_DIR/"
+
+# Rechte setzen
 sudo chmod -R 755 "$INSTALL_DIR"
 
 # ==========================
@@ -85,6 +89,8 @@ rm -f "$ZIP_FILE"
 
 echo
 echo "[✓] 1002xOPERATOR installation complete."
-echo "Installed to: $INSTALL_DIR"
-echo "Alias points to: $INSTALL_DIR/menu.sh"
-echo "Log out and back in or run 'source $BASHRC' to activate the alias."
+echo "-----------------------------------------"
+echo "Check: ls -l $INSTALL_DIR/menu.sh"
+ls -l "$INSTALL_DIR/menu.sh"
+echo "-----------------------------------------"
+echo "Log out and back in or run: source $BASHRC"
