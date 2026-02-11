@@ -29,11 +29,12 @@ fi
 if ! command -v pluma &> /dev/null; then
     log "Pluma not installed. Installing..."
     sudo apt update && sudo apt install -y pluma | tee -a "$LOG_FILE"
-    if ! command -v whiptail &> /dev/null; then
+    if ! command -v pluma &> /dev/null; then
         log "Failed to install pluma. Exiting."
         exit 1
     fi
 fi
+
 
 if [[ -f /etc/modos/tools/1002xSUDO-installer.sh ]]; then
     sudo rm /etc/modos/tools/1002xSUDO-installer.sh
@@ -213,24 +214,20 @@ find "$SCRIPT_DIR" -type f -name "*.sh" -exec chmod +x {} +
 
 
 # --- Alias für alle User setzen ---
+sudo sed -i '/alias 1002xUPDATES=/d' /etc/bash.bashrc
+sudo sed -i '/alias 1002xTOOLS=/d' /etc/bash.bashrc
+sudo sed -i '/alias 1002xDNS=/d' /etc/bash.bashrc
+
+# --- Neue Alias-Zeilen setzen ---
 ALIAS_LINE="alias 1002xUPDATES='sudo bash $SCRIPT_DIR/tools/updater.sh'"
 ALIAS_LINE2="alias 1002xTOOLS='sudo bash $SCRIPT_DIR/debui.sh'"
 ALIAS_LINE3="alias 1002xDNS='sudo rm /etc/resolv.conf && sudo cp $SCRIPT_DIR/tools/resolv.conf /etc'"
 
-if ! grep -Fxq "$ALIAS_LINE" /etc/bash.bashrc; then
-    echo "$ALIAS_LINE" | sudo tee -a /etc/bash.bashrc >/dev/null
-    log "Alias 1002xUPDATES added to /etc/bash.bashrc"
-fi
+echo "$ALIAS_LINE" | sudo tee -a /etc/bash.bashrc >/dev/null
+echo "$ALIAS_LINE2" | sudo tee -a /etc/bash.bashrc >/dev/null
+echo "$ALIAS_LINE3" | sudo tee -a /etc/bash.bashrc >/dev/null
 
-if ! grep -Fxq "$ALIAS_LINE2" /etc/bash.bashrc; then
-    echo "$ALIAS_LINE2" | sudo tee -a /etc/bash.bashrc >/dev/null
-    log "Alias 1002xTOOLS added to /etc/bash.bashrc"
-fi
-
-if ! grep -Fxq "$ALIAS_LINE3" /etc/bash.bashrc; then
-    echo "$ALIAS_LINE3" | sudo tee -a /etc/bash.bashrc >/dev/null
-    log "Alias 1002xDNS added to /etc/bash.bashrc"
-fi
+log "Aliases for 1002xTOOLS, 1002xUPDATES and 1002xDNS set in /etc/bash.bashrc"
 
 
 
