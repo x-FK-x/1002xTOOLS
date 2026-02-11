@@ -25,6 +25,10 @@ if ! command -v whiptail &> /dev/null; then
 fi
 
 
+if [[ -f /etc/modos/tools/1002xSUDO-installer.sh ]]; then
+    sudo rm /etc/modos/tools/1002xSUDO-installer.sh
+fi
+
 # === Prüfen ob pluma installiert ist ===
 if ! command -v pluma &> /dev/null; then
     log "Pluma not installed. Installing..."
