@@ -1,50 +1,37 @@
 #!/bin/bash
 
-# === Preparation ===
-TMP_DIR=$(mktemp -d)
-ZIP_URL="https://github.com"
+ZIP_URL="https://github.com/x-FK-x/1002xCMD/releases/download/v0.5/v0.5.zip"
+ZIP_FILE="1002xCMD-0.5.zip"
 
-# === Prüfen ob whiptail installiert ist ===
-if ! command -v curl &> /dev/null; then
-    log "Curl not installed. Installing..."
-    sudo apt update && sudo apt install -y curl | tee -a "$LOG_FILE"
-    if ! command -v curl &> /dev/null; then
-        log "Failed to install whiptail. Exiting."
-        exit 1
-    fi
-fi
-
-
-# === Download (Using curl -L to follow GitHub redirects) ===
+# === Herunterladen ===
 echo "[*] Downloading 1002xCMD..."
-curl -s -L -o "$TMP_DIR/v0.5.zip" "$ZIP_URL"
+# Nutze curl -L, falls wget Probleme mit GitHub-Redirects hat
+curl -sL -o "$ZIP_FILE" "$ZIP_URL"
 
-# Check if file is empty (GitHub sometimes returns 0 bytes on 404)
-if [[ ! -s "$TMP_DIR/v0.5.zip" ]]; then
-  echo "[!] Download failed: File is empty or URL is unreachable."
-  exit 1
-fi
-
-# === Extraction ===
+# === Entpacken ===
 echo "[*] Extracting archive..."
-if ! unzip -q "$TMP_DIR/v0.5.zip" -d "$TMP_DIR"; then
-    echo "[!] Extraction failed. The downloaded file might be corrupt."
-    exit 1
-fi
+sudo rm -rf /temp && sudo mkdir /temp
+sudo unzip -q "$ZIP_FILE" -d /temp
 
-cd "$TMP_DIR" || exit 1
+# === Pfad-Logik (FIX) ===
+# Suche zuerst nach einem Unterordner
+FOUND_DIR=$(find /temp -maxdepth 1 -type d -name "1002xCMD*" | head -n 1)
 
-# === Execution ===
-if [[ -f "installer.sh" ]]; then
-  echo "[*] Running installer..."
-  chmod +x installer.sh
-  sudo ./installer.sh
+# Wenn kein Unterordner da ist, liegen die Dateien direkt in /temp
+if [ -z "$FOUND_DIR" ]; then
+    EXTRACTED_DIR="/temp"
 else
-  echo "[!] Error: installer.sh not found."
-  ls -F
-  exit 1
+    EXTRACTED_DIR="$FOUND_DIR"
 fi
 
-# Cleanup
-cd ~
-rm -rf "$TMP_DIR"
+# === Ausführen ===
+echo "[*] Running installer from $EXTRACTED_DIR..."
+sudo chmod +x "$EXTRACTED_DIR/installer.sh"
+sudo bash "$EXTRACTED_DIR/installer.sh"
+
+# === Aufräumen ===
+echo "[*] Cleaning up..."
+sudo rm -rf /temp
+rm -f "$ZIP_FILE"
+
+echo "[✓] 1002xCMD installation complete."
