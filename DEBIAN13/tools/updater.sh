@@ -191,7 +191,7 @@ if [[ -f "$EXTRACTED_DIR/tools/list.txt" ]]; then
     log "Copied list.txt to $SCRIPT_DIR/tools/list.txt"
 else
     log "list.txt not found in folder."
-    whiptail --title "Updater" --msgbox "osversion.txt not found in folder." 10 50
+    whiptail --title "Updater" --msgbox "list.txt not found in folder." 10 50
 fi
 
 
