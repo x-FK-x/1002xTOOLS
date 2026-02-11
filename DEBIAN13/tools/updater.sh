@@ -151,15 +151,6 @@ else
     whiptail --title "Updater" --msgbox "debui.sh not found in folder." 10 50
 fi
 
-# motd 
-if [[ -f "$EXTRACTED_DIR/tools/motd" ]]; then
-    cp -f "$EXTRACTED_DIR/tools/motd" "$SCRIPT_DIR/tools/motd"
-       log "Copied motd to $SCRIPT_DIR/tools/motd"
-else
-    log "motd not found in folder."
-    whiptail --title "Updater" --msgbox "motd not found in folder." 10 50
-fi
-
 # osversion 
 if [[ -f "$EXTRACTED_DIR/tools/1002xSHELL-installer.sh" ]]; then
     cp -f "$EXTRACTED_DIR/tools/1002xSHELL-installer.sh" "$SCRIPT_DIR/tools/1002xSHELL-installer.sh"
