@@ -190,7 +190,7 @@ if [[ -f "$EXTRACTED_DIR/tools/list.txt" ]]; then
     cp -f "$EXTRACTED_DIR/tools/list.txt" "$SCRIPT_DIR/tools/list.txt"
     log "Copied list.txt to $SCRIPT_DIR/tools/list.txt"
 else
-    log "osversion.txt not found in folder."
+    log "list.txt not found in folder."
     whiptail --title "Updater" --msgbox "osversion.txt not found in folder." 10 50
 fi
 
