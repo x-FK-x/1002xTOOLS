@@ -1,12 +1,11 @@
 #!/bin/bash
 
 # ==========================================
-# 1002xOPERATOR Extractor & Installer (CURL FIX)
+# 1002xOPERATOR Installer (CURL/UNZIP Check)
 # ==========================================
 
 ZIP_URL="https://github.com"
-ZIP_FILE="/tmp/1002xOPERATOR-main.zip"
-TEMP_DIR="/tmp/1002xOPERATOR_extract"
+ZIP_FILE="/tmp/1002xOPERATOR.zip"
 INSTALL_DIR="/etc/1002xOPERATOR"
 BASHRC="/etc/bash.bashrc"
 
@@ -14,75 +13,73 @@ echo "========================================="
 echo "      1002xOPERATOR Installer"
 echo "========================================="
 
-# sudo prüfen
-if ! sudo -v 2>/dev/null; then
-    echo "[!] This script requires sudo privileges."
-    exit 1
-fi
+# ==========================
+# CHECK DEPENDENCIES
+# ==========================
+for pkg in curl unzip; do
+    if ! command -v $pkg &> /dev/null; then
+        echo "[*] $pkg is missing. Installing..."
+        sudo apt-get update && sudo apt-get install -y $pkg
+    fi
+done
 
 # ==========================
-# DOWNLOAD WITH CURL
+# DOWNLOAD
 # ==========================
-echo "[*] Downloading archive via curl..."
-# -L folgt Redirects, -s für Silent (entfernt für Fehlersuche falls nötig)
-sudo curl -L "$ZIP_URL" -o "$ZIP_FILE"
-
-if [[ $? -ne 0 || ! -s "$ZIP_FILE" ]]; then
-    echo "[!] Download failed. Please check your internet connection."
-    exit 1
-fi
-
-# ==========================
-# EXTRACT
-# ==========================
-echo "[*] Extracting archive..."
-rm -rf "$TEMP_DIR"
-mkdir -p "$TEMP_DIR"
-unzip -q "$ZIP_FILE" -d "$TEMP_DIR"
-
-if [[ $? -ne 0 ]]; then
-    echo "[!] Extraction failed. The zip file might be corrupt."
-    rm -f "$ZIP_FILE"
-    exit 1
-fi
-
-# Unterordner identifizieren (z.B. 1002xOPERATOR-main)
-EXTRACTED_SUBDIR=$(find "$TEMP_DIR" -maxdepth 1 -type d -name "1002xOPERATOR*" | head -n 1)
-
-# ==========================
-# COPY TO /etc (FLAT COPY)
-# ==========================
-echo "[*] Copying files to $INSTALL_DIR ..."
+echo "[*] Downloading archive..."
 sudo rm -rf "$INSTALL_DIR"
 sudo mkdir -p "$INSTALL_DIR"
+# -L follows redirects, -o specifies output file
+sudo curl -L "$ZIP_URL" -o "$ZIP_FILE"
 
-# Wechselt in den Unterordner und kopiert den Inhalt direkt nach /etc/1002xOPERATOR
-cd "$EXTRACTED_SUBDIR" || exit 1
-sudo cp -rf . "$INSTALL_DIR/"
-
-sudo chmod -R 755 "$INSTALL_DIR"
-
-# ==========================
-# SET GLOBAL ALIAS
-# ==========================
-if ! grep -q "alias 1002xOPERATOR=" "$BASHRC"; then
-    echo "alias 1002xOPERATOR='bash $INSTALL_DIR/menu.sh'" | sudo tee -a "$BASHRC" >/dev/null
-    echo "[✓] Alias '1002xOPERATOR' added to $BASHRC"
+if [[ ! -s "$ZIP_FILE" ]]; then
+    echo "[!] Download failed or file is empty."
+    exit 1
 fi
 
 # ==========================
-# CLEANUP
+# EXTRACT & RESTRUCTURE
 # ==========================
-rm -rf "$TEMP_DIR"
-rm -f "$ZIP_FILE"
+echo "[*] Extracting and restructuring..."
+# Extracting into /etc/1002xOPERATOR (creates /etc/1002xOPERATOR/1002xOPERATOR-main/)
+sudo unzip -q "$ZIP_FILE" -d "$INSTALL_DIR"
+
+# Locate the automatically created subdirectory
+SUBDIR=$(find "$INSTALL_DIR" -maxdepth 1 -type d -name "1002xOPERATOR-main")
+
+if [ -d "$SUBDIR" ]; then
+    echo "[*] Moving files from $SUBDIR to $INSTALL_DIR..."
+    # Move all contents (including hidden files) from subdir to root
+    sudo cp -rf "$SUBDIR"/. "$INSTALL_DIR/"
+    # Delete the now empty subdir
+    sudo rm -rf "$SUBDIR"
+    echo "[✓] Files moved successfully."
+else
+    echo "[!] Error: Subdirectory 1002xOPERATOR-main not found."
+    exit 1
+fi
+
+# ==========================
+# FINISH
+# ==========================
+sudo rm -f "$ZIP_FILE"
+sudo chmod -R 755 "$INSTALL_DIR"
+
+# Add global alias if it doesn't exist
+if ! grep -q "alias 1002xOPERATOR=" "$BASHRC"; then
+    echo "alias 1002xOPERATOR='bash $INSTALL_DIR/menu.sh'" | sudo tee -a "$BASHRC" >/dev/null
+    echo "[✓] Global alias added to $BASHRC"
+fi
 
 echo
 if [[ -f "$INSTALL_DIR/menu.sh" ]]; then
-    echo "[✓] 1002xOPERATOR installation complete."
+    echo "[✓] Installation successful!"
     echo "-----------------------------------------"
-    echo "Location: $INSTALL_DIR/menu.sh"
+    echo "Structure in $INSTALL_DIR:"
+    ls -F "$INSTALL_DIR"
     echo "-----------------------------------------"
-    echo "Run 'source $BASHRC' or log in again to use the alias."
+    echo "To activate, run: source $BASHRC"
+    echo "Then simply type: 1002xOPERATOR"
 else
-    echo "[!] ERROR: menu.sh was not found in $INSTALL_DIR after copy."
+    echo "[!] Critical Error: menu.sh not found in $INSTALL_DIR."
 fi
