@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Logfile im tools-Ordner
-TARGET_TOOLS_DIR="/etc/wodos/tools"
+TARGET_TOOLS_DIR="/etc/modos/tools"
 LOG_FILE="$TARGET_TOOLS_DIR/1002xTOOLS_updater.log"
 
 mkdir -p "$TARGET_TOOLS_DIR"
@@ -46,6 +46,9 @@ elif [[ -d /etc/modos ]]; then
 elif [[ -d /etc/wodos ]]; then
     VERSION="wodos"
     SCRIPT_DIR="/etc/wodos"
+elif [[ -d /etc/dodos ]]; then
+    VERSION="dodos"
+    SCRIPT_DIR="/etc/dodos"
 else
     log "No valid version directory detected. Exiting."
     whiptail --title "Updater Error" --msgbox "No valid version directory detected. Exiting." 10 50
@@ -53,7 +56,7 @@ else
 fi
 
 log "Detected version: $VERSION, SCRIPT_DIR: $SCRIPT_DIR"
-OS_VERSION=$(head -n1 "/etc/wodos/tools/osversion.txt")
+OS_VERSION=$(head -n1 "/etc/modos/tools/osversion.txt")
 echo "$OS_VERSION"
 log "OS version: $OS_VERSION"
 
