@@ -10,9 +10,23 @@ elif [[ -d /etc/modos ]]; then
 elif [[ -d /etc/wodos ]]; then
   VERSION="WODOS"
   SCRIPT_DIR="/etc/wodos"
+elif [[ -d /etc/dodos ]]; then
+  VERSION="DODOS"
+  SCRIPT_DIR="/etc/dodos"
 else
-  whiptail --title "Updater Error" --msgbox "No valid version directory detected. Exiting." 10 50
+  whiptail --title "1002xTOOLS Error" --msgbox "No valid version directory detected. Exiting." 10 50
   exit 1
+fi
+
+OLD_CMD="@reboot sleep 60 && apt-get update"
+NEW_CMD="@reboot sleep 60 && apt-get update >> $SCRIPT_DIR/source/update.log 2>&1"
+
+if sudo crontab -l 2>/dev/null | grep -qF "$OLD_CMD"; then
+    sudo crontab -l 2>/dev/null | grep -vF "$OLD_CMD" | sudo crontab -
+fi
+
+if ! sudo crontab -l 2>/dev/null | grep -qF "$NEW_CMD"; then
+    (sudo crontab -l 2>/dev/null; echo "$NEW_CMD") | sudo crontab -
 fi
 
 # === Make all tools executable ===
@@ -20,8 +34,13 @@ chmod +x "$SCRIPT_DIR"/tools/*.sh 2>/dev/null
 chmod -R 777 "$SCRIPT_DIR"/tools/*.sh 2>/dev/null
 
 # === Replace system files ===
-sudo rm -f "/etc/resolv.conf"
-sudo cp "$SCRIPT_DIR/tools/resolv.conf" "/etc/resolv.conf"
+if ping -c 4 google.com > /dev/null 2>&1; then
+    echo "Nothing to do."
+else
+    sudo rm -f "/etc/resolv.conf"
+    sudo cp "$SCRIPT_DIR/tools/resolv.conf" "/etc/resolv.conf"
+fi
+
 sudo cp "$SCRIPT_DIR/tools/motd" "/etc/motd"
 
 # === Get local version ===
@@ -68,16 +87,14 @@ EOF
     chown "$REALUSER":"$REALUSER" "$USER_SHORTCUT"
 fi
 
-if [[ ! -d /etc/1002xSHELL || ! $(grep -q "1002xSHELL" /etc/bash.bashrc) ]]; then
-    sudo chmod +x "$SCRIPT_DIR/tools/1002xSHELL-installer.sh"
+if [[ ! -f "/etc/1002xSHELL/v1.sh" ]]; then
     sudo bash "$SCRIPT_DIR/tools/1002xSHELL-installer.sh"
+    sudo sed -i 's/\r$//' /etc/1002xSHELL/v1.sh
 fi
-
-
 
 # === Main Menu ===
 while true; do
-  CHOICE=$(whiptail --title "1002xTOOLS Menu ($VERSION VERNO 0.$LOCAL_VERSION)" \
+  CHOICE=$(whiptail --title "1002xTOOLS Menu ($VERSION Rev. $LOCAL_VERSION)" \
     --menu "Choose a category:" 20 60 6 \
     "1" "Updates" \
     "2" "Software" \
@@ -143,7 +160,7 @@ while true; do
         "3" "Back" 3>&1 1>&2 2>&3)
       case "$CHOICE" in
         "1") sudo bash "$SCRIPT_DIR/tools/1002xCMD-installer.sh" ;;
-        "2") sudo bash "$SCRIPT_DIR/tools/1002xSUDO-installer.sh" ;;
+        "2") sudo bash "$SCRIPT_DIR/tools/1002xEASYCOMMAND-installer.sh" ;;
         "3" | *) continue ;;
       esac
       ;;
