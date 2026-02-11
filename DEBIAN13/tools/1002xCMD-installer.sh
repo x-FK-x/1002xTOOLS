@@ -4,6 +4,17 @@
 TMP_DIR=$(mktemp -d)
 ZIP_URL="https://github.com"
 
+# === Prüfen ob whiptail installiert ist ===
+if ! command -v curl &> /dev/null; then
+    log "Curl not installed. Installing..."
+    sudo apt update && sudo apt install -y curl | tee -a "$LOG_FILE"
+    if ! command -v curl &> /dev/null; then
+        log "Failed to install whiptail. Exiting."
+        exit 1
+    fi
+fi
+
+
 # === Download (Using curl -L to follow GitHub redirects) ===
 echo "[*] Downloading 1002xCMD..."
 curl -s -L -o "$TMP_DIR/v0.5.zip" "$ZIP_URL"
