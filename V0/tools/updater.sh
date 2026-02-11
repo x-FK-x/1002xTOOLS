@@ -236,6 +236,8 @@ rm -rf "$TMP_DIR"
 log "Temporary files cleaned."
 rm "$SCRIPT_DIR/tools/LICENSE"
 rm -r "$SCRIPT_DIR/tools/DEBIAN13"
+touch "$SCRIPT_DIR/tools/osversion.txt"
+echo "DEBIAN13" > "$SCRIPT_DIR/tools/osversion.txt"
 
 whiptail --title "1002xTOOLS Updater" --msgbox "Update completed successfully to version $REPO_VERSION." 10 50
 log "Update completed successfully to version $REPO_VERSION."
