@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Logfile im tools-Ordner
-TARGET_TOOLS_DIR="/etc/godos/tools"
+TARGET_TOOLS_DIR="/etc/dodos/tools"
 LOG_FILE="$TARGET_TOOLS_DIR/1002xTOOLS_updater.log"
 
 mkdir -p "$TARGET_TOOLS_DIR"
@@ -29,12 +29,16 @@ fi
 if ! command -v pluma &> /dev/null; then
     log "Pluma not installed. Installing..."
     sudo apt update && sudo apt install -y pluma | tee -a "$LOG_FILE"
-    if ! command -v whiptail &> /dev/null; then
+    if ! command -v pluma &> /dev/null; then
         log "Failed to install pluma. Exiting."
         exit 1
     fi
 fi
 
+
+if [[ -f /etc/dodos/tools/1002xSUDO-installer.sh ]]; then
+    sudo rm /etc/dodos/tools/1002xSUDO-installer.sh
+fi
 
 # === Version erkennen ===
 if [[ -d /etc/godos ]]; then
@@ -56,7 +60,7 @@ else
 fi
 
 log "Detected version: $VERSION, SCRIPT_DIR: $SCRIPT_DIR"
-OS_VERSION=$(head -n1 "/etc/godos/tools/osversion.txt")
+OS_VERSION=$(head -n1 "/etc/dodos/tools/osversion.txt")
 echo "$OS_VERSION"
 log "OS version: $OS_VERSION"
 
@@ -186,8 +190,8 @@ if [[ -f "$EXTRACTED_DIR/tools/list.txt" ]]; then
     cp -f "$EXTRACTED_DIR/tools/list.txt" "$SCRIPT_DIR/tools/list.txt"
     log "Copied list.txt to $SCRIPT_DIR/tools/list.txt"
 else
-    log "osversion.txt not found in folder."
-    whiptail --title "Updater" --msgbox "osversion.txt not found in folder." 10 50
+    log "list.txt not found in folder."
+    whiptail --title "Updater" --msgbox "list.txt not found in folder." 10 50
 fi
 
 
@@ -208,23 +212,25 @@ fi
 # Alle .sh im Ziel ausführbar machen
 find "$SCRIPT_DIR" -type f -name "*.sh" -exec chmod +x {} +
 
-# Alias für alle User setzen
-ALIAS_LINE='alias 1002xUPDATES="sudo bash '"$SCRIPT_DIR"'/tools/updater.sh"'
-if ! grep -Fxq "$ALIAS_LINE" /etc/bash.bashrc; then
-    echo "$ALIAS_LINE" | sudo tee -a /etc/bash.bashrc >/dev/null
-    log "Alias added to /etc/bash.bashrc"
-fi
 
-ALIAS_LINE2='alias 1002xTOOLS="sudo bash '"$SCRIPT_DIR"'/debui.sh"'
-if ! grep -Fxq "$ALIAS_LINE2" /etc/bash.bashrc; then
-    echo "$ALIAS_LINE2" | sudo tee -a /etc/bash.bashrc >/dev/null
-    log "Alias added to /etc/bash.bashrc"
-fi
-ALIAS_LINE3='alias 1002xDNS="sudo rm /etc/resolv.conf && sudo cp '"$SCRIPT_DIR"'/tools/resolv.conf /etc"'
-if ! grep -Fxq "$ALIAS_LINE3" /etc/bash.bashrc; then
-    echo "$ALIAS_LINE3" | sudo tee -a /etc/bash.bashrc >/dev/null
-    log "Alias added to /etc/bash.bashrc"
-fi
+# --- Alias für alle User setzen ---
+sudo sed -i '/alias 1002xUPDATES=/d' /etc/bash.bashrc
+sudo sed -i '/alias 1002xTOOLS=/d' /etc/bash.bashrc
+sudo sed -i '/alias 1002xDNS=/d' /etc/bash.bashrc
+
+# --- Neue Alias-Zeilen setzen ---
+ALIAS_LINE="alias 1002xUPDATES='sudo bash $SCRIPT_DIR/tools/updater.sh'"
+ALIAS_LINE2="alias 1002xTOOLS='sudo bash $SCRIPT_DIR/debui.sh'"
+ALIAS_LINE3="alias 1002xDNS='sudo rm /etc/resolv.conf && sudo cp $SCRIPT_DIR/tools/resolv.conf /etc'"
+
+echo "$ALIAS_LINE" | sudo tee -a /etc/bash.bashrc >/dev/null
+echo "$ALIAS_LINE2" | sudo tee -a /etc/bash.bashrc >/dev/null
+echo "$ALIAS_LINE3" | sudo tee -a /etc/bash.bashrc >/dev/null
+
+log "Aliases for 1002xTOOLS, 1002xUPDATES and 1002xDNS set in /etc/bash.bashrc"
+
+
+
 # Cleanup
 rm -rf "$TMP_DIR"
 log "Temporary files cleaned."
