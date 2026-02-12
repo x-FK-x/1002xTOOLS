@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [[ "${1:-}" == "uninstall" ]]; then
-    echo "[*] Removing 1002xOPERATOR..."
+    echo "[*] Removing 1002xCMD..."
     sudo rm -r "/etc/1002xCMD"
     sudo sed -i '/1002xCMD/d' /etc/bash.bashrc
     sudo sed -i '/cmd/d' /etc/bash.bashrc
