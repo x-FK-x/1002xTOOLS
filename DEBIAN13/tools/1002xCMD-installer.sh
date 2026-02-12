@@ -1,10 +1,11 @@
 #!/bin/bash
 
 if [[ "${1:-}" == "uninstall" ]]; then
-    echo "[*] Removing 1002xOPERATOR..."
-    sudo rm -r "/etc/100x2CMD"
-    sudo sed -i '/1002xCMD/d' "$BASHRC"
-    sudo sed -i '/cmd/d' "$BASHRC"
+    echo "[*] Removing 1002xCMD..."
+    sudo rm -r "/etc/1002xCMD"
+    sudo sed -i '/1002xCMD/d' /etc/bash.bashrc
+    sudo sed -i '/cmd/d' /etc/bash.bashrc
+    source /etc/bash.bashrc
     echo "[✓] Successfully removed."
     exit 0
 fi
@@ -19,7 +20,7 @@ if ! command -v curl &> /dev/null; then
     echo "curl not installed. Installing..."
     sudo apt update && sudo apt install -y curl | tee -a "$LOG_FILE"
     if ! command -v curl &> /dev/null; then
-        log "Failed to install curl. Exiting."
+        echo "Failed to install curl. Exiting."
         exit 1
     fi
 fi
@@ -54,5 +55,5 @@ sudo bash "$EXTRACTED_DIR/installer.sh"
 echo "[*] Cleaning up..."
 #sudo rm -rf /temp
 rm -f "$ZIP_FILE"
-
+source /etc/bash.bashrc
 echo "[✓] 1002xCMD installation complete."
