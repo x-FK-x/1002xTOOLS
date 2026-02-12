@@ -55,5 +55,5 @@ sudo bash "$EXTRACTED_DIR/installer.sh"
 echo "[*] Cleaning up..."
 #sudo rm -rf /temp
 rm -f "$ZIP_FILE"
-sudo source /etc/bash.bashrc
+source /etc/bash.bashrc
 echo "[✓] 1002xCMD installation complete."
