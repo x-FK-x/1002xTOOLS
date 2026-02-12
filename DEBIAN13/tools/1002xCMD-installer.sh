@@ -1,38 +1,58 @@
 #!/bin/bash
 
-# === Variablen ===
+if [[ "${1:-}" == "uninstall" ]]; then
+    echo "[*] Removing 1002xOPERATOR..."
+    sudo rm -r "/etc/100x2CMD"
+    sudo sed -i '/1002xCMD/d' "$BASHRC"
+    sudo sed -i '/cmd/d' "$BASHRC"
+    echo "[✓] Successfully removed."
+    exit 0
+fi
 
 ZIP_URL="https://github.com/x-FK-x/1002xCMD/releases/download/v0.5/v0.5.zip"
 ZIP_FILE="1002xCMD-0.5.zip"
 
-
 # === Herunterladen ===
 echo "[*] Downloading 1002xCMD..."
-wget -q -O "$ZIP_FILE" "$ZIP_URL"
 
-if [[ $? -ne 0 || ! -f "$ZIP_FILE" ]]; then
-  echo "[!] Failed to download archive from $ZIP_URL"
-  exit 1
+if ! command -v curl &> /dev/null; then
+    echo "curl not installed. Installing..."
+    sudo apt update && sudo apt install -y curl | tee -a "$LOG_FILE"
+    if ! command -v curl &> /dev/null; then
+        log "Failed to install curl. Exiting."
+        exit 1
+    fi
 fi
+
+curl -sL -o "$ZIP_FILE" "$ZIP_URL"
+
+
+
 
 # === Entpacken ===
 echo "[*] Extracting archive..."
-sudo mkdir /temp
+sudo rm -rf /temp && sudo mkdir /temp
 sudo unzip -q "$ZIP_FILE" -d /temp
 
-EXTRACTED_DIR=$(find /temp -maxdepth 1 -type d -name "1002xCMD*" | head -n 1)
+# === Pfad-Logik (FIX) ===
+# Suche zuerst nach einem Unterordner
+FOUND_DIR=$(find /temp -maxdepth 1 -type d -name "1002xCMD*" | head -n 1)
 
+# Wenn kein Unterordner da ist, liegen die Dateien direkt in /temp
+if [ -z "$FOUND_DIR" ]; then
+    EXTRACTED_DIR="/temp"
+else
+    EXTRACTED_DIR="$FOUND_DIR"
+fi
 
 # === Ausführen ===
-echo "[*] Running installer..."
+echo "[*] Running installer from $EXTRACTED_DIR..."
 sudo chmod +x "$EXTRACTED_DIR/installer.sh"
 sudo bash "$EXTRACTED_DIR/installer.sh"
 
 # === Aufräumen ===
 echo "[*] Cleaning up..."
-sudo rm -rf /temp
-sudo rm $ZIP_FILE
+#sudo rm -rf /temp
+rm -f "$ZIP_FILE"
 
 echo "[✓] 1002xCMD installation complete."
-
-#DODOS - DownTown1002xCollection of Debian OS
