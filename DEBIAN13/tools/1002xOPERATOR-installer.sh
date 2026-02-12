@@ -93,4 +93,4 @@ if [[ -f "$INSTALL_DIR/menu.sh" ]]; then
 else
     echo "[!] Critical Error: menu.sh not found in $INSTALL_DIR."
 fi
-sudo source /etc/bash.bashrc
+source /etc/bash.bashrc
