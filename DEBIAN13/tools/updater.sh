@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Logfile im tools-Ordner
-TARGET_TOOLS_DIR="/etc/godos/tools"
+TARGET_TOOLS_DIR="/etc/wodos/tools"
 LOG_FILE="$TARGET_TOOLS_DIR/1002xTOOLS_updater.log"
 
 mkdir -p "$TARGET_TOOLS_DIR"
@@ -14,7 +14,13 @@ log() {
 
 log "Starting updater..."
 
-# === Prüfen ob whiptail installiert ist ===
+
+if [[ -f /etc/apt/sources.list.d/mx.list ]]; then
+  sudo rm /etc/apt/sources.list.d/mx.list
+  sudo apt remove --purge mx-snapshot -y
+fi
+
+
 if ! command -v whiptail &> /dev/null; then
     log "Whiptail not installed. Installing..."
     sudo apt update && sudo apt install -y whiptail | tee -a "$LOG_FILE"
@@ -24,8 +30,6 @@ if ! command -v whiptail &> /dev/null; then
     fi
 fi
 
-
-# === Prüfen ob pluma installiert ist ===
 if ! command -v pluma &> /dev/null; then
     log "Pluma not installed. Installing..."
     sudo apt update && sudo apt install -y pluma | tee -a "$LOG_FILE"
@@ -36,13 +40,8 @@ if ! command -v pluma &> /dev/null; then
 fi
 
 
-if [[ -f /etc/apt/sources.list.d/mx.list ]]; then
-  sudo rm /etc/apt/sources.list.d/mx.list
-  sudo apt remove --purge mx-snapshot -y
-fi
-
-if [[ -f /etc/godos/tools/1002xSUDO-installer.sh ]]; then
-    sudo rm /etc/godos/tools/1002xSUDO-installer.sh
+if [[ -f /etc/wodos/tools/1002xSUDO-installer.sh ]]; then
+    sudo rm /etc/wodos/tools/1002xSUDO-installer.sh
 fi
 
 # === Version erkennen ===
@@ -65,7 +64,7 @@ else
 fi
 
 log "Detected version: $VERSION, SCRIPT_DIR: $SCRIPT_DIR"
-OS_VERSION=$(head -n1 "/etc/godos/tools/osversion.txt")
+OS_VERSION=$(head -n1 "/etc/wodos/tools/osversion.txt")
 echo "$OS_VERSION"
 log "OS version: $OS_VERSION"
 
@@ -195,8 +194,8 @@ if [[ -f "$EXTRACTED_DIR/tools/list.txt" ]]; then
     cp -f "$EXTRACTED_DIR/tools/list.txt" "$SCRIPT_DIR/tools/list.txt"
     log "Copied list.txt to $SCRIPT_DIR/tools/list.txt"
 else
-    log "osversion.txt not found in folder."
-    whiptail --title "Updater" --msgbox "osversion.txt not found in folder." 10 50
+    log "list.txt not found in folder."
+    whiptail --title "Updater" --msgbox "list.txt not found in folder." 10 50
 fi
 
 
