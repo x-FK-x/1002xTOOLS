@@ -20,7 +20,7 @@ if ! command -v curl &> /dev/null; then
     echo "curl not installed. Installing..."
     sudo apt update && sudo apt install -y curl | tee -a "$LOG_FILE"
     if ! command -v curl &> /dev/null; then
-        log "Failed to install curl. Exiting."
+        echo "Failed to install curl. Exiting."
         exit 1
     fi
 fi
