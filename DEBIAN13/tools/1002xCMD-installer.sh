@@ -1,5 +1,14 @@
 #!/bin/bash
 
+if [[ "${1:-}" == "uninstall" ]]; then
+    echo "[*] Removing 1002xOPERATOR..."
+    sudo rm -r "/etc/100x2CMD"
+    sudo sed -i '/1002xCMD/d' "$BASHRC"
+    sudo sed -i '/cmd/d' "$BASHRC"
+    echo "[✓] Successfully removed."
+    exit 0
+fi
+
 ZIP_URL="https://github.com/x-FK-x/1002xCMD/releases/download/v0.5/v0.5.zip"
 ZIP_FILE="1002xCMD-0.5.zip"
 
@@ -7,6 +16,8 @@ ZIP_FILE="1002xCMD-0.5.zip"
 echo "[*] Downloading 1002xCMD..."
 # Nutze curl -L, falls wget Probleme mit GitHub-Redirects hat
 curl -sL -o "$ZIP_FILE" "$ZIP_URL"
+
+
 
 # === Entpacken ===
 echo "[*] Extracting archive..."
