@@ -14,7 +14,6 @@ log() {
 
 log "Starting updater..."
 
-# === Prüfen ob whiptail installiert ist ===
 if ! command -v whiptail &> /dev/null; then
     log "Whiptail not installed. Installing..."
     sudo apt update && sudo apt install -y whiptail | tee -a "$LOG_FILE"
@@ -25,7 +24,6 @@ if ! command -v whiptail &> /dev/null; then
 fi
 
 
-# === Prüfen ob pluma installiert ist ===
 if ! command -v pluma &> /dev/null; then
     log "Pluma not installed. Installing..."
     sudo apt update && sudo apt install -y pluma | tee -a "$LOG_FILE"
