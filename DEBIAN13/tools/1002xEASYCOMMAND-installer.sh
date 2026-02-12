@@ -89,12 +89,12 @@ alias POWEROFF='LOG "POWEROFF"; sudo poweroff'
 alias REBOOT='LOG "REBOOT"; sudo reboot'
 alias SHUTDOWN='LOG "SHUTDOWN"; sudo shutdown now'
 
-alias UPDATE='LOG "APT_UPDATE"; sudo apt update && sudo apt upgrade -y'
-alias UPGRADE='sudo apt full-upgrade'
+alias UPDATE='LOG "APT_UPDATE"; sudo apt update'
+alias UPGRADE='sudo apt upgrade -y'
 alias INSTALL='sudo apt install'
 alias REMOVE='sudo apt remove --purge'
 alias APTSEARCH='apt search'
-
+alias APTCLEAN='apt autoclean && apt autoremove -y"
 alias PING='ping -c 4'
 alias IP='ip a'
 
