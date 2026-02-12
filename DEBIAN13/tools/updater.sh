@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Logfile im tools-Ordner
-TARGET_TOOLS_DIR="/etc/wodos/tools"
+TARGET_TOOLS_DIR="/etc/godos/tools"
 LOG_FILE="$TARGET_TOOLS_DIR/1002xTOOLS_updater.log"
 
 mkdir -p "$TARGET_TOOLS_DIR"
@@ -40,8 +40,8 @@ if ! command -v pluma &> /dev/null; then
 fi
 
 
-if [[ -f /etc/wodos/tools/1002xSUDO-installer.sh ]]; then
-    sudo rm /etc/wodos/tools/1002xSUDO-installer.sh
+if [[ -f /etc/godos/tools/1002xSUDO-installer.sh ]]; then
+    sudo rm /etc/godos/tools/1002xSUDO-installer.sh
 fi
 
 # === Version erkennen ===
@@ -64,7 +64,7 @@ else
 fi
 
 log "Detected version: $VERSION, SCRIPT_DIR: $SCRIPT_DIR"
-OS_VERSION=$(head -n1 "/etc/wodos/tools/osversion.txt")
+OS_VERSION=$(head -n1 "/etc/godos/tools/osversion.txt")
 echo "$OS_VERSION"
 log "OS version: $OS_VERSION"
 
