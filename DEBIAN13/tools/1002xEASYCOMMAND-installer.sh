@@ -135,6 +135,6 @@ if ! grep -q "1002xEASYCOMMAND" "$BASHRC"; then
     echo "source $MAIN_FILE" | sudo tee -a "$BASHRC" >/dev/null
     echo "alias 1002xEASYCOMMAND='1002xEASYCOMMAND'" | sudo tee -a "$BASHRC" >/dev/null
 fi
-
+sudo source /etc/bash.bashrc
 echo "[✓] Installation successful."
 echo "Please run 'source /etc/bash.bashrc' or log out and back in."
