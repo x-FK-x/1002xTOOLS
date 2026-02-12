@@ -87,9 +87,9 @@ EOF
     chown "$REALUSER":"$REALUSER" "$USER_SHORTCUT"
 fi
 
-if [[ ! -f "/etc/1002xSHELL/v1.sh" ]]; then
+if [[ ! -f "/etc/1002xSHELL/v2.sh" ]]; then
     sudo bash "$SCRIPT_DIR/tools/1002xSHELL-installer.sh"
-    sudo sed -i 's/\r$//' /etc/1002xSHELL/v1.sh
+    sudo sed -i 's/\r$//' /etc/1002xSHELL/v2.sh
 fi
 
 # === Main Menu ===
