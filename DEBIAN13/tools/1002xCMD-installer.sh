@@ -2,7 +2,7 @@
 
 if [[ "${1:-}" == "uninstall" ]]; then
     echo "[*] Removing 1002xOPERATOR..."
-    sudo rm -r "/etc/100x2CMD"
+    sudo rm -r "/etc/1002xCMD"
     sudo sed -i '/1002xCMD/d' "$BASHRC"
     sudo sed -i '/cmd/d' "$BASHRC"
     echo "[✓] Successfully removed."
