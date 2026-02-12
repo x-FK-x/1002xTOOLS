@@ -5,7 +5,7 @@ if [[ "${1:-}" == "uninstall" ]]; then
     sudo rm -r "/etc/1002xCMD"
     sudo sed -i '/1002xCMD/d' /etc/bash.bashrc
     sudo sed -i '/cmd/d' /etc/bash.bashrc
-    sudo source /etc/bash.bashrc
+    source /etc/bash.bashrc
     echo "[✓] Successfully removed."
     exit 0
 fi
