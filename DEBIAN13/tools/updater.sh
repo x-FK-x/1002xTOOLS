@@ -1,4 +1,50 @@
-#!/bin/bash
+a#!/bin/bash
+# ==============================
+# 1002xOPERATOR Update (autonom)
+# ==============================
+OP_DIR="/etc/1002xOPERATOR"
+OP_TMP="/tmp/1002xOPERATOR_update"
+OP_URL="https://github.com/x-FK-x/1002xOPERATOR/archive/refs/heads/main.zip"
+
+log "Starting 1002xOPERATOR updater..."
+
+if [[ ! -d "$OP_DIR" ]]; then
+    log "1002xOPERATOR not installed."
+    whiptail --title "1002xOPERATOR" --msgbox "1002xOPERATOR is not installed. Skipping update." 10 50
+else
+    rm -rf "$OP_TMP"
+    mkdir -p "$OP_TMP"
+
+    log "Downloading latest 1002xOPERATOR..."
+    curl -Ls "$OP_URL" -o "$OP_TMP/op.zip"
+    unzip -q "$OP_TMP/op.zip" -d "$OP_TMP"
+
+    OP_SRC=$(find "$OP_TMP" -maxdepth 1 -type d -name "1002xOPERATOR-*")
+    if [[ ! -f "$OP_SRC/release.txt" ]]; then
+        log "release.txt missing in repo."
+        whiptail --title "1002xOPERATOR" --msgbox "release.txt missing in repo. Update aborted." 10 50
+        rm -rf "$OP_TMP"
+    else
+        REPO_VER=$(head -n1 "$OP_SRC/release.txt")
+        LOCAL_VER=$(head -n1 "$OP_DIR/release.txt" 2>/dev/null)
+
+        log "Local version: $LOCAL_VER"
+        log "Repo version: $REPO_VER"
+
+        if [[ "$LOCAL_VER" == "$REPO_VER" ]]; then
+            log "1002xOPERATOR already up to date."
+            whiptail --title "1002xOPERATOR" --msgbox "Already up to date.\nVersion: $LOCAL_VER" 10 50
+        else
+            log "Updating 1002xOPERATOR..."
+            sudo cp -rf "$OP_SRC"/. "$OP_DIR/"
+            sudo chmod -R 755 "$OP_DIR"
+            log "Updated to $REPO_VER"
+            whiptail --title "1002xOPERATOR" --msgbox "Update successful.\nNew version: $REPO_VER" 10 50
+        fi
+
+        rm -rf "$OP_TMP"
+    fi
+fi
 
 # Logfile im tools-Ordner
 TARGET_TOOLS_DIR="/etc/dodos/tools"
@@ -136,6 +182,7 @@ if [[ "$LOCAL_VERSION" == "$REPO_VERSION" ]]; then
     log "Tools are already up to date."
     whiptail --title "Updater" --msgbox "Tools are already up to date (version $OS_VERSION Rev. $LOCAL_VERSION)." 10 50
     rm -rf "$TMP_DIR"
+    exit 0
 fi
 
 # --- Dateien kopieren ---
@@ -214,53 +261,6 @@ echo "$ALIAS_LINE2" | sudo tee -a /etc/bash.bashrc >/dev/null
 echo "$ALIAS_LINE3" | sudo tee -a /etc/bash.bashrc >/dev/null
 
 log "Aliases for 1002xTOOLS, 1002xUPDATES and 1002xDNS set in /etc/bash.bashrc"
-
-# ==============================
-# 1002xOPERATOR Update (autonom)
-# ==============================
-OP_DIR="/etc/1002xOPERATOR"
-OP_TMP="/tmp/1002xOPERATOR_update"
-OP_URL="https://github.com/x-FK-x/1002xOPERATOR/archive/refs/heads/main.zip"
-
-log "Starting 1002xOPERATOR updater..."
-
-if [[ ! -d "$OP_DIR" ]]; then
-    log "1002xOPERATOR not installed."
-    whiptail --title "1002xOPERATOR" --msgbox "1002xOPERATOR is not installed. Skipping update." 10 50
-else
-    rm -rf "$OP_TMP"
-    mkdir -p "$OP_TMP"
-
-    log "Downloading latest 1002xOPERATOR..."
-    curl -Ls "$OP_URL" -o "$OP_TMP/op.zip"
-    unzip -q "$OP_TMP/op.zip" -d "$OP_TMP"
-
-    OP_SRC=$(find "$OP_TMP" -maxdepth 1 -type d -name "1002xOPERATOR-*")
-    if [[ ! -f "$OP_SRC/release.txt" ]]; then
-        log "release.txt missing in repo."
-        whiptail --title "1002xOPERATOR" --msgbox "release.txt missing in repo. Update aborted." 10 50
-        rm -rf "$OP_TMP"
-    else
-        REPO_VER=$(head -n1 "$OP_SRC/release.txt")
-        LOCAL_VER=$(head -n1 "$OP_DIR/release.txt" 2>/dev/null)
-
-        log "Local version: $LOCAL_VER"
-        log "Repo version: $REPO_VER"
-
-        if [[ "$LOCAL_VER" == "$REPO_VER" ]]; then
-            log "1002xOPERATOR already up to date."
-            whiptail --title "1002xOPERATOR" --msgbox "Already up to date.\nVersion: $LOCAL_VER" 10 50
-        else
-            log "Updating 1002xOPERATOR..."
-            sudo cp -rf "$OP_SRC"/. "$OP_DIR/"
-            sudo chmod -R 755 "$OP_DIR"
-            log "Updated to $REPO_VER"
-            whiptail --title "1002xOPERATOR" --msgbox "Update successful.\nNew version: $REPO_VER" 10 50
-        fi
-
-        rm -rf "$OP_TMP"
-    fi
-fi
 
 # Cleanup
 rm -rf "$TMP_DIR"
