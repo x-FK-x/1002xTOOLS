@@ -1,16 +1,62 @@
 #!/bin/bash
-
-# Logfile im tools-Ordner
-TARGET_TOOLS_DIR="/etc/wodos/tools"
 LOG_FILE="$TARGET_TOOLS_DIR/1002xTOOLS_updater.log"
-
-mkdir -p "$TARGET_TOOLS_DIR"
 echo "=== 1002xTOOLS Updater Log ===" > "$LOG_FILE"
 echo "Start time: $(date)" >> "$LOG_FILE"
-
 log() {
     echo "$1" | tee -a "$LOG_FILE"
 }
+
+
+# ==============================
+# 1002xOPERATOR Update (autonom)
+# ==============================
+OP_DIR="/etc/1002xOPERATOR"
+OP_TMP="/tmp/1002xOPERATOR_update"
+OP_URL="https://github.com/x-FK-x/1002xOPERATOR/archive/refs/heads/main.zip"
+
+log "Starting 1002xOPERATOR updater..."
+
+if [[ ! -d "$OP_DIR" ]]; then
+    log "1002xOPERATOR not installed."
+    whiptail --title "1002xOPERATOR" --msgbox "1002xOPERATOR is not installed. Skipping update." 10 50
+else
+    rm -rf "$OP_TMP"
+    mkdir -p "$OP_TMP"
+
+    log "Downloading latest 1002xOPERATOR..."
+    curl -Ls "$OP_URL" -o "$OP_TMP/op.zip"
+    unzip -q "$OP_TMP/op.zip" -d "$OP_TMP"
+
+    OP_SRC=$(find "$OP_TMP" -maxdepth 1 -type d -name "1002xOPERATOR-*")
+    if [[ ! -f "$OP_SRC/release.txt" ]]; then
+        log "release.txt missing in repo."
+        whiptail --title "1002xOPERATOR" --msgbox "release.txt missing in repo. Update aborted." 10 50
+        rm -rf "$OP_TMP"
+    else
+        REPO_VER=$(head -n1 "$OP_SRC/release.txt")
+        LOCAL_VER=$(head -n1 "$OP_DIR/release.txt" 2>/dev/null)
+
+        log "Local version: $LOCAL_VER"
+        log "Repo version: $REPO_VER"
+
+        if [[ "$LOCAL_VER" == "$REPO_VER" ]]; then
+            log "1002xOPERATOR already up to date."
+            whiptail --title "1002xOPERATOR" --msgbox "Already up to date.\nVersion: $LOCAL_VER" 10 50
+        else
+            log "Updating 1002xOPERATOR..."
+            sudo cp -rf "$OP_SRC"/. "$OP_DIR/"
+            sudo chmod -R 755 "$OP_DIR"
+            log "Updated to $REPO_VER"
+            whiptail --title "1002xOPERATOR" --msgbox "Update successful.\nNew version: $REPO_VER" 10 50
+        fi
+
+        rm -rf "$OP_TMP"
+    fi
+fi
+
+# Logfile im tools-Ordner
+TARGET_TOOLS_DIR="/etc/dodos/tools"
+mkdir -p "$TARGET_TOOLS_DIR"
 
 log "Starting updater..."
 
@@ -23,19 +69,8 @@ if ! command -v whiptail &> /dev/null; then
     fi
 fi
 
-
-if ! command -v pluma &> /dev/null; then
-    log "Pluma not installed. Installing..."
-    sudo apt update && sudo apt install -y pluma | tee -a "$LOG_FILE"
-    if ! command -v pluma &> /dev/null; then
-        log "Failed to install pluma. Exiting."
-        exit 1
-    fi
-fi
-
-
-if [[ -f /etc/wodos/tools/1002xSUDO-installer.sh ]]; then
-    sudo rm /etc/wodos/tools/1002xSUDO-installer.sh
+if [[ -f /etc/dodos/tools/1002xSUDO-installer.sh ]]; then
+    sudo rm /etc/dodos/tools/1002xSUDO-installer.sh
 fi
 
 # === Version erkennen ===
@@ -58,7 +93,7 @@ else
 fi
 
 log "Detected version: $VERSION, SCRIPT_DIR: $SCRIPT_DIR"
-OS_VERSION=$(head -n1 "/etc/wodos/tools/osversion.txt")
+OS_VERSION=$(head -n1 "/etc/dodos/tools/osversion.txt")
 echo "$OS_VERSION"
 log "OS version: $OS_VERSION"
 
@@ -226,8 +261,6 @@ echo "$ALIAS_LINE2" | sudo tee -a /etc/bash.bashrc >/dev/null
 echo "$ALIAS_LINE3" | sudo tee -a /etc/bash.bashrc >/dev/null
 
 log "Aliases for 1002xTOOLS, 1002xUPDATES and 1002xDNS set in /etc/bash.bashrc"
-
-
 
 # Cleanup
 rm -rf "$TMP_DIR"
