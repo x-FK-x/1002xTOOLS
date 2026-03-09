@@ -1,4 +1,10 @@
-a#!/bin/bash
+#!/bin/bash
+LOG_FILE="$TARGET_TOOLS_DIR/1002xTOOLS_updater.log"
+echo "=== 1002xTOOLS Updater Log ===" > "$LOG_FILE"
+echo "Start time: $(date)" >> "$LOG_FILE"
+log() {
+    echo "$1" | tee -a "$LOG_FILE"
+}
 # ==============================
 # 1002xOPERATOR Update (autonom)
 # ==============================
@@ -48,15 +54,7 @@ fi
 
 # Logfile im tools-Ordner
 TARGET_TOOLS_DIR="/etc/dodos/tools"
-LOG_FILE="$TARGET_TOOLS_DIR/1002xTOOLS_updater.log"
-
 mkdir -p "$TARGET_TOOLS_DIR"
-echo "=== 1002xTOOLS Updater Log ===" > "$LOG_FILE"
-echo "Start time: $(date)" >> "$LOG_FILE"
-
-log() {
-    echo "$1" | tee -a "$LOG_FILE"
-}
 
 log "Starting updater..."
 
