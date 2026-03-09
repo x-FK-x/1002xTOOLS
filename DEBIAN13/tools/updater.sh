@@ -136,7 +136,6 @@ if [[ "$LOCAL_VERSION" == "$REPO_VERSION" ]]; then
     log "Tools are already up to date."
     whiptail --title "Updater" --msgbox "Tools are already up to date (version $OS_VERSION Rev. $LOCAL_VERSION)." 10 50
     rm -rf "$TMP_DIR"
-    exit 0
 fi
 
 # --- Dateien kopieren ---
