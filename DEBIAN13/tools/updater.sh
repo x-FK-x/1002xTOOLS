@@ -1,4 +1,14 @@
 #!/bin/bash
+
+if ! command -v whiptail &> /dev/null; then
+    log "Whiptail not installed. Installing..."
+    sudo apt update && sudo apt install -y whiptail | tee -a "$LOG_FILE"
+    if ! command -v whiptail &> /dev/null; then
+        log "Failed to install whiptail. Exiting."
+        exit 1
+    fi
+fi
+
 LOG_FILE="$TARGET_TOOLS_DIR/1002xTOOLS_updater.log"
 echo "=== 1002xTOOLS Updater Log ===" > "$LOG_FILE"
 echo "Start time: $(date)" >> "$LOG_FILE"
@@ -59,15 +69,6 @@ TARGET_TOOLS_DIR="/etc/godos/tools"
 mkdir -p "$TARGET_TOOLS_DIR"
 
 log "Starting updater..."
-
-if ! command -v whiptail &> /dev/null; then
-    log "Whiptail not installed. Installing..."
-    sudo apt update && sudo apt install -y whiptail | tee -a "$LOG_FILE"
-    if ! command -v whiptail &> /dev/null; then
-        log "Failed to install whiptail. Exiting."
-        exit 1
-    fi
-fi
 
 if [[ -f /etc/godos/tools/1002xSUDO-installer.sh ]]; then
     sudo rm /etc/godos/tools/1002xSUDO-installer.sh
