@@ -55,7 +55,7 @@ else
 fi
 
 # Logfile im tools-Ordner
-TARGET_TOOLS_DIR="/etc/dodos/tools"
+TARGET_TOOLS_DIR="/etc/godos/tools"
 mkdir -p "$TARGET_TOOLS_DIR"
 
 log "Starting updater..."
@@ -69,8 +69,8 @@ if ! command -v whiptail &> /dev/null; then
     fi
 fi
 
-if [[ -f /etc/dodos/tools/1002xSUDO-installer.sh ]]; then
-    sudo rm /etc/dodos/tools/1002xSUDO-installer.sh
+if [[ -f /etc/godos/tools/1002xSUDO-installer.sh ]]; then
+    sudo rm /etc/godos/tools/1002xSUDO-installer.sh
 fi
 
 # === Version erkennen ===
@@ -93,7 +93,7 @@ else
 fi
 
 log "Detected version: $VERSION, SCRIPT_DIR: $SCRIPT_DIR"
-OS_VERSION=$(head -n1 "/etc/dodos/tools/osversion.txt")
+OS_VERSION=$(head -n1 "/etc/godos/tools/osversion.txt")
 echo "$OS_VERSION"
 log "OS version: $OS_VERSION"
 
