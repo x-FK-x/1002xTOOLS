@@ -57,6 +57,7 @@ fi
 # Logfile im tools-Ordner
 TARGET_TOOLS_DIR="/etc/dodos/tools"
 mkdir -p "$TARGET_TOOLS_DIR"
+mkdir -p /etc/dodos/source
 
 log "Starting updater..."
 
