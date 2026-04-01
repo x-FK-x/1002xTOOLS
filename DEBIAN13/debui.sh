@@ -137,7 +137,7 @@ while true; do
         "2" "Keyboard Manager" \
         "3" "Back" 3>&1 1>&2 2>&3)
       case "$CHOICE" in
-        "1") sudo dpkg-reconfigure locales ;;
+        "1") sudo dpkg-reconfigure locales && LC_ALL=C.UTF-8 xdg-user-dirs-update --force;;
         "2") sudo dpkg-reconfigure keyboard-configuration && sudo setupcon ;;
         "3" | *) continue ;;
       esac
