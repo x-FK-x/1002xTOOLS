@@ -213,6 +213,10 @@ fi
 
 source /etc/bash.bashrc
 
+# Define color variables for output (outside of heredoc)
+BLUE="\e[34m"
+RESET="\e[0m"
+
 echo ""
 echo -e "${BLUE}========== Installation Summary ==========${RESET}"
 echo "[✓] Installation successful (v2.2)"
