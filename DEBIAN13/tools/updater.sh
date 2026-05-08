@@ -273,6 +273,8 @@ log "Update completed successfully to version $REPO_VERSION."
 if [ -f "/etc/profile.d/1002xEASYCOMMAND.sh" ]; then
    whiptail --title "1002xEASYCOMMAND" --msgbox "1002xEASYCOMMAND is installed. Checking update." 10 50
    bash "$SCRIPT_DIR/tools/1002xEASYCOMMAND-updater.sh" 
+      whiptail --title "1002xEASYCOMMAND" --msgbox "1002xEASYCOMMAND is installed. Finishing update." 10 50
+      sleep 10
 else
     whiptail --title "1002xEASYCOMMAND" --msgbox "1002xEASYCOMMAND is not installed. Skipping update." 10 50
 fi
