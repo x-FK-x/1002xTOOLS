@@ -266,8 +266,6 @@ log "Aliases for 1002xTOOLS, 1002xUPDATES and 1002xDNS set in /etc/bash.bashrc"
 # Cleanup
 rm -rf "$TMP_DIR"
 log "Temporary files cleaned."
-rm "$SCRIPT_DIR/tools/LICENSE"
-rm -r "$SCRIPT_DIR/tools/DEBIAN13"
 
 whiptail --title "1002xTOOLS Updater" --msgbox "Update completed successfully to version $REPO_VERSION." 10 50
 log "Update completed successfully to version $REPO_VERSION."
