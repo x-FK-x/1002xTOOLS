@@ -1,231 +1,239 @@
 #!/bin/bash
 
-# ==============================================================================
-# 1002xEASYCOMMAND Installer v2.2 (KORRIGIERT & VERBESSERT)
-# ==============================================================================
-
-# AUTO-FIX: Check for Windows line endings (\r) and fix them before continuing
-if grep -q $'\r' "$0"; then
-    echo "[!] Windows line endings detected. Fixing script format..."
-    sed -i 's/\r$//' "$0"
-    exec bash "$0" "$@"
-fi
-
 set -euo pipefail
 
-VERSION="2.2"
+VERSION="3.2"
+
 MAIN_FILE="/etc/profile.d/1002xEASYCOMMAND.sh"
 BASHRC="/etc/bash.bashrc"
 LOG_FILE="/var/log/1002xEASYCOMMAND.log"
 
-# Check sudo privileges using the standard sudo -v command
-if ! sudo -v 2>/dev/null; then
-    echo "[!] This script requires sudo privileges."
+# =====================================================
+# ROOT CHECK
+# =====================================================
+
+if [[ $EUID -ne 0 ]]; then
+    echo "[!] Run as root (sudo)"
     exit 1
 fi
 
-# =============================
-# UNINSTALL LOGIC
-# =============================
+# =====================================================
+# LOGGING
+# =====================================================
+
+touch "$LOG_FILE"
+chmod 640 "$LOG_FILE"
+
+log() {
+    echo "$(date '+%F %T') | $1" >> "$LOG_FILE"
+}
+
+# =====================================================
+# UNINSTALL
+# =====================================================
+
 if [[ "${1:-}" == "uninstall" ]]; then
-    echo "[*] Removing 1002xEASYCOMMAND..."
-    sudo rm -f "$MAIN_FILE" "$LOG_FILE"
-    sudo sed -i '/1002xEASYCOMMAND/d' "$BASHRC"
-    echo "[✓] Successfully removed."
+    echo "[*] Removing..."
+    rm -f "$MAIN_FILE"
+    sed -i '/1002xEASYCOMMAND/d' "$BASHRC"
+    rm -f "$LOG_FILE"
+    echo "[✓] Removed"
     exit 0
 fi
 
-# Initialize Logfile (Root-owned, restricted permissions for security)
-sudo touch "$LOG_FILE"
-sudo chmod 640 "$LOG_FILE"
-
-# =============================
-# GENERATE MAIN RUNTIME FILE
-# =============================
-# Using <<'EOF' to prevent local shell variable expansion during installation
-sudo tee "$MAIN_FILE" > /dev/null <<'EOF'
 # =====================================================
-# 1002xEASYCOMMAND Runtime Environment v2.2
+# RUNTIME FILE
 # =====================================================
 
-RED="\e[31m"
-GREEN="\e[32m"
-BLUE="\e[34m"
-YELLOW="\e[33m"
-RESET="\e[0m"
+cat > "$MAIN_FILE" <<'EOF'
 
-LOG() {
-    echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" >> /var/log/1002xEASYCOMMAND.log
-}
+# =====================================================
+# 1002xEASYCOMMAND SAFE RUNTIME v3.2
+# =====================================================
 
-# Reliability checks based on standard command availability
-has_cmd() { command -v "$1" >/dev/null 2>&1; }
-has_pkg() { dpkg-query -W -f='${Status}' "$1" 2>/dev/null | grep -q "ok installed"; }
-has_service() { systemctl is-enabled "$1.service" >/dev/null 2>&1 || systemctl is-active "$1.service" >/dev/null 2>&1; }
+LOGFILE="/var/log/1002xEASYCOMMAND.log"
 
-1002xEASYCOMMAND() {
-    clear
-    echo -e "${BLUE}========== 1002xEASYCOMMAND v2.2 ==========${RESET}"
-    echo ""
-
-    echo -e "${GREEN}SYSTEM:${RESET}   POWEROFF REBOOT SHUTDOWN"
-    echo -e "${GREEN}PACKAGE:${RESET}  UPDATE UPGRADE INSTALL REMOVE APTSEARCH APTCLEAN"
-
-    if has_cmd ping; then 
-        echo -e "${GREEN}NETWORK:${RESET}  PING IP"
-    fi
-
-    if has_pkg ufw; then 
-        echo -e "${GREEN}FIREWALL:${RESET} UFWSTATUS OPEN80 OPEN443 OPENSSH"
-    fi
-
-    if has_service apache2 || has_service nginx; then
-        echo -e "${GREEN}WEBSERVER:${RESET} WEBSTART WEBSTOP WEBRESTART"
-    fi
-
-    if has_cmd nmap || has_cmd msfconsole; then
-        echo -e "${GREEN}SECURITY:${RESET}  NMAP METASPLOIT WIRESHARK SQLMAP"
-    fi
-
-    echo ""
-    echo -e "Type ${BLUE}EASYHELP${RESET} for detailed information"
+log() {
+    echo "$(date '+%F %T') | $1" >> "$LOGFILE"
 }
 
 # =====================================================
-# SYSTEM COMMANDS
+# SAFETY CORE
 # =====================================================
-alias POWEROFF='LOG "POWEROFF executed"; sudo poweroff'
-alias REBOOT='LOG "REBOOT executed"; sudo reboot'
-alias SHUTDOWN='LOG "SHUTDOWN executed"; sudo shutdown now'
+
+confirm() {
+    read -rp "[CONFIRM] $1 (yes/no): " a
+    [[ "$a" == "yes" ]]
+}
 
 # =====================================================
-# PACKAGE MANAGEMENT (APT)
+# SYSTEM
 # =====================================================
-alias UPDATE='LOG "APT UPDATE executed"; sudo apt update'
-alias UPGRADE='LOG "APT UPGRADE executed"; sudo apt upgrade -y'
-alias INSTALL='sudo apt install -y'
-alias REMOVE='sudo apt remove --purge -y'
-alias APTSEARCH='apt search'
-alias APTCLEAN='LOG "APT CLEAN executed"; sudo apt autoclean && sudo apt autoremove -y'
+
+POWEROFF() { log "POWEROFF"; poweroff; }
+REBOOT() { log "REBOOT"; reboot; }
+SHUTDOWN() { log "SHUTDOWN"; shutdown now; }
 
 # =====================================================
-# NETWORK COMMANDS
+# APT
 # =====================================================
-alias PING='ping -c 4'
-alias IP='ip address show'
+
+APT_UPDATE() { log "APT UPDATE"; apt update; }
+APT_UPGRADE() { log "APT UPGRADE"; apt upgrade -y; }
+APT_INSTALL() { log "APT INSTALL $*"; apt install -y "$@"; }
+APT_REMOVE() { log "APT REMOVE $*"; apt remove -y "$@"; }
 
 # =====================================================
-# FIREWALL COMMANDS (UFW)
+# NETWORK
 # =====================================================
-alias UFWSTATUS='sudo ufw status verbose'
-alias OPEN80='LOG "UFW OPEN80 executed"; sudo ufw allow 80/tcp'
-alias OPEN443='LOG "UFW OPEN443 executed"; sudo ufw allow 443/tcp'
-alias OPENSSH='LOG "UFW OPENSSH executed"; sudo ufw allow 22/tcp'
+
+PING() { log "PING $1"; ping -c 4 "$1"; }
+IP() { ip a; }
 
 # =====================================================
-# WEBSERVER HANDLING (Nginx prioritized over Apache2)
+# FIREWALL
 # =====================================================
-if has_service nginx; then
-    alias WEBSTART='LOG "NGINX START"; sudo systemctl start nginx'
-    alias WEBSTOP='LOG "NGINX STOP"; sudo systemctl stop nginx'
-    alias WEBRESTART='LOG "NGINX RESTART"; sudo systemctl restart nginx'
-elif has_service apache2; then
-    alias WEBSTART='LOG "APACHE2 START"; sudo systemctl start apache2'
-    alias WEBSTOP='LOG "APACHE2 STOP"; sudo systemctl stop apache2'
-    alias WEBRESTART='LOG "APACHE2 RESTART"; sudo systemctl restart apache2'
-fi
+
+OPEN80() { log "OPEN80"; ufw allow 80/tcp; }
+BLOCK80() { log "BLOCK80"; ufw deny 80/tcp; }
+
+OPEN443() { log "OPEN443"; ufw allow 443/tcp; }
+BLOCK443() { log "BLOCK443"; ufw deny 443/tcp; }
+
+OPENSSH() { log "OPENSSH"; ufw allow 22/tcp; }
+BLOCKSSH() { log "BLOCKSSH"; ufw deny 22/tcp; }
+
+FW_STATUS() { ufw status verbose; }
 
 # =====================================================
-# SECURITY TOOLS
+# WEBSERVER
 # =====================================================
-alias NMAP='sudo nmap'
-alias METASPLOIT='sudo msfconsole'
-alias WIRESHARK='sudo wireshark'
-alias SQLMAP='sqlmap'
+
+WEB_START() {
+    if systemctl list-unit-files | grep -q nginx; then
+        log "WEB START nginx"
+        systemctl start nginx
+    elif systemctl list-unit-files | grep -q apache2; then
+        log "WEB START apache2"
+        systemctl start apache2
+    fi
+}
+
+WEB_STOP() {
+    if systemctl list-unit-files | grep -q nginx; then
+        log "WEB STOP nginx"
+        systemctl stop nginx
+    elif systemctl list-unit-files | grep -q apache2; then
+        systemctl stop apache2
+    fi
+}
+
+WEB_RESTART() {
+    WEB_STOP
+    WEB_START
+}
 
 # =====================================================
-# HELP COMMAND
+# DISK
 # =====================================================
+
+DISK_LIST() { lsblk -o NAME,SIZE,TYPE,MOUNTPOINT; }
+DISK_USAGE() { df -h; }
+
+# =====================================================
+# EASYHELP (HARDCODED - FIXED STABLE VERSION)
+# =====================================================
+
 EASYHELP() {
-    cat << HELPEOF
-${BLUE}1002xEASYCOMMAND v2.2 Hub${RESET}
 
-${GREEN}USAGE:${RESET}
-Simply type the commands listed in CAPITAL letters.
+clear
 
-${GREEN}SYSTEM MANAGEMENT:${RESET}
-  POWEROFF   - Shutdown system immediately
-  REBOOT     - Reboot system
-  SHUTDOWN   - Shutdown system
+echo "1002xEASYCOMMAND v3.2"
+echo "================================================="
 
-${GREEN}PACKAGE MANAGEMENT:${RESET}
-  UPDATE     - Update package lists (sudo apt update)
-  UPGRADE    - Upgrade installed packages (sudo apt upgrade -y)
-  INSTALL    - Install packages (usage: INSTALL package-name)
-  REMOVE     - Remove packages (usage: REMOVE package-name)
-  APTSEARCH  - Search for packages (usage: APTSEARCH search-term)
-  APTCLEAN   - Clean up unused packages
+echo ""
+echo "SYSTEM:"
+echo "  POWEROFF    Shutdown system immediately"
+echo "  REBOOT      Reboot system"
+echo "  SHUTDOWN    Shutdown system immediately"
 
-${GREEN}NETWORK:${RESET}
-  PING       - Ping host (sends 4 packets)
-  IP         - Show IP addresses and interfaces
+echo ""
+echo "PACKAGE MANAGEMENT:"
+echo "  UPDATE      sudo apt update"
+echo "  UPGRADE     sudo apt upgrade -y"
+echo "  FULLUPGRADE sudo apt full-upgrade -y"
+echo "  DISTUPGRADE sudo apt dist-upgrade -y"
+echo "  INSTALL     Install package"
+echo "  REMOVE      Remove package"
+echo "  PURGE       Remove package incl. config"
+echo "  REINSTALL   Reinstall package"
+echo "  AUTOREMOVE  Remove unused dependencies"
+echo "  AUTOCLEAN   Clean old cache"
+echo "  CLEAN       Full cache cleanup"
+echo "  APTSEARCH   Search packages"
+echo "  APTSHOW     Show package info"
+echo "  APTPOLICY   Show package policy"
+echo "  APTINSTALLED Installed packages"
+echo "  FIXBROKEN   Repair packages"
+echo "  APTCHECK    Check system"
+echo "  APTFAST     Fast update/upgrade"
+echo "  APTFIX      Repair system"
+echo "  APTMAINTAIN Full maintenance"
 
-${GREEN}FIREWALL (UFW):${RESET}
-  UFWSTATUS  - Show firewall status
-  OPEN80     - Allow HTTP traffic (port 80)
-  OPEN443    - Allow HTTPS traffic (port 443)
-  OPENSSH    - Allow SSH connections (port 22)
+echo ""
+echo "NETWORK:"
+echo "  PING host   Ping host"
+echo "  IP          Show IP addresses"
 
-${GREEN}WEBSERVER:${RESET}
-  WEBSTART   - Start web server (nginx or apache2)
-  WEBSTOP    - Stop web server
-  WEBRESTART - Restart web server
+echo ""
+echo "FIREWALL:"
+echo "  OPEN80      Open HTTP"
+echo "  BLOCK80     Close HTTP"
+echo "  OPEN443     Open HTTPS"
+echo "  BLOCK443    Close HTTPS"
+echo "  OPENSSH     Open SSH"
+echo "  BLOCKSSH    Close SSH"
+echo "  FW_STATUS   Show firewall status"
 
-${GREEN}SECURITY TOOLS:${RESET}
-  NMAP       - Network mapper (usage: NMAP target)
-  METASPLOIT - Metasploit console
-  WIRESHARK  - Network protocol analyzer
-  SQLMAP     - SQL injection testing tool
+echo ""
+echo "WEBSERVER:"
+echo "  WEB_START   Start server"
+echo "  WEB_STOP    Stop server"
+echo "  WEB_RESTART Restart server"
 
-${GREEN}LOG FILE:${RESET}
-  All important actions are logged to: /var/log/1002xEASYCOMMAND.log
+echo ""
+echo "LOG FILE:"
+echo "  /var/log/1002xEASYCOMMAND.log"
 
-${YELLOW}Example:${RESET}
-  1002xEASYCOMMAND     - Show available commands
-  EASYHELP             - Display this help message
-  INSTALL nginx        - Install nginx package
-  PING 8.8.8.8         - Ping Google's DNS server
+echo ""
+echo "EXAMPLES:"
+echo "  INSTALL nginx"
+echo "  REMOVE apache2"
+echo "  PING 8.8.8.8"
+echo "  APTSEARCH docker"
+echo "  APTSHOW bash"
 
-HELPEOF
 }
-
 EOF
 
-sudo chmod 644 "$MAIN_FILE"
+chmod 644 "$MAIN_FILE"
 
-# =============================
-# PERSISTENCE (BASHRC)
-# =============================
+# =====================================================
+# BASHRC INJECTION
+# =====================================================
+
 if ! grep -q "1002xEASYCOMMAND" "$BASHRC"; then
-    echo "source $MAIN_FILE" | sudo tee -a "$BASHRC" >/dev/null
-    echo "alias 1002xEASYCOMMAND='1002xEASYCOMMAND'" | sudo tee -a "$BASHRC" >/dev/null
+    echo "" >> "$BASHRC"
+    echo "# 1002xEASYCOMMAND v3.2" >> "$BASHRC"
+    echo "source $MAIN_FILE" >> "$BASHRC"
 fi
 
-source /etc/bash.bashrc
-
-# Define color variables for output (outside of heredoc)
-BLUE="\e[34m"
-RESET="\e[0m"
+source "$MAIN_FILE"
 
 echo ""
-echo -e "${BLUE}========== Installation Summary ==========${RESET}"
-echo "[✓] Installation successful (v2.2)"
-echo "[✓] Main file:  $MAIN_FILE"
-echo "[✓] Log file:   $LOG_FILE"
+echo "====================================="
+echo "  1002xEASYCOMMAND INSTALLED"
+echo "  VERSION: $VERSION (HARD MODE)"
+echo "====================================="
 echo ""
-echo "Please run one of the following:"
-echo "  • source /etc/bash.bashrc"
-echo "  • Log out and back in"
-echo "  • Start a new terminal session"
-echo ""
-echo "Then type: 1002xEASYCOMMAND"
+echo "Run: EASYHELP"

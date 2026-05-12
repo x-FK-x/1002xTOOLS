@@ -65,13 +65,13 @@ else
 fi
 
 # Logfile im tools-Ordner
-TARGET_TOOLS_DIR="/etc/godos/tools"
+TARGET_TOOLS_DIR="/etc/modos/tools"
 mkdir -p "$TARGET_TOOLS_DIR"
 
 log "Starting updater..."
 
-if [[ -f /etc/godos/tools/1002xSUDO-installer.sh ]]; then
-    sudo rm /etc/godos/tools/1002xSUDO-installer.sh
+if [[ -f /etc/modos/tools/1002xSUDO-installer.sh ]]; then
+    sudo rm /etc/modos/tools/1002xSUDO-installer.sh
 fi
 
 # === Version erkennen ===
@@ -94,7 +94,7 @@ else
 fi
 
 log "Detected version: $VERSION, SCRIPT_DIR: $SCRIPT_DIR"
-OS_VERSION=$(head -n1 "/etc/godos/tools/osversion.txt")
+OS_VERSION=$(head -n1 "/etc/modos/tools/osversion.txt")
 echo "$OS_VERSION"
 log "OS version: $OS_VERSION"
 
@@ -266,11 +266,20 @@ log "Aliases for 1002xTOOLS, 1002xUPDATES and 1002xDNS set in /etc/bash.bashrc"
 # Cleanup
 rm -rf "$TMP_DIR"
 log "Temporary files cleaned."
-rm "$SCRIPT_DIR/tools/LICENSE"
-rm -r "$SCRIPT_DIR/tools/DEBIAN13"
+
 
 whiptail --title "1002xTOOLS Updater" --msgbox "Update completed successfully to version $REPO_VERSION." 10 50
 log "Update completed successfully to version $REPO_VERSION."
+
+
+if [ -f "/etc/profile.d/1002xEASYCOMMAND.sh" ]; then
+   whiptail --title "1002xEASYCOMMAND" --msgbox "1002xEASYCOMMAND is installed. Checking update." 10 50
+   bash "$SCRIPT_DIR/tools/1002xEASYCOMMAND-updater.sh" 
+      whiptail --title "1002xEASYCOMMAND" --msgbox "1002xEASYCOMMAND is installed. Finishing update." 10 50
+      sleep 10
+else
+    whiptail --title "1002xEASYCOMMAND" --msgbox "1002xEASYCOMMAND is not installed. Skipping update." 10 50
+fi
 
 # === Rückkehrmenü ===
 while true; do
