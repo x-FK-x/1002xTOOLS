@@ -292,6 +292,15 @@ else
     log "No tools folder found in DEBIAN13"
 fi
 
+if [[ -f "$EXTRACTED_DIR/tools/1002xCMD-ver.txt" ]]; then
+    cp -f "$EXTRACTED_DIR/tools/1002xCMD-ver.txt" "$SCRIPT_DIR/tools/1002xCMD-ver.txt"
+    log "Copied list.txt to $SCRIPT_DIR/tools/1002xCMD-ver.txt"
+else
+    log "1002xCMD-ver.txt not found in folder."
+    whiptail --title "Updater" --msgbox "1002xCMD-ver.txt not found in folder." 10 50
+fi
+
+
 # Alle .sh im Ziel ausführbar machen
 find "$SCRIPT_DIR" -type f -name "*.sh" -exec chmod +x {} +
 
