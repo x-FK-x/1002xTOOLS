@@ -1,14 +1,4 @@
 #!/bin/bash
-
-if ! command -v whiptail &> /dev/null; then
-    log "Whiptail not installed. Installing..."
-    sudo apt update && sudo apt install -y whiptail | tee -a "$LOG_FILE"
-    if ! command -v whiptail &> /dev/null; then
-        log "Failed to install whiptail. Exiting."
-        exit 1
-    fi
-fi
-
 LOG_FILE="$TARGET_TOOLS_DIR/1002xTOOLS_updater.log"
 echo "=== 1002xTOOLS Updater Log ===" > "$LOG_FILE"
 echo "Start time: $(date)" >> "$LOG_FILE"
@@ -40,7 +30,7 @@ else
     OP_SRC=$(find "$OP_TMP" -maxdepth 1 -type d -name "1002xOPERATOR-*")
     if [[ ! -f "$OP_SRC/release.txt" ]]; then
         log "release.txt missing in repo."
-        whiptail --title "1002xOPERATOR" --msgbox "release.txt missing in repo. Update aborted." 10 50
+        whiptail --title "1002xOPERATOR" --msgbox "release.txt missing in repo. Update aborted." 10 50g
         rm -rf "$OP_TMP"
     else
         REPO_VER=$(head -n1 "$OP_SRC/release.txt")
@@ -63,15 +53,74 @@ else
         rm -rf "$OP_TMP"
     fi
 fi
+#-------
+if [ -f "/etc/profile.d/1002xEASYCOMMAND.sh" ]; then
+   whiptail --title "1002xEASYCOMMAND" --msgbox "1002xEASYCOMMAND is installed. Checking update." 10 50
+   bash "$SCRIPT_DIR/tools/1002xEASYCOMMAND-updater.sh" 
+      whiptail --title "1002xEASYCOMMAND" --msgbox "1002xEASYCOMMAND is installed. Finishing update." 10 50
+      sleep 10
+else
+    whiptail --title "1002xEASYCOMMAND" --msgbox "1002xEASYCOMMAND is not installed. Skipping update." 10 50
+fi
+#-----
+
+LOCAL_CMD_FILE="/etc/godos/tools/1002xCMD-ver.txt"
+REMOTE_URL="https://raw.githubusercontent.com/x-FK-x/1002xCMD/refs/heads/main/version.txt"
+
+if [ -d "/etc/1002xCMD" ]; then
+    echo "1002xCMD is installed"
+    
+    
+    if [ ! -f "$LOCAL_CMD_FILE" ]; then
+        echo "Local version file not found. Creating a blank one."
+        touch "$LOCAL_CMD_FILE"
+    fi
+
+ 
+    REMOTE_VERSION=$(curl -sf "$REMOTE_URL")
+
+    # Prüfen, ob der curl-Befehl erfolgreich war
+    if [ $? -ne 0 ] || [ -z "$REMOTE_VERSION" ]; then
+        echo "Error: Could not fetch remote version."
+    else
+        # 3. Inhalt der lokalen Datei auslesen
+        LOCAL_VERSION=$(cat "$LOCAL_CMD_FILE")
+
+       
+        if [ "$LOCAL_VERSION" = "$REMOTE_VERSION" ]; then
+            echo "Versions match ($LOCAL_VERSION). No update needed."
+        else
+            echo "Update available! Local: '$LOCAL_VERSION' vs Remote: '$REMOTE_VERSION'"
+            bash "$SCRIPT_DIR/tools/1002xCMD-installer.sh" 
+        fi
+        sleep 10
+    fi
+else
+    echo "1002xCMD is not installed. Skipping Update."
+    sleep 10
+fi
+#----
+
+
 
 # Logfile im tools-Ordner
-TARGET_TOOLS_DIR="/etc/modos/tools"
+TARGET_TOOLS_DIR="/etc/godos/tools"
 mkdir -p "$TARGET_TOOLS_DIR"
+mkdir -p /etc/godos/source
 
 log "Starting updater..."
 
-if [[ -f /etc/modos/tools/1002xSUDO-installer.sh ]]; then
-    sudo rm /etc/modos/tools/1002xSUDO-installer.sh
+if ! command -v whiptail &> /dev/null; then
+    log "Whiptail not installed. Installing..."
+    sudo apt update && sudo apt install -y whiptail | tee -a "$LOG_FILE"
+    if ! command -v whiptail &> /dev/null; then
+        log "Failed to install whiptail. Exiting."
+        exit 1
+    fi
+fi
+
+if [[ -f /etc/godos/tools/1002xSUDO-installer.sh ]]; then
+    sudo rm /etc/godos/tools/1002xSUDO-installer.sh
 fi
 
 # === Version erkennen ===
@@ -94,7 +143,7 @@ else
 fi
 
 log "Detected version: $VERSION, SCRIPT_DIR: $SCRIPT_DIR"
-OS_VERSION=$(head -n1 "/etc/modos/tools/osversion.txt")
+OS_VERSION=$(head -n1 "/etc/godos/tools/osversion.txt")
 echo "$OS_VERSION"
 log "OS version: $OS_VERSION"
 
@@ -243,6 +292,15 @@ else
     log "No tools folder found in DEBIAN13"
 fi
 
+if [[ -f "$EXTRACTED_DIR/tools/1002xCMD-ver.txt" ]]; then
+    cp -f "$EXTRACTED_DIR/tools/1002xCMD-ver.txt" "$SCRIPT_DIR/tools/1002xCMD-ver.txt"
+    log "Copied list.txt to $SCRIPT_DIR/tools/1002xCMD-ver.txt"
+else
+    log "1002xCMD-ver.txt not found in folder."
+    whiptail --title "Updater" --msgbox "1002xCMD-ver.txt not found in folder." 10 50
+fi
+
+
 # Alle .sh im Ziel ausführbar machen
 find "$SCRIPT_DIR" -type f -name "*.sh" -exec chmod +x {} +
 
@@ -267,19 +325,11 @@ log "Aliases for 1002xTOOLS, 1002xUPDATES and 1002xDNS set in /etc/bash.bashrc"
 rm -rf "$TMP_DIR"
 log "Temporary files cleaned."
 
-
 whiptail --title "1002xTOOLS Updater" --msgbox "Update completed successfully to version $REPO_VERSION." 10 50
 log "Update completed successfully to version $REPO_VERSION."
 
 
-if [ -f "/etc/profile.d/1002xEASYCOMMAND.sh" ]; then
-   whiptail --title "1002xEASYCOMMAND" --msgbox "1002xEASYCOMMAND is installed. Checking update." 10 50
-   bash "$SCRIPT_DIR/tools/1002xEASYCOMMAND-updater.sh" 
-      whiptail --title "1002xEASYCOMMAND" --msgbox "1002xEASYCOMMAND is installed. Finishing update." 10 50
-      sleep 10
-else
-    whiptail --title "1002xEASYCOMMAND" --msgbox "1002xEASYCOMMAND is not installed. Skipping update." 10 50
-fi
+
 
 # === Rückkehrmenü ===
 while true; do
