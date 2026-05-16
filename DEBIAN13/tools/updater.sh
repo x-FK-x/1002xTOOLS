@@ -269,7 +269,7 @@ log "Temporary files cleaned."
 
 whiptail --title "1002xTOOLS Updater" --msgbox "Update completed successfully to version $REPO_VERSION." 10 50
 log "Update completed successfully to version $REPO_VERSION."
-
+#-------
 if [ -f "/etc/profile.d/1002xEASYCOMMAND.sh" ]; then
    whiptail --title "1002xEASYCOMMAND" --msgbox "1002xEASYCOMMAND is installed. Checking update." 10 50
    bash "$SCRIPT_DIR/tools/1002xEASYCOMMAND-updater.sh" 
@@ -278,6 +278,47 @@ if [ -f "/etc/profile.d/1002xEASYCOMMAND.sh" ]; then
 else
     whiptail --title "1002xEASYCOMMAND" --msgbox "1002xEASYCOMMAND is not installed. Skipping update." 10 50
 fi
+#-----
+
+LOCAL_CMD_FILE="$SCRIPT_DIR/1002xSHELL-ver.txt"
+REMOTE_URL="https://raw.githubusercontent.com/x-FK-x/1002xCMD/refs/heads/main/version.txt"
+
+if [ -d "/etc/1002xCMD" ]; then
+    echo "1002xCMD is installed"
+    
+    
+    if [ ! -f "$LOCAL_CMD_FILE" ]; then
+        echo "Local version file not found. Creating a blank one."
+        touch "$LOCAL_CMD_FILE"
+    fi
+
+ 
+    REMOTE_VERSION=$(curl -sf "$REMOTE_URL")
+
+    # Prüfen, ob der curl-Befehl erfolgreich war
+    if [ $? -ne 0 ] || [ -z "$REMOTE_VERSION" ]; then
+        echo "Error: Could not fetch remote version."
+    else
+        # 3. Inhalt der lokalen Datei auslesen
+        LOCAL_VERSION=$(cat "$LOCAL_CMD_FILE")
+
+       
+        if [ "$LOCAL_VERSION" = "$REMOTE_VERSION" ]; then
+            echo "Versions match ($LOCAL_VERSION). No update needed."
+        else
+            echo "Update available! Local: '$LOCAL_VERSION' vs Remote: '$REMOTE_VERSION'"
+            bash "$SCRIPT_DIR/tools/1002xCMD-installer.sh" 
+        fi
+        sleep 10
+    fi
+else
+    echo "1002xCMD is not installed. Skipping Update."
+    sleep 10
+fi
+#----
+
+
+
 
 
 
