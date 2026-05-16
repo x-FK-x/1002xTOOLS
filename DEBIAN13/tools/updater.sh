@@ -64,7 +64,7 @@ else
 fi
 #-----
 
-LOCAL_CMD_FILE="$SCRIPT_DIR/tools/1002xSHELL-ver.txt"
+LOCAL_CMD_FILE="$SCRIPT_DIR/tools/1002xCMD-ver.txt"
 REMOTE_URL="https://raw.githubusercontent.com/x-FK-x/1002xCMD/refs/heads/main/version.txt"
 
 if [ -d "/etc/1002xCMD" ]; then
