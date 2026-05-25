@@ -119,10 +119,6 @@ if ! command -v whiptail &> /dev/null; then
     fi
 fi
 
-if [[ -f /etc/dodos/tools/1002xSUDO-installer.sh ]]; then
-    sudo rm /etc/dodos/tools/1002xSUDO-installer.sh
-fi
-
 # === Version erkennen ===
 if [[ -d /etc/godos ]]; then
     VERSION="godos"
@@ -300,6 +296,14 @@ else
     whiptail --title "Updater" --msgbox "1002xCMD-ver.txt not found in folder." 10 50
 fi
 
+
+if [[ -f "$EXTRACTED_DIR/tools/resolv.conf" ]]; then
+    cp -f "$EXTRACTED_DIR/tools/resolv.conf" "$SCRIPT_DIR/tools/resolv.conf"
+    log "Copied list.txt to $SCRIPT_DIR/tools/resolv.conf"
+else
+    log "resolv.conf not found in folder."
+    whiptail --title "Updater" --msgbox "resolv.conf not found in folder." 10 50
+fi
 
 # Alle .sh im Ziel ausführbar machen
 find "$SCRIPT_DIR" -type f -name "*.sh" -exec chmod +x {} +
