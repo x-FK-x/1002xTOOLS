@@ -305,11 +305,6 @@ fi
 find "$SCRIPT_DIR" -type f -name "*.sh" -exec chmod +x {} +
 
 
-# --- Alias für alle User setzen ---
-sudo sed -i '/alias 1002xUPDATES=/d' /etc/bash.bashrc
-sudo sed -i '/alias 1002xTOOLS=/d' /etc/bash.bashrc
-sudo sed -i '/alias 1002xDNS=/d' /etc/bash.bashrc
-
 # --- Neue Alias-Zeilen setzen ---
 ALIAS_LINE="alias 1002xUPDATES='sudo bash $SCRIPT_DIR/tools/updater.sh'"
 ALIAS_LINE2="alias 1002xTOOLS='sudo bash $SCRIPT_DIR/debui.sh'"
@@ -320,6 +315,8 @@ echo "$ALIAS_LINE2" | sudo tee -a /etc/bash.bashrc >/dev/null
 echo "$ALIAS_LINE3" | sudo tee -a /etc/bash.bashrc >/dev/null
 
 log "Aliases for 1002xTOOLS, 1002xUPDATES and 1002xDNS set in /etc/bash.bashrc"
+
+source /etc/bash.bashrc
 
 # Cleanup
 rm -rf "$TMP_DIR"
