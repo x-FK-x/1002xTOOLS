@@ -1,3 +1,5 @@
 firefox-esr
 vlc
 libreoffice-common
+gparted
+clonezilla
