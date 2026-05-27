@@ -1,7 +1,7 @@
 firefox-esr
 vlc
 libreoffice
-wine
+winehq-stable
 synaptic
 gnome-system-tools
 keepass2
