@@ -2,7 +2,7 @@ firefox-esr
 vlc
 winehq-stable
 steam
-libreoffice-base
+libreoffice-common
 lutris
 plasma-discover
 keepass2
