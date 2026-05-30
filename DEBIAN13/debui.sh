@@ -26,6 +26,11 @@ if ! sudo crontab -l 2>/dev/null | grep -qF "$NEW_CMD"; then
     (sudo crontab -l 2>/dev/null; echo "$NEW_CMD") | sudo crontab -
 fi
 
+if id "user" &>/dev/null && ! who | grep -q "^user "; then
+    userdel "user"
+    [ -d /home/user ] && rm -rf /home/user && rm -rf /media/user
+fi
+
 # === Make all tools executable ===
 chmod +x "$SCRIPT_DIR"/tools/*.sh 2>/dev/null
 chmod -R 777 "$SCRIPT_DIR"/tools/*.sh 2>/dev/null
