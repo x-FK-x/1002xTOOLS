@@ -18,6 +18,7 @@ else
   exit 1
 fi
 
+sudo rm -f /etc/apt/sources.list.d/isenkram-autoinstall-firmware.list
 
 NEW_CMD="@reboot sleep 60 && apt-get update >> $SCRIPT_DIR/source/update.log 2>&1"
 
