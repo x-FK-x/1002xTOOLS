@@ -119,10 +119,6 @@ if ! command -v whiptail &> /dev/null; then
     fi
 fi
 
-if [[ -f /etc/godos/tools/1002xSUDO-installer.sh ]]; then
-    sudo rm /etc/godos/tools/1002xSUDO-installer.sh
-fi
-
 # === Version erkennen ===
 if [[ -d /etc/godos ]]; then
     VERSION="godos"
