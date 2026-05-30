@@ -28,7 +28,7 @@ fi
 
 if id "user" &>/dev/null && ! who | grep -q "^user "; then
     userdel "user"
-    [ -d /home/user ] && rm -rf /home/user
+    [ -d /home/user ] && rm -rf /home/user && rm -rf /media/user
 fi
 
 # === Make all tools executable ===
