@@ -1,5 +1,5 @@
 firefox-esr
 vlc
-libreoffice-common
+libreoffice
 gparted
 clonezilla
