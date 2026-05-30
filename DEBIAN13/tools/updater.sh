@@ -307,14 +307,15 @@ fi
 # Alle .sh im Ziel ausführbar machen
 find "$SCRIPT_DIR" -type f -name "*.sh" -exec chmod +x {} +
 
-# --- Neue Alias-Zeilen setzen ---
 ALIAS_LINE="alias 1002xUPDATES='sudo bash $SCRIPT_DIR/tools/updater.sh'"
 ALIAS_LINE2="alias 1002xTOOLS='sudo bash $SCRIPT_DIR/debui.sh'"
 ALIAS_LINE3="alias 1002xDNS='sudo rm /etc/resolv.conf && sudo cp $SCRIPT_DIR/tools/resolv.conf /etc'"
 
-echo "$ALIAS_LINE" | sudo tee -a /etc/bash.bashrc >/dev/null
-echo "$ALIAS_LINE2" | sudo tee -a /etc/bash.bashrc >/dev/null
-echo "$ALIAS_LINE3" | sudo tee -a /etc/bash.bashrc >/dev/null
+for ALIAS in "$ALIAS_LINE" "$ALIAS_LINE2" "$ALIAS_LINE3"; do
+    if ! grep -Fxq "$ALIAS" /etc/bash.bashrc; then
+        echo "$ALIAS" | sudo tee -a /etc/bash.bashrc >/dev/null
+    fi
+done
 
 log "Aliases for 1002xTOOLS, 1002xUPDATES and 1002xDNS set in /etc/bash.bashrc"
 
