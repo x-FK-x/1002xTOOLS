@@ -51,20 +51,42 @@ check_gpu_drivers() {
 
 # Function to ensure Bluetooth stack and services are installed and active
 configure_bluetooth() {
-    echo -e "\n=================================================="
-    echo "🌐 Checking and configuring Bluetooth Stack..."
-    echo "=================================================="
-    
-    # Install the official Linux Bluetooth stack and a graphical manager (blueman)
-    echo "📦 Installing bluez and bluetooth management tools..."
-    sudo apt install -y bluez bluez-tools blueman
-    
-    # Enable and start the background service
-    echo "⚙️ Enabling and starting Bluetooth system service..."
-    sudo systemctl enable bluetooth
-    sudo systemctl start bluetooth
-    
-    echo "🟢 Bluetooth service is now active and ready."
+    # 1. Check for Bluetooth hardware
+    # Scans USB devices and sysfs entries for Bluetooth controller presence
+    local bt_check
+    bt_check=$(lsusb | grep -qi "bluetooth" && echo "yes" || (ls /sys/class/bluetooth/ 2>/dev/null | grep -q . && echo "yes") || echo "no")
+
+    if [ "$bt_check" = "no" ]; then
+        whiptail --title "Bluetooth Error" --msgbox "No Bluetooth hardware was detected on this system.\nInstallation will be skipped." 10 60
+        return 1
+    fi
+
+    # 2. Gather details of the detected controllers for display
+    local bt_info
+    bt_info=$(lsusb | grep -i "bluetooth" || ls /sys/class/bluetooth/)
+
+    # 3. Display info box with the detected hardware
+    whiptail --title "Bluetooth Hardware Found" --msgbox "The following Bluetooth hardware was detected:\n\n$bt_info" 12 60
+
+    # 4. Yes/No query for the installation
+    if whiptail --title "Bluetooth Installation" --yesno "Do you really want to install the Bluetooth stack and management tools?" 10 60; then
+        
+        # Original installation code
+        echo -e "\n=================================================="
+        echo "🌐 Checking and configuring Bluetooth Stack..."
+        echo "=================================================="
+        
+        echo "📦 Installing bluez and bluetooth management tools..."
+        sudo apt install -y bluez bluez-tools blueman
+        
+        echo "⚙️ Enabling and starting Bluetooth system service..."
+        sudo systemctl enable bluetooth
+        sudo systemctl start bluetooth
+        
+        whiptail --title "Success" --msgbox "Bluetooth has been successfully installed and started!" 8 50
+    else
+        echo "Bluetooth installation canceled by the user."
+    fi
 }
 
 # Main Script Execution

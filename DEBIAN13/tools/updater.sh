@@ -30,7 +30,7 @@ else
     OP_SRC=$(find "$OP_TMP" -maxdepth 1 -type d -name "1002xOPERATOR-*")
     if [[ ! -f "$OP_SRC/release.txt" ]]; then
         log "release.txt missing in repo."
-        whiptail --title "1002xOPERATOR" --msgbox "release.txt missing in repo. Update aborted." 10 50
+        whiptail --title "1002xOPERATOR" --msgbox "release.txt missing in repo. Update aborted." 10 50g
         rm -rf "$OP_TMP"
     else
         REPO_VER=$(head -n1 "$OP_SRC/release.txt")
@@ -64,7 +64,7 @@ else
 fi
 #-----
 
-LOCAL_CMD_FILE="/etc/dodos/tools/1002xCMD-ver.txt"
+LOCAL_CMD_FILE="/etc/wodos/tools/1002xCMD-ver.txt"
 REMOTE_URL="https://raw.githubusercontent.com/x-FK-x/1002xCMD/refs/heads/main/version.txt"
 
 if [ -d "/etc/1002xCMD" ]; then
@@ -104,9 +104,9 @@ fi
 
 
 # Logfile im tools-Ordner
-TARGET_TOOLS_DIR="/etc/dodos/tools"
+TARGET_TOOLS_DIR="/etc/*odos/tools"
 mkdir -p "$TARGET_TOOLS_DIR"
-mkdir -p /etc/dodos/source
+mkdir -p /etc/*odos/source
 
 log "Starting updater..."
 
@@ -139,7 +139,7 @@ else
 fi
 
 log "Detected version: $VERSION, SCRIPT_DIR: $SCRIPT_DIR"
-OS_VERSION=$(head -n1 "/etc/dodos/tools/osversion.txt")
+OS_VERSION=$(head -n1 "/etc/*odos/tools/osversion.txt")
 echo "$OS_VERSION"
 log "OS version: $OS_VERSION"
 
@@ -255,6 +255,16 @@ else
     whiptail --title "Updater" --msgbox "motd not found in folder." 10 50
 fi
 
+
+# motd 
+if [[ -f "$EXTRACTED_DIR/tools/gamingpack.sh" ]]; then
+    cp -f "$EXTRACTED_DIR/tools/gamingpack.sh" "$SCRIPT_DIR/tools/gamingpack.sh"
+       log "Copied gamingpack.sh to $SCRIPT_DIR/tools/gamingpack.sh"
+else
+    log "gamingpack.sh not found in folder."
+    whiptail --title "Updater" --msgbox "gamingpack.sh not found in folder." 10 50
+fi
+
 # osversion 
 if [[ -f "$EXTRACTED_DIR/tools/1002xSHELL-installer.sh" ]]; then
     cp -f "$EXTRACTED_DIR/tools/1002xSHELL-installer.sh" "$SCRIPT_DIR/tools/1002xSHELL-installer.sh"
@@ -305,8 +315,10 @@ else
     whiptail --title "Updater" --msgbox "resolv.conf not found in folder." 10 50
 fi
 
+
 # Alle .sh im Ziel ausführbar machen
 find "$SCRIPT_DIR" -type f -name "*.sh" -exec chmod +x {} +
+
 
 ALIAS_LINE="alias 1002xUPDATES='sudo bash $SCRIPT_DIR/tools/updater.sh'"
 ALIAS_LINE2="alias 1002xTOOLS='sudo bash $SCRIPT_DIR/debui.sh'"
