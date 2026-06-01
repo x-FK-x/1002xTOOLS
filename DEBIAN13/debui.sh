@@ -119,14 +119,12 @@ while true; do
         "1" "Installer of Software" \
         "2" "Remover of Software" \
         "3" "Edit Desktop Icons" \
-        "4" "Install the Gaming Pack")
-        "5" "Back" 3>&1 1>&2 2>&3)
+        "4" "Back" 3>&1 1>&2 2>&3)
       case "$CHOICE" in
         "1") sudo bash "$SCRIPT_DIR/tools/installer.sh" ;;
         "2") sudo bash "$SCRIPT_DIR/tools/remover.sh" ;;
         "3") sudo bash "$SCRIPT_DIR/tools/icons.sh" ;;
-        "4") sudo bash "$SCRIPT_DIR/tools/gamingpack.sh" ;;
-        "5" | *) continue ;;
+        "4" | *) continue ;;
       esac
       ;;
     "3")
