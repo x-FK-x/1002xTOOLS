@@ -7,9 +7,23 @@ install_firmware_tools() {
     echo "=================================================="
     sudo apt update
     
-    # 1. Install your requested universal safety net bundle (Covers Intel & Realtek Bluetooth!)
-    echo "📦 Installing core firmware and CPU microcode bundle..."
-    sudo apt install -y firmware-linux firmware-misc-nonfree firmware-realtek firmware-iwlwifi intel-microcode amd64-microcode
+    # Universal safety net bundle (Covers Realtek & Intel Wireless/Bluetooth)
+    local pkgs="firmware-linux firmware-misc-nonfree firmware-realtek firmware-iwlwifi"
+
+    # Dynamische CPU-Erkennung für Microcode
+    if grep -q "AuthenticAMD" /proc/cpuinfo; then
+        echo "🟢 AMD CPU detected. Adding amd64-microcode to installation..."
+        pkgs="$pkgs amd64-microcode"
+    elif grep -q "GenuineIntel" /proc/cpuinfo; then
+        echo "🟢 Intel CPU detected. Adding intel-microcode to installation..."
+        pkgs="$pkgs intel-microcode"
+    else
+        echo "⚠️ Unknown CPU vendor. Skipping CPU microcode installation."
+    fi
+    
+    # 1. Install core firmware and matching CPU microcode
+    echo "📦 Installing core firmware bundle..."
+    sudo apt install -y $pkgs
     
     # 2. Install the hardware scanning tool
     echo "📦 Installing isenkram-cli..."
@@ -52,7 +66,6 @@ check_gpu_drivers() {
 # Function to ensure Bluetooth stack and services are installed and active
 configure_bluetooth() {
     # 1. Check for Bluetooth hardware
-    # Scans USB devices and sysfs entries for Bluetooth controller presence
     local bt_check
     bt_check=$(lsusb | grep -qi "bluetooth" && echo "yes" || (ls /sys/class/bluetooth/ 2>/dev/null | grep -q . && echo "yes") || echo "no")
 
@@ -71,7 +84,6 @@ configure_bluetooth() {
     # 4. Yes/No query for the installation
     if whiptail --title "Bluetooth Installation" --yesno "Do you really want to install the Bluetooth stack and management tools?" 10 60; then
         
-        # Original installation code
         echo -e "\n=================================================="
         echo "🌐 Checking and configuring Bluetooth Stack..."
         echo "=================================================="
