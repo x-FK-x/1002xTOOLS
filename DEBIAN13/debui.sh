@@ -1,15 +1,9 @@
 #!/bin/bash
 
 # === Version Detection ===
-if [[ -d /etc/godos ]]; then
-  VERSION="GODOS"
-  SCRIPT_DIR="/etc/godos"
-elif [[ -d /etc/modos ]]; then
+if [[ -d /etc/modos ]]; then
   VERSION="MODOS"
   SCRIPT_DIR="/etc/modos"
-elif [[ -d /etc/wodos ]]; then
-  VERSION="WODOS"
-  SCRIPT_DIR="/etc/wodos"
 elif [[ -d /etc/dodos ]]; then
   VERSION="DODOS"
   SCRIPT_DIR="/etc/dodos"
@@ -24,6 +18,11 @@ NEW_CMD="@reboot sleep 60 && apt-get update >> $SCRIPT_DIR/source/update.log 2>&
 
 if ! sudo crontab -l 2>/dev/null | grep -qF "$NEW_CMD"; then
     (sudo crontab -l 2>/dev/null; echo "$NEW_CMD") | sudo crontab -
+fi
+
+if id "user" &>/dev/null && ! who | grep -q "^user "; then
+    userdel "user"
+    [ -d /home/user ] && rm -rf /home/user && rm -rf /media/user
 fi
 
 # === Make all tools executable ===
@@ -84,9 +83,9 @@ EOF
     chown "$REALUSER":"$REALUSER" "$USER_SHORTCUT"
 fi
 
-if [[ ! -f "/etc/1002xSHELL/v2.sh" ]]; then
+if [[ ! -f "/etc/1002xSHELL/v3.sh" ]]; then
     sudo bash "$SCRIPT_DIR/tools/1002xSHELL-installer.sh"
-    sudo sed -i 's/\r$//' /etc/1002xSHELL/v2.sh
+    sudo sed -i 's/\r$//' /etc/1002xSHELL/v3.sh
 fi
 
 # === Main Menu ===
@@ -120,12 +119,14 @@ while true; do
         "1" "Installer of Software" \
         "2" "Remover of Software" \
         "3" "Edit Desktop Icons" \
-        "4" "Back" 3>&1 1>&2 2>&3)
+        "4" "Install the Gaming Pack")
+        "5" "Back" 3>&1 1>&2 2>&3)
       case "$CHOICE" in
         "1") sudo bash "$SCRIPT_DIR/tools/installer.sh" ;;
         "2") sudo bash "$SCRIPT_DIR/tools/remover.sh" ;;
         "3") sudo bash "$SCRIPT_DIR/tools/icons.sh" ;;
-        "4" | *) continue ;;
+        "4") sudo bash "$SCRIPT_DIR/tools/gamingpack.sh" ;;
+        "5" | *) continue ;;
       esac
       ;;
     "3")
