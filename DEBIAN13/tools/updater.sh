@@ -119,6 +119,15 @@ if ! command -v whiptail &> /dev/null; then
     fi
 fi
 
+if ! command -v dos2unix &> /dev/null; then
+    log "dos2unix not installed. Installing..."
+    sudo apt update && sudo apt install -y dos2unix | tee -a "$LOG_FILE"
+    if ! command -v dos2unix &> /dev/null; then
+        log "Failed to install dos2unix. Exiting."
+        exit 1
+    fi
+fi
+
 # === Version erkennen ===
 if [[ -d /etc/dodos ]]; then
     VERSION="dodos"
@@ -312,6 +321,7 @@ fi
 
 # Alle .sh im Ziel ausführbar machen
 find "$SCRIPT_DIR" -type f -name "*.sh" -exec chmod +x {} +
+find "$SCRIPT_DIR" -type f -name "*.sh" -exec dos2unix {} +
 
 
 ALIAS_LINE="alias 1002xUPDATES='sudo bash $SCRIPT_DIR/tools/updater.sh'"
