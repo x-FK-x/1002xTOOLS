@@ -119,7 +119,7 @@ while true; do
         "1" "Installer of Software" \
         "2" "Remover of Software" \
         "3" "Edit Desktop Icons" \
-        "4" "Install the Gaming Pack") \
+        "4" "Install the Gaming Pack" \
         "5" "Back" 3>&1 1>&2 2>&3)
       case "$CHOICE" in
         "1") sudo bash "$SCRIPT_DIR/tools/installer.sh" ;;
