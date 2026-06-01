@@ -3,3 +3,6 @@ vlc
 libreoffice
 gparted
 clonezilla
+steam
+lutris
+winehq-stable
