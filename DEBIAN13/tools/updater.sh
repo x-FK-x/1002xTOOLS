@@ -320,8 +320,8 @@ fi
 
 
 # Alle .sh im Ziel ausführbar machen
-find "$SCRIPT_DIR" -type f -name "*.sh" -exec chmod +x {} +
-find "$SCRIPT_DIR" -type f -name "*.sh" -exec dos2unix {} +
+sudo find "$SCRIPT_DIR" -type f -name "*.sh" -exec chmod +x {} +
+sudo find "$SCRIPT_DIR" -type f -name "*.sh" -exec dos2unix {} +
 
 
 ALIAS_LINE="alias 1002xUPDATES='sudo bash $SCRIPT_DIR/tools/updater.sh'"
