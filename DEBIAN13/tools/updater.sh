@@ -64,7 +64,7 @@ else
 fi
 #-----
 
-LOCAL_CMD_FILE="/etc/wodos/tools/1002xCMD-ver.txt"
+LOCAL_CMD_FILE="/etc/modos/tools/1002xCMD-ver.txt"
 REMOTE_URL="https://raw.githubusercontent.com/x-FK-x/1002xCMD/refs/heads/main/version.txt"
 
 if [ -d "/etc/1002xCMD" ]; then
@@ -104,9 +104,9 @@ fi
 
 
 # Logfile im tools-Ordner
-TARGET_TOOLS_DIR="/etc/*odos/tools"
+TARGET_TOOLS_DIR="/etc/modos/tools"
 mkdir -p "$TARGET_TOOLS_DIR"
-mkdir -p /etc/*odos/source
+mkdir -p /etc/modos/source
 
 log "Starting updater..."
 
@@ -120,18 +120,12 @@ if ! command -v whiptail &> /dev/null; then
 fi
 
 # === Version erkennen ===
-if [[ -d /etc/godos ]]; then
-    VERSION="godos"
-    SCRIPT_DIR="/etc/godos"
+if [[ -d /etc/dodos ]]; then
+    VERSION="dodos"
+    SCRIPT_DIR="/etc/dodos"
 elif [[ -d /etc/modos ]]; then
     VERSION="modos"
     SCRIPT_DIR="/etc/modos"
-elif [[ -d /etc/wodos ]]; then
-    VERSION="wodos"
-    SCRIPT_DIR="/etc/wodos"
-elif [[ -d /etc/dodos ]]; then
-    VERSION="dodos"
-    SCRIPT_DIR="/etc/dodos"
 else
     log "No valid version directory detected. Exiting."
     whiptail --title "Updater Error" --msgbox "No valid version directory detected. Exiting." 10 50
@@ -139,7 +133,7 @@ else
 fi
 
 log "Detected version: $VERSION, SCRIPT_DIR: $SCRIPT_DIR"
-OS_VERSION=$(head -n1 "/etc/*odos/tools/osversion.txt")
+OS_VERSION=$(head -n1 "/etc/modos/tools/osversion.txt")
 echo "$OS_VERSION"
 log "OS version: $OS_VERSION"
 
