@@ -161,7 +161,7 @@ fi
 
 
 # === Repo & Temp ===
-REPO="x-FK-x/1002xTOOLS"
+REPO="x-FK-x/1002xTOOLScollection"
 BRANCH="$VERSION"
 TMP_DIR="$HOME/.1002xtools_temp"
 FOLDER="DEBIAN13"
