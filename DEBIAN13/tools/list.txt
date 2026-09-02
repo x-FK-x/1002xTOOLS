@@ -7,3 +7,6 @@ steam
 lutris
 winehq-stable
 keepass2
+kdenlive
+pluma
+gpicview
