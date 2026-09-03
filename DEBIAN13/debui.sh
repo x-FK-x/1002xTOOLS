@@ -65,7 +65,7 @@ REALUSER=$(logname 2>/dev/null || echo "$SUDO_USER")
 USER_DESKTOP=$(eval echo "~$REALUSER/Desktop")
 mkdir -p "$USER_DESKTOP"
 USER_SHORTCUT="$USER_DESKTOP/1002xTOOLS.desktop"
-SHORTCUT_PREF_FILE="$SCRIPT_DIR/.shortcut_preference"
+SHORTCUT_PREF_FILE=$(eval echo "~$REALUSER/.1002xtools_shortcut_preference")
 
 if [[ ! -f "$SHORTCUT_PREF_FILE" ]]; then
     if whiptail --title "Desktop Shortcut" \
@@ -88,11 +88,7 @@ Categories=System;
 EOF
     chmod +x "$USER_SHORTCUT"
     chown "$REALUSER":"$REALUSER" "$USER_SHORTCUT"
-fi
-
-if [[ ! -f "/etc/1002xSHELL/v5.sh" ]]; then
-    sudo bash "$SCRIPT_DIR/tools/1002xSHELL-installer.sh"
-    sudo sed -i 's/\r$//' /etc/1002xSHELL/v5.sh
+    chown "$REALUSER":"$REALUSER" "$SHORTCUT_PREF_FILE"
 fi
 
 # === Main Menu ===
