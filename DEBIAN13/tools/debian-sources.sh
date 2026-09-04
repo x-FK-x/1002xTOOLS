@@ -4,6 +4,7 @@
 #  Supports: Debian 13 (trixie/stable) and Testing
 #  Run with: sudo bash debian-sources.sh
 # ============================================================
+clear
 
 set -euo pipefail
 
