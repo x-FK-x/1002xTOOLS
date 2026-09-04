@@ -6,9 +6,9 @@ USERHOME=$(eval echo "~$REALUSER")
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # === Version detection ===
-if [[ -f /etc/modos ]]; then
+if [[ -d /etc/modos ]]; then
     VERSION_DIR="/etc/modos"
-elif [[ -f /etc/dodos ]]; then
+elif [[ -d /etc/dodos ]]; then
     VERSION_DIR="/etc/dodos"
 else
     whiptail --title "Error" --msgbox "No version file found (/etc/modos or /etc/dodos)." 10 50
