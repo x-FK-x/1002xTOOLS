@@ -54,6 +54,39 @@ EOF
     sudo chmod +x "$DESKTOP_ENTRY_PATH"
 fi
 
+# === Ensure user Desktop shortcut exists ===
+REALUSER=$(logname 2>/dev/null || echo "$SUDO_USER")
+[[ -z "$REALUSER" ]] && REALUSER=$(whoami)
+USER_DESKTOP=$(eval echo "~$REALUSER/Desktop")
+mkdir -p "$USER_DESKTOP"
+USER_SHORTCUT="$USER_DESKTOP/1002xTOOLS.desktop"
+SHORTCUT_PREF_FILE=$(eval echo "~$REALUSER/.1002xtools_shortcut_preference")
+
+if [[ ! -f "$SHORTCUT_PREF_FILE" ]]; then
+    if whiptail --title "Desktop Shortcut" \
+        --yesno "Create a desktop shortcut for 1002xTOOLS?\n\nThis adds an icon to your Desktop for quick access to the internal system tools." 10 60; then
+        echo "yes" > "$SHORTCUT_PREF_FILE"
+    else
+        echo "no" > "$SHORTCUT_PREF_FILE"
+        rm -rf $USER_SHORTCUT
+    fi
+fi
+
+if [[ "$(cat "$SHORTCUT_PREF_FILE")" == "yes" && ! -f "$USER_SHORTCUT" ]]; then
+    cat <<EOF > "$USER_SHORTCUT"
+[Desktop Entry]
+Name=1002xTOOLS
+Exec=$SCRIPT_DIR/debui.sh
+Icon=utilities-terminal
+Terminal=true
+Type=Application
+Categories=System;
+EOF
+    chmod +x "$USER_SHORTCUT"
+    chown "$REALUSER":"$REALUSER" "$USER_SHORTCUT"
+    chown "$REALUSER":"$REALUSER" "$SHORTCUT_PREF_FILE"
+fi
+
 if [[ ! -f "/etc/1002xSHELL/v5.sh" ]]; then
     sudo bash "$SCRIPT_DIR/tools/1002xSHELL-installer.sh"
     sudo sed -i 's/\r$//' /etc/1002xSHELL/v5.sh
