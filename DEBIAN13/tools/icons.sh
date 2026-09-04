@@ -7,15 +7,16 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # === Version detection ===
 if [[ -f /etc/modos ]]; then
-    DEBUI="/etc/modos/tools/debui.sh"
-    LIST="$SCRIPT_DIR/list.txt"
+    VERSION_DIR="/etc/modos"
 elif [[ -f /etc/dodos ]]; then
-    DEBUI="/etc/dodos/tools/debui.sh"
-    LIST="$SCRIPT_DIR/list.txt"
+    VERSION_DIR="/etc/dodos"
 else
     whiptail --title "Error" --msgbox "No version file found (/etc/modos or /etc/dodos)." 10 50
     exit 1
 fi
+
+DEBUI="$VERSION_DIR/debui.sh"
+LIST="$SCRIPT_DIR/list.txt"
 
 DESKTOP_DIR="$USERHOME/Desktop"
 SHORTCUT_PREF_FILE="$USERHOME/.1002xtools_shortcut_preference"
