@@ -73,6 +73,7 @@ if [[ ! -f "$SHORTCUT_PREF_FILE" ]]; then
         echo "yes" > "$SHORTCUT_PREF_FILE"
     else
         echo "no" > "$SHORTCUT_PREF_FILE"
+        rm -rf $USER_SHORTCUT
     fi
 fi
 
