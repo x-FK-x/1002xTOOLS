@@ -1,9 +1,4 @@
 #!/bin/bash
-# ============================================================
-#  debian-sources.sh — Debian APT Sources Configuration
-#  Supports: Debian 13 (trixie/stable) and Testing
-#  Run with: sudo bash debian-sources.sh
-# ============================================================
 
 set -euo pipefail
 
@@ -14,21 +9,16 @@ TITLE="Debian APT Sources Configuration"
 W=70  # whiptail width
 H=20  # whiptail default height
 
-# --- Root check ---
 if [[ $EUID -ne 0 ]]; then
     whiptail --title "$TITLE" --msgbox "Please run as root or with sudo." 8 50
     exit 1
 fi
 
-# --- whiptail check ---
 if ! command -v whiptail &>/dev/null; then
     echo "whiptail not found. Install it with: apt install whiptail"
     exit 1
 fi
 
-# ============================================================
-#  Mirror definitions  (tag label hostname)
-# ============================================================
 
 REGIONS=(
     "1" "Official / CDN"
@@ -99,7 +89,6 @@ declare -a R6=(
     "mirror.marwan.ma"      "Morocco - MARWAN"
 )
 
-# Return nameref to region array by index (1-based)
 get_region_array() {
     case "$1" in
         1) echo "R0" ;;
@@ -112,9 +101,6 @@ get_region_array() {
     esac
 }
 
-# ============================================================
-#  Main menu
-# ============================================================
 main_menu() {
     while true; do
         local choice
@@ -137,9 +123,6 @@ main_menu() {
     done
 }
 
-# ============================================================
-#  Show current sources.list
-# ============================================================
 show_current() {
     if [[ ! -f "$SOURCES_FILE" ]]; then
         whiptail --title "$TITLE" --msgbox "${SOURCES_FILE} does not exist." 8 $W
@@ -151,9 +134,6 @@ show_current() {
         --scrolltext --msgbox "$content" 24 $W
 }
 
-# ============================================================
-#  Restore backup
-# ============================================================
 restore_backup() {
     local -a BACKUPS
     mapfile -t BACKUPS < <(ls -t "${BACKUP_DIR}/${BACKUP_PREFIX}"* 2>/dev/null || true)
@@ -208,9 +188,6 @@ restore_backup() {
     fi
 }
 
-# ============================================================
-#  Manage backups
-# ============================================================
 manage_backups() {
     while true; do
         local -a BACKUPS
@@ -254,9 +231,6 @@ manage_backups() {
     done
 }
 
-# ============================================================
-#  Configure — Step 1: Release
-# ============================================================
 choose_release() {
     local choice
     choice=$(whiptail --title "$TITLE" \
@@ -274,9 +248,6 @@ choose_release() {
     return 0
 }
 
-# ============================================================
-#  Step 2: Region → Mirror
-# ============================================================
 choose_mirror() {
     local reg_choice
     reg_choice=$(whiptail --title "$TITLE" \
@@ -318,9 +289,6 @@ choose_mirror() {
     return 0
 }
 
-# ============================================================
-#  Step 3: Components
-# ============================================================
 choose_components() {
     local choice
     choice=$(whiptail --title "$TITLE" \
@@ -335,34 +303,33 @@ choose_components() {
     return 0
 }
 
-# ============================================================
-#  Step 4: Extra repos  (checklist)
-# ============================================================
 choose_extras() {
-    local bp_item=""
+    local result
+
     if [[ "$RELEASE" == "trixie" ]]; then
-        bp_item='"backports" "Include Backports" OFF'
+        result=$(whiptail --title "$TITLE" \
+            --checklist "Step 4 / 4 — Additional Repositories" \
+            $H $W 3 \
+            "security"  "Include Security Updates" ON \
+            "updates"   "Include Updates Repo"     ON \
+            "backports" "Include Backports"        OFF \
+            3>&1 1>&2 2>&3) || return 1
+    else
+        result=$(whiptail --title "$TITLE" \
+            --checklist "Step 4 / 4 — Additional Repositories" \
+            $H $W 2 \
+            "security" "Include Security Updates" ON \
+            "updates"  "Include Updates Repo"     ON \
+            3>&1 1>&2 2>&3) || return 1
     fi
 
-    local result
-    result=$(eval whiptail --title "$TITLE" \
-        --checklist '"Step 4 / 4 — Additional Repositories\n(Space to toggle, Enter to confirm)"' \
-        $H $W 3 \
-        '"security" "Include Security Updates" ON' \
-        '"updates"  "Include Updates Repo"     ON' \
-        $bp_item \
-        3>&1 1>&2 2>&3) || return 1
-
     USE_SECURITY="n"; USE_UPDATES="n"; USE_BACKPORTS="n"
-    [[ "$result" == *"security"* ]] && USE_SECURITY="y"
-    [[ "$result" == *"updates"*  ]] && USE_UPDATES="y"
+    [[ "$result" == *"security"* ]]  && USE_SECURITY="y"
+    [[ "$result" == *"updates"* ]]   && USE_UPDATES="y"
     [[ "$result" == *"backports"* ]] && USE_BACKPORTS="y"
     return 0
 }
 
-# ============================================================
-#  Build sources.list
-# ============================================================
 build_sources() {
     local proto="http"
     SOURCES_CONTENT=""
@@ -398,9 +365,6 @@ build_sources() {
     fi
 }
 
-# ============================================================
-#  Preview + Apply
-# ============================================================
 show_preview_and_apply() {
     # --- Settings summary ---
     local sec_label="No"
@@ -457,9 +421,6 @@ show_preview_and_apply() {
     fi
 }
 
-# ============================================================
-#  Configure sources — full wizard
-# ============================================================
 configure_sources() {
     RELEASE=""
     RELEASE_LABEL=""
@@ -479,7 +440,4 @@ configure_sources() {
     show_preview_and_apply
 }
 
-# ============================================================
-#  Entry point
-# ============================================================
 main_menu
