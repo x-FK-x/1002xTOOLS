@@ -10,98 +10,106 @@ set -euo pipefail
 SOURCES_FILE="/etc/apt/sources.list"
 BACKUP_DIR="/etc/apt"
 BACKUP_PREFIX="sources.list.bak."
+TITLE="Debian APT Sources Configuration"
+W=70  # whiptail width
+H=20  # whiptail default height
 
 # --- Root check ---
 if [[ $EUID -ne 0 ]]; then
-    echo "Please run as root or with sudo."
+    whiptail --title "$TITLE" --msgbox "Please run as root or with sudo." 8 50
+    exit 1
+fi
+
+# --- whiptail check ---
+if ! command -v whiptail &>/dev/null; then
+    echo "whiptail not found. Install it with: apt install whiptail"
     exit 1
 fi
 
 # ============================================================
-#  Mirror definitions  (label|hostname)
+#  Mirror definitions  (tag label hostname)
 # ============================================================
 
 REGIONS=(
-    "Official / CDN"
-    "Europe"
-    "North America"
-    "Asia"
-    "Oceania"
-    "South America"
-    "Africa"
+    "1" "Official / CDN"
+    "2" "Europe"
+    "3" "North America"
+    "4" "Asia"
+    "5" "Oceania"
+    "6" "South America"
+    "7" "Africa"
 )
 
-declare -a R0=( "deb.debian.org (official Anycast CDN)|deb.debian.org" )
+declare -a R0=( "deb.debian.org" "Official Anycast CDN" )
 
 declare -a R1=(
-    "ftp.de.debian.org     (Germany)|ftp.de.debian.org"
-    "ftp.at.debian.org     (Austria)|ftp.at.debian.org"
-    "ftp.ch.debian.org     (Switzerland)|ftp.ch.debian.org"
-    "ftp.nl.debian.org     (Netherlands)|ftp.nl.debian.org"
-    "ftp.fr.debian.org     (France)|ftp.fr.debian.org"
-    "ftp.uk.debian.org     (United Kingdom)|ftp.uk.debian.org"
-    "ftp.pl.debian.org     (Poland)|ftp.pl.debian.org"
-    "ftp.se.debian.org     (Sweden)|ftp.se.debian.org"
-    "mirror.selfnet.de     (Germany, Selfnet)|mirror.selfnet.de"
-    "debian.anexia.at      (Austria, Anexia)|debian.anexia.at"
+    "ftp.de.debian.org"         "Germany"
+    "ftp.at.debian.org"         "Austria"
+    "ftp.ch.debian.org"         "Switzerland"
+    "ftp.nl.debian.org"         "Netherlands"
+    "ftp.fr.debian.org"         "France"
+    "ftp.uk.debian.org"         "United Kingdom"
+    "ftp.pl.debian.org"         "Poland"
+    "ftp.se.debian.org"         "Sweden"
+    "mirror.selfnet.de"         "Germany - Selfnet"
+    "debian.anexia.at"          "Austria - Anexia"
 )
 
 declare -a R2=(
-    "ftp.us.debian.org          (USA, official)|ftp.us.debian.org"
-    "mirror.math.ucdavis.edu    (USA, UC Davis)|mirror.math.ucdavis.edu"
-    "mirrors.ocf.berkeley.edu   (USA, UC Berkeley)|mirrors.ocf.berkeley.edu"
-    "debian.mirror.constant.com (USA, Constant)|debian.mirror.constant.com"
-    "ftp.ca.debian.org          (Canada)|ftp.ca.debian.org"
-    "mirror.csclub.uwaterloo.ca (Canada, UWaterloo)|mirror.csclub.uwaterloo.ca"
+    "ftp.us.debian.org"             "USA - Official"
+    "mirror.math.ucdavis.edu"       "USA - UC Davis"
+    "mirrors.ocf.berkeley.edu"      "USA - UC Berkeley"
+    "debian.mirror.constant.com"    "USA - Constant"
+    "ftp.ca.debian.org"             "Canada - Official"
+    "mirror.csclub.uwaterloo.ca"    "Canada - UWaterloo"
 )
 
 declare -a R3=(
-    "ftp.jp.debian.org              (Japan)|ftp.jp.debian.org"
-    "ftp.cn.debian.org              (China)|ftp.cn.debian.org"
-    "ftp.kr.debian.org              (South Korea)|ftp.kr.debian.org"
-    "ftp.tw.debian.org              (Taiwan)|ftp.tw.debian.org"
-    "ftp.in.debian.org              (India)|ftp.in.debian.org"
-    "ftp.id.debian.org              (Indonesia)|ftp.id.debian.org"
-    "mirror.nus.edu.sg              (Singapore, NUS)|mirror.nus.edu.sg"
-    "mirrors.tuna.tsinghua.edu.cn   (China, Tsinghua)|mirrors.tuna.tsinghua.edu.cn"
+    "ftp.jp.debian.org"             "Japan"
+    "ftp.cn.debian.org"             "China"
+    "ftp.kr.debian.org"             "South Korea"
+    "ftp.tw.debian.org"             "Taiwan"
+    "ftp.in.debian.org"             "India"
+    "ftp.id.debian.org"             "Indonesia"
+    "mirror.nus.edu.sg"             "Singapore - NUS"
+    "mirrors.tuna.tsinghua.edu.cn"  "China - Tsinghua"
 )
 
 declare -a R4=(
-    "ftp.au.debian.org                       (Australia)|ftp.au.debian.org"
-    "mirror.aarnet.edu.au                    (Australia, AARNet)|mirror.aarnet.edu.au"
-    "debian.mirror.digitalpacific.com.au     (Australia, DP)|debian.mirror.digitalpacific.com.au"
-    "ftp.nz.debian.org                       (New Zealand)|ftp.nz.debian.org"
-    "mirror.fsmg.org.nz                      (New Zealand, FSMG)|mirror.fsmg.org.nz"
+    "ftp.au.debian.org"                     "Australia - Official"
+    "mirror.aarnet.edu.au"                  "Australia - AARNet"
+    "debian.mirror.digitalpacific.com.au"   "Australia - Digital Pacific"
+    "ftp.nz.debian.org"                     "New Zealand - Official"
+    "mirror.fsmg.org.nz"                    "New Zealand - FSMG"
 )
 
 declare -a R5=(
-    "ftp.br.debian.org      (Brazil)|ftp.br.debian.org"
-    "ftp.ar.debian.org      (Argentina)|ftp.ar.debian.org"
-    "ftp.cl.debian.org      (Chile)|ftp.cl.debian.org"
-    "ftp.co.debian.org      (Colombia)|ftp.co.debian.org"
-    "debian.c3sl.ufpr.br    (Brazil, UFPR)|debian.c3sl.ufpr.br"
+    "ftp.br.debian.org"     "Brazil - Official"
+    "ftp.ar.debian.org"     "Argentina"
+    "ftp.cl.debian.org"     "Chile"
+    "ftp.co.debian.org"     "Colombia"
+    "debian.c3sl.ufpr.br"   "Brazil - UFPR"
 )
 
 declare -a R6=(
-    "ftp.za.debian.org      (South Africa)|ftp.za.debian.org"
-    "mirror.ac.za           (South Africa, TENET)|mirror.ac.za"
-    "debian.mirror.ac.ke    (Kenya)|debian.mirror.ac.ke"
-    "ftp.eg.debian.org      (Egypt)|ftp.eg.debian.org"
-    "mirror.marwan.ma       (Morocco, MARWAN)|mirror.marwan.ma"
+    "ftp.za.debian.org"     "South Africa - Official"
+    "mirror.ac.za"          "South Africa - TENET"
+    "debian.mirror.ac.ke"   "Kenya"
+    "ftp.eg.debian.org"     "Egypt"
+    "mirror.marwan.ma"      "Morocco - MARWAN"
 )
 
-# ============================================================
-#  UI helpers
-# ============================================================
-clr() { clear; }
-
-print_header() {
-    clr
-    echo ""
-    echo "╔══════════════════════════════════════════════════════╗"
-    echo "║       Debian APT Sources Configuration               ║"
-    echo "╚══════════════════════════════════════════════════════╝"
-    echo ""
+# Return nameref to region array by index (1-based)
+get_region_array() {
+    case "$1" in
+        1) echo "R0" ;;
+        2) echo "R1" ;;
+        3) echo "R2" ;;
+        4) echo "R3" ;;
+        5) echo "R4" ;;
+        6) echo "R5" ;;
+        7) echo "R6" ;;
+    esac
 }
 
 # ============================================================
@@ -109,24 +117,22 @@ print_header() {
 # ============================================================
 main_menu() {
     while true; do
-        print_header
-        echo "  ── Main Menu ──"
-        echo "  [1] Configure APT Sources"
-        echo "  [2] Restore from backup"
-        echo "  [3] List / delete backups"
-        echo "  [4] Show current sources.list"
-        echo "  [5] Quit"
-        echo ""
-
         local choice
-        read -rp "  Choice [1-5]: " choice
+        choice=$(whiptail --title "$TITLE" \
+            --menu "Main Menu" $H $W 5 \
+            "1" "Configure APT Sources" \
+            "2" "Restore from Backup" \
+            "3" "Manage Backups" \
+            "4" "Show Current sources.list" \
+            "5" "Quit" \
+            3>&1 1>&2 2>&3) || exit 0
+
         case "$choice" in
             1) configure_sources ;;
             2) restore_backup    ;;
             3) manage_backups    ;;
             4) show_current      ;;
-            5) echo ""; echo "  Bye."; echo ""; exit 0 ;;
-            *) echo "  Invalid input."; sleep 1 ;;
+            5) exit 0            ;;
         esac
     done
 }
@@ -135,327 +141,227 @@ main_menu() {
 #  Show current sources.list
 # ============================================================
 show_current() {
-    clr
-    echo ""
-    echo "  ── Current: ${SOURCES_FILE} ──"
-    if [[ -f "$SOURCES_FILE" ]]; then
-        echo "  ┌────────────────────────────────────────────────────"
-        sed 's/^/  │ /' "$SOURCES_FILE"
-        echo "  └────────────────────────────────────────────────────"
-    else
-        echo "  (file does not exist)"
+    if [[ ! -f "$SOURCES_FILE" ]]; then
+        whiptail --title "$TITLE" --msgbox "${SOURCES_FILE} does not exist." 8 $W
+        return
     fi
-    echo ""
-    read -rp "  Press Enter to return..." _
+    local content
+    content=$(cat "$SOURCES_FILE")
+    whiptail --title "Current: ${SOURCES_FILE}" \
+        --scrolltext --msgbox "$content" 24 $W
 }
 
 # ============================================================
 #  Restore backup
 # ============================================================
 restore_backup() {
-    clr
-    echo ""
-    echo "  ── Restore from Backup ──"
-    echo ""
-
-    # Collect backup files sorted newest first
     local -a BACKUPS
-    mapfile -t BACKUPS < <(
-        ls -t "${BACKUP_DIR}/${BACKUP_PREFIX}"* 2>/dev/null || true
-    )
+    mapfile -t BACKUPS < <(ls -t "${BACKUP_DIR}/${BACKUP_PREFIX}"* 2>/dev/null || true)
 
     if [[ ${#BACKUPS[@]} -eq 0 ]]; then
-        echo "  No backups found in ${BACKUP_DIR}."
-        echo ""
-        read -rp "  Press Enter to return..." _
+        whiptail --title "$TITLE" --msgbox "No backups found in ${BACKUP_DIR}." 8 $W
         return
     fi
 
-    echo "  Available backups (newest first):"
-    echo ""
+    # Build menu items: tag = index, item = filename + size
+    local -a MENU_ITEMS=()
     local i=1
     for f in "${BACKUPS[@]}"; do
-        local ts="${f##*${BACKUP_PREFIX}}"
         local size
         size=$(du -h "$f" | cut -f1)
-        printf "  [%2d] %s  (%s)  %s\n" "$i" "$(basename "$f")" "$size" ""
+        MENU_ITEMS+=( "$i" "$(basename "$f")  [${size}]" )
         (( i++ ))
     done
-    echo ""
-    echo "  [0] Cancel"
-    echo ""
 
     local choice
-    while true; do
-        read -rp "  Select backup [0-${#BACKUPS[@]}]: " choice
-        if [[ "$choice" == "0" ]]; then return; fi
-        if [[ "$choice" =~ ^[0-9]+$ ]] && \
-           (( choice >= 1 && choice <= ${#BACKUPS[@]} )); then
-            break
-        fi
-        echo "  Invalid input."
-    done
+    choice=$(whiptail --title "$TITLE" \
+        --menu "Select backup to restore (newest first):" $H $W "${#BACKUPS[@]}" \
+        "${MENU_ITEMS[@]}" \
+        3>&1 1>&2 2>&3) || return
 
     local selected="${BACKUPS[$((choice-1))]}"
+    local preview
+    preview=$(cat "$selected")
 
-    echo ""
-    echo "  ── Preview of selected backup ──"
-    echo "  ┌────────────────────────────────────────────────────"
-    sed 's/^/  │ /' "$selected"
-    echo "  └────────────────────────────────────────────────────"
-    echo ""
+    whiptail --title "Preview: $(basename "$selected")" \
+        --scrolltext --msgbox "$preview" 24 $W
 
-    read -rp "  Restore this backup? [Y/n]: " confirm
-    confirm="${confirm,,}"; [[ -z "$confirm" ]] && confirm="y"
+    if whiptail --title "$TITLE" \
+        --yesno "Restore $(basename "$selected") to ${SOURCES_FILE}?" 8 $W; then
 
-    if [[ "$confirm" == "y" ]]; then
-        # Back up the current file before overwriting
+        # Back up current before overwriting
         if [[ -f "$SOURCES_FILE" ]]; then
             local now_bak="${BACKUP_DIR}/${BACKUP_PREFIX}$(date +%Y%m%d_%H%M%S)"
             cp "$SOURCES_FILE" "$now_bak"
-            echo "  Current sources.list backed up to: $(basename "$now_bak")"
         fi
         cp "$selected" "$SOURCES_FILE"
-        echo "  ✔ Restored: $(basename "$selected") → ${SOURCES_FILE}"
 
-        read -rp "  Run apt update now? [Y/n]: " do_update
-        do_update="${do_update,,}"; [[ -z "$do_update" ]] && do_update="y"
-        if [[ "$do_update" == "y" ]]; then
-            echo ""
+        if whiptail --title "$TITLE" \
+            --yesno "Restored successfully.\n\nRun apt update now?" 9 $W; then
+            clear
             apt update
+            echo ""
+            read -rp "  Press Enter to return..." _
+        else
+            whiptail --title "$TITLE" --msgbox "Restored: $(basename "$selected")" 8 $W
         fi
-    else
-        echo "  Cancelled."
     fi
-
-    echo ""
-    read -rp "  Press Enter to return..." _
 }
 
 # ============================================================
-#  Manage (list / delete) backups
+#  Manage backups
 # ============================================================
 manage_backups() {
-    clr
-    echo ""
-    echo "  ── Manage Backups ──"
-    echo ""
-
-    local -a BACKUPS
-    mapfile -t BACKUPS < <(
-        ls -t "${BACKUP_DIR}/${BACKUP_PREFIX}"* 2>/dev/null || true
-    )
-
-    if [[ ${#BACKUPS[@]} -eq 0 ]]; then
-        echo "  No backups found."
-        echo ""
-        read -rp "  Press Enter to return..." _
-        return
-    fi
-
-    local i=1
-    for f in "${BACKUPS[@]}"; do
-        local size
-        size=$(du -h "$f" | cut -f1)
-        printf "  [%2d] %s  (%s)\n" "$i" "$(basename "$f")" "$size"
-        (( i++ ))
-    done
-    echo ""
-    echo "  Options:"
-    echo "  [d <n>]  Delete backup number <n>   (e.g. d 3)"
-    echo "  [d all]  Delete ALL backups"
-    echo "  [0]      Return to main menu"
-    echo ""
-
     while true; do
-        read -rp "  Command: " cmd arg
+        local -a BACKUPS
+        mapfile -t BACKUPS < <(ls -t "${BACKUP_DIR}/${BACKUP_PREFIX}"* 2>/dev/null || true)
 
-        case "$cmd" in
-            0) return ;;
-            d|D)
-                if [[ "${arg,,}" == "all" ]]; then
-                    read -rp "  Delete ALL ${#BACKUPS[@]} backups? [y/N]: " yn
-                    yn="${yn,,}"
-                    if [[ "$yn" == "y" ]]; then
-                        for f in "${BACKUPS[@]}"; do rm -f "$f"; done
-                        echo "  ✔ All backups deleted."
-                    else
-                        echo "  Cancelled."
-                    fi
-                    echo ""
-                    read -rp "  Press Enter to return..." _
-                    return
-                elif [[ "$arg" =~ ^[0-9]+$ ]] && \
-                     (( arg >= 1 && arg <= ${#BACKUPS[@]} )); then
-                    local target="${BACKUPS[$((arg-1))]}"
-                    read -rp "  Delete $(basename "$target")? [y/N]: " yn
-                    yn="${yn,,}"
-                    if [[ "$yn" == "y" ]]; then
-                        rm -f "$target"
-                        echo "  ✔ Deleted."
-                    else
-                        echo "  Cancelled."
-                    fi
-                    echo ""
-                    read -rp "  Press Enter to return..." _
-                    return
-                else
-                    echo "  Invalid number."
-                fi
-                ;;
-            *) echo "  Unknown command. Use 'd <n>', 'd all', or '0'." ;;
-        esac
+        if [[ ${#BACKUPS[@]} -eq 0 ]]; then
+            whiptail --title "$TITLE" --msgbox "No backups found." 8 $W
+            return
+        fi
+
+        local -a MENU_ITEMS=()
+        local i=1
+        for f in "${BACKUPS[@]}"; do
+            local size
+            size=$(du -h "$f" | cut -f1)
+            MENU_ITEMS+=( "$i" "$(basename "$f")  [${size}]" )
+            (( i++ ))
+        done
+        MENU_ITEMS+=( "A" "Delete ALL backups" )
+
+        local choice
+        choice=$(whiptail --title "$TITLE" \
+            --menu "Manage Backups — select entry to delete:" $H $W "$(( ${#BACKUPS[@]} + 1 ))" \
+            "${MENU_ITEMS[@]}" \
+            3>&1 1>&2 2>&3) || return
+
+        if [[ "${choice^^}" == "A" ]]; then
+            if whiptail --title "$TITLE" \
+                --yesno "Delete ALL ${#BACKUPS[@]} backups?" 8 $W; then
+                for f in "${BACKUPS[@]}"; do rm -f "$f"; done
+                whiptail --title "$TITLE" --msgbox "All backups deleted." 8 $W
+            fi
+        elif [[ "$choice" =~ ^[0-9]+$ ]]; then
+            local target="${BACKUPS[$((choice-1))]}"
+            if whiptail --title "$TITLE" \
+                --yesno "Delete $(basename "$target")?" 8 $W; then
+                rm -f "$target"
+                whiptail --title "$TITLE" --msgbox "Deleted: $(basename "$target")" 8 $W
+            fi
+        fi
     done
 }
 
 # ============================================================
-#  Configure sources — Step 1: Release
+#  Configure — Step 1: Release
 # ============================================================
 choose_release() {
-    print_header
-    echo "  ── Step 1/4 — Select Release ──"
-    echo ""
-    echo "  [1] Debian 13 Trixie  (stable — recommended)"
-    echo "  [2] Testing            (rolling, latest packages)"
-    echo "  [0] Back to main menu"
-    echo ""
-
     local choice
-    while true; do
-        read -rp "  Choice: " choice
-        case "$choice" in
-            1) RELEASE="trixie";  RELEASE_LABEL="Debian 13 Trixie (stable)"; return 0 ;;
-            2) RELEASE="testing"; RELEASE_LABEL="Testing (rolling)";          return 0 ;;
-            0) return 1 ;;
-            *) echo "  Invalid input." ;;
-        esac
-    done
-}
+    choice=$(whiptail --title "$TITLE" \
+        --menu "Step 1 / 4 — Select Release" $H $W 2 \
+        "trixie"  "Debian 13 Trixie  (stable — recommended)" \
+        "testing" "Testing            (rolling, latest packages)" \
+        3>&1 1>&2 2>&3) || return 1
 
-# ============================================================
-#  Step 2 — Region then Mirror
-# ============================================================
-choose_mirror() {
-    print_header
-    echo "  ── Step 2/4 — Select Region ──"
-    echo ""
-    for i in "${!REGIONS[@]}"; do
-        printf "  [%d] %s\n" "$((i+1))" "${REGIONS[$i]}"
-    done
-    echo "  [0] Back"
-    echo ""
-
-    local reg_choice reg_idx
-    while true; do
-        read -rp "  Region: " reg_choice
-        if [[ "$reg_choice" == "0" ]]; then return 1; fi
-        if [[ "$reg_choice" =~ ^[0-9]+$ ]] && \
-           (( reg_choice >= 1 && reg_choice <= ${#REGIONS[@]} )); then
-            reg_idx=$(( reg_choice - 1 ))
-            break
-        fi
-        echo "  Invalid input."
-    done
-
-    # Build mirror list for chosen region
-    local -a raw_entries
-    mapfile -t raw_entries < <(
-        case "$reg_idx" in
-            0) printf '%s\n' "${R0[@]}" ;;
-            1) printf '%s\n' "${R1[@]}" ;;
-            2) printf '%s\n' "${R2[@]}" ;;
-            3) printf '%s\n' "${R3[@]}" ;;
-            4) printf '%s\n' "${R4[@]}" ;;
-            5) printf '%s\n' "${R5[@]}" ;;
-            6) printf '%s\n' "${R6[@]}" ;;
-        esac
-    )
-
-    print_header
-    echo "  ── Step 2/4 — Select Mirror — ${REGIONS[$reg_idx]} ──"
-    echo ""
-
-    local -a LABELS URLS
-    LABELS=(); URLS=()
-    local i=1
-    for entry in "${raw_entries[@]}"; do
-        local lbl="${entry%%|*}"
-        local url="${entry##*|}"
-        LABELS+=("$lbl")
-        URLS+=("$url")
-        printf "  [%d] %s\n" "$i" "$lbl"
-        (( i++ ))
-    done
-    echo "  [0] Back"
-    echo ""
-
-    local mir_choice
-    while true; do
-        read -rp "  Mirror: " mir_choice
-        if [[ "$mir_choice" == "0" ]]; then return 1; fi
-        if [[ "$mir_choice" =~ ^[0-9]+$ ]] && \
-           (( mir_choice >= 1 && mir_choice <= ${#URLS[@]} )); then
-            MIRROR="${URLS[$((mir_choice-1))]}"
-            MIRROR_LABEL="${LABELS[$((mir_choice-1))]}"
-            return 0
-        fi
-        echo "  Invalid input."
-    done
-}
-
-# ============================================================
-#  Step 3 — Components
-# ============================================================
-choose_components() {
-    print_header
-    echo "  ── Step 3/4 — Select Components ──"
-    echo ""
-    echo "  [1] main                                      (free software only)"
-    echo "  [2] main contrib                              (+ contrib)"
-    echo "  [3] main contrib non-free                     (+ non-free)"
-    echo "  [4] main contrib non-free non-free-firmware   (full, recommended)"
-    echo "  [0] Back"
-    echo ""
-
-    local choice
-    while true; do
-        read -rp "  Choice: " choice
-        case "$choice" in
-            1) COMPONENTS="main";                                      return 0 ;;
-            2) COMPONENTS="main contrib";                              return 0 ;;
-            3) COMPONENTS="main contrib non-free";                     return 0 ;;
-            4) COMPONENTS="main contrib non-free non-free-firmware";   return 0 ;;
-            0) return 1 ;;
-            *) echo "  Invalid input." ;;
-        esac
-    done
-}
-
-# ============================================================
-#  Step 4 — Extra repos
-# ============================================================
-choose_extras() {
-    print_header
-    echo "  ── Step 4/4 — Additional Repositories ──"
-    echo ""
-
-    read -rp "  Include Security updates? [Y/n]: " sec
-    USE_SECURITY="${sec,,}"; [[ -z "$USE_SECURITY" ]] && USE_SECURITY="y"
-
-    read -rp "  Include Updates repo?     [Y/n]: " upd
-    USE_UPDATES="${upd,,}";  [[ -z "$USE_UPDATES"  ]] && USE_UPDATES="y"
-
+    RELEASE="$choice"
     if [[ "$RELEASE" == "trixie" ]]; then
-        read -rp "  Include Backports?        [y/N]: " bp
-        USE_BACKPORTS="${bp,,}"; [[ -z "$USE_BACKPORTS" ]] && USE_BACKPORTS="n"
+        RELEASE_LABEL="Debian 13 Trixie (stable)"
     else
-        USE_BACKPORTS="n"
+        RELEASE_LABEL="Testing (rolling)"
     fi
     return 0
 }
 
 # ============================================================
-#  Build sources.list content
+#  Step 2: Region → Mirror
+# ============================================================
+choose_mirror() {
+    local reg_choice
+    reg_choice=$(whiptail --title "$TITLE" \
+        --menu "Step 2 / 4 — Select Region" $H $W 7 \
+        "${REGIONS[@]}" \
+        3>&1 1>&2 2>&3) || return 1
+
+    # Get the array name for the chosen region
+    local arr_name
+    arr_name=$(get_region_array "$reg_choice")
+
+    # Build mirror menu from that array (pairs: hostname label)
+    local -n arr_ref="$arr_name"
+    local -a MIR_ITEMS=()
+    local i=0
+    while (( i < ${#arr_ref[@]} )); do
+        MIR_ITEMS+=( "${arr_ref[$i]}" "${arr_ref[$((i+1))]}" )
+        (( i += 2 ))
+    done
+
+    local region_label="${REGIONS[$((reg_choice*2-1))]}"
+
+    local mir_choice
+    mir_choice=$(whiptail --title "$TITLE" \
+        --menu "Step 2 / 4 — Select Mirror: ${region_label}" $H $W "$(( ${#MIR_ITEMS[@]} / 2 ))" \
+        "${MIR_ITEMS[@]}" \
+        3>&1 1>&2 2>&3) || return 1
+
+    MIRROR="$mir_choice"
+    # Find label for the chosen mirror
+    i=0
+    while (( i < ${#arr_ref[@]} )); do
+        if [[ "${arr_ref[$i]}" == "$mir_choice" ]]; then
+            MIRROR_LABEL="${arr_ref[$((i+1))]}"
+            break
+        fi
+        (( i += 2 ))
+    done
+    return 0
+}
+
+# ============================================================
+#  Step 3: Components
+# ============================================================
+choose_components() {
+    local choice
+    choice=$(whiptail --title "$TITLE" \
+        --menu "Step 3 / 4 — Select Components" $H $W 4 \
+        "main"                                    "Free software only" \
+        "main contrib"                            "Free + Contrib" \
+        "main contrib non-free"                   "Free + Contrib + Non-Free" \
+        "main contrib non-free non-free-firmware" "Full (recommended)" \
+        3>&1 1>&2 2>&3) || return 1
+
+    COMPONENTS="$choice"
+    return 0
+}
+
+# ============================================================
+#  Step 4: Extra repos  (checklist)
+# ============================================================
+choose_extras() {
+    local bp_item=""
+    if [[ "$RELEASE" == "trixie" ]]; then
+        bp_item='"backports" "Include Backports" OFF'
+    fi
+
+    local result
+    result=$(eval whiptail --title "$TITLE" \
+        --checklist '"Step 4 / 4 — Additional Repositories\n(Space to toggle, Enter to confirm)"' \
+        $H $W 3 \
+        '"security" "Include Security Updates" ON' \
+        '"updates"  "Include Updates Repo"     ON' \
+        $bp_item \
+        3>&1 1>&2 2>&3) || return 1
+
+    USE_SECURITY="n"; USE_UPDATES="n"; USE_BACKPORTS="n"
+    [[ "$result" == *"security"* ]] && USE_SECURITY="y"
+    [[ "$result" == *"updates"*  ]] && USE_UPDATES="y"
+    [[ "$result" == *"backports"* ]] && USE_BACKPORTS="y"
+    return 0
+}
+
+# ============================================================
+#  Build sources.list
 # ============================================================
 build_sources() {
     local proto="http"
@@ -496,39 +402,30 @@ build_sources() {
 #  Preview + Apply
 # ============================================================
 show_preview_and_apply() {
-    print_header
-    echo "  ── Preview: ${SOURCES_FILE} ──"
-    echo "  ┌────────────────────────────────────────────────────"
-    echo -e "$SOURCES_CONTENT" | sed 's/^/  │ /'
-    echo "  └────────────────────────────────────────────────────"
-    echo ""
+    whiptail --title "Preview: ${SOURCES_FILE}" \
+        --scrolltext --msgbox "$(echo -e "$SOURCES_CONTENT")" 24 $W
 
-    read -rp "  Apply changes? [Y/n]: " confirm
-    confirm="${confirm,,}"; [[ -z "$confirm" ]] && confirm="y"
+    if whiptail --title "$TITLE" \
+        --yesno "Apply these changes to ${SOURCES_FILE}?" 8 $W; then
 
-    if [[ "$confirm" == "y" ]]; then
         if [[ -f "$SOURCES_FILE" ]]; then
             local bak="${BACKUP_DIR}/${BACKUP_PREFIX}$(date +%Y%m%d_%H%M%S)"
             cp "$SOURCES_FILE" "$bak"
-            echo "  Backup created: $(basename "$bak")"
         fi
         echo -e "$SOURCES_CONTENT" > "$SOURCES_FILE"
-        echo "  ✔ ${SOURCES_FILE} written."
 
-        read -rp "  Run apt update now? [Y/n]: " do_update
-        do_update="${do_update,,}"; [[ -z "$do_update" ]] && do_update="y"
-        if [[ "$do_update" == "y" ]]; then
-            echo ""
+        if whiptail --title "$TITLE" \
+            --yesno "sources.list written successfully.\n\nRun apt update now?" 9 $W; then
+            clear
             apt update
+            echo ""
+            read -rp "  Press Enter to return..." _
+        else
+            whiptail --title "$TITLE" \
+                --msgbox "Done! Sources configured successfully." 8 $W
         fi
-        echo ""
-        echo "  ✔ Done! Sources configured successfully."
-        echo ""
-        read -rp "  Press Enter to return to main menu..." _
     else
-        echo "  Cancelled. No changes made."
-        echo ""
-        read -rp "  Press Enter to return to main menu..." _
+        whiptail --title "$TITLE" --msgbox "Cancelled. No changes made." 8 $W
     fi
 }
 
@@ -546,10 +443,10 @@ configure_sources() {
     USE_BACKPORTS="n"
     SOURCES_CONTENT=""
 
-    choose_release  || return
-    choose_mirror   || return
+    choose_release    || return
+    choose_mirror     || return
     choose_components || return
-    choose_extras
+    choose_extras     || return
     build_sources
     show_preview_and_apply
 }
