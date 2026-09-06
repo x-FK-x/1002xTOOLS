@@ -92,6 +92,13 @@ EOF
     chown "$REALUSER":"$REALUSER" "$SHORTCUT_PREF_FILE"
 fi
 
+
+if [[ ! -f "/etc/1002xSHELL/v6.sh" ]]; then
+    sudo bash "$SCRIPT_DIR/tools/1002xSHELL-installer.sh"
+    sudo sed -i 's/\r$//' /etc/1002xSHELL/v6.sh
+fi
+
+
 # === Main Menu ===
 while true; do
   CHOICE=$(whiptail --title "1002xTOOLS Menu ($VERSION Rev. $LOCAL_VERSION)" \
