@@ -174,7 +174,7 @@ BRANCH="$VERSION"
 TMP_DIR="$HOME/.1002xtools_temp"
 FOLDER="DEBIAN13"
 LOCAL_DEV_FILE="$SCRIPT_DIR/dev.txt"
-
+rm -rf "$TMP_DIR"
 mkdir -p "$TMP_DIR"
 
 log "Downloading branch $BRANCH from repo $REPO..."
