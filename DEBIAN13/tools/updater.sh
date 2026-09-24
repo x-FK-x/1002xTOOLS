@@ -3,7 +3,7 @@
 clear
 echo "Checking Debian updates"
 sleep 5
-sudo apt updates && sudo apt upgrade -y && sudo apt auto remove --purge -y && sudo apt auto clean
+sudo apt update && sudo apt upgrade -y && sudo apt auto remove --purge -y && sudo apt auto clean
 echo "Debian updates finished"
 sleep 7
 clear
