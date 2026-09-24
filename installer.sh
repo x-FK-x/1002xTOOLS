@@ -7,6 +7,14 @@ fi
 
 echo "Success: Admin privileges verified!"
 
+clear
+echo "Checking Debian updates"
+sleep 5
+sudo apt updates && sudo apt upgrade -y && sudo apt auto remove --purge -y && sudo apt auto clean
+echo "Debian updates finished"
+sleep 7
+clear
+
 TARGET_TOOLS_DIR="/etc/dodos/tools"
 mkdir -p "$TARGET_TOOLS_DIR"
 mkdir -p /etc/dodos/source
