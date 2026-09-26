@@ -148,8 +148,8 @@ while true; do
         "2" "Keyboard Manager" \
         "3" "Back" 3>&1 1>&2 2>&3)
       case "$CHOICE" in
-        "1") sudo bash "$SCRIPT_DIR/tools/language.sh;;
-        "2") sudo bash "$SCRIPT_DIR/tools/keyboard.sh ;;
+        "1") sudo bash "$SCRIPT_DIR/tools/language.sh";;
+        "2") sudo bash "$SCRIPT_DIR/tools/keyboard.sh" ;;
         "3" | *) continue ;;
       esac
       ;;
