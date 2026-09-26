@@ -4,6 +4,7 @@ clear
 echo "Checking Debian updates"
 sleep 5
 sudo apt update && sudo apt upgrade -y && sudo apt autoremove --purge -y && sudo apt autoclean
+clear
 echo "Debian updates finished"
 sleep 7
 clear
