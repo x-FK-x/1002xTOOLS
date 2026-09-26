@@ -1,5 +1,10 @@
 #!/bin/bash
 
+
+
+
+
+
 clear
 echo "Checking Debian updates"
 sleep 5
@@ -327,15 +332,38 @@ else
 fi
 
 # Alle .sh-Dateien aus DEBIAN13/tools nach tools kopieren
+# WICHTIG: updater.sh wird hier bewusst ausgeschlossen, da sich das
+# laufende Skript sonst selbst überschreibt, waehrend bash es noch
+# ausfuehrt (fuehrt zu "unexpected EOF" Fehlern). Es wird stattdessen
+# separat behandelt und das Skript danach neu gestartet (siehe unten).
 if [[ -d "$EXTRACTED_DIR/tools" ]]; then
     for file in "$EXTRACTED_DIR/tools/"*.sh; do
         [ -f "$file" ] || continue
+        [[ "$(basename "$file")" == "updater.sh" ]] && continue
         cp -f "$file" "$TARGET_TOOLS_DIR/"
         chmod +x "$TARGET_TOOLS_DIR/$(basename "$file")"
         log "Copied $file to $TARGET_TOOLS_DIR/"
     done
 else
     log "No tools folder found in DEBIAN13"
+fi
+
+# updater.sh separat behandeln: nur kopieren wenn geaendert, und danach
+# das Skript per exec neu starten, damit bash die neue Datei sauber
+# von Anfang an liest (kein Ueberschreiben unter laufendem Prozess).
+if [[ -f "$EXTRACTED_DIR/tools/updater.sh" ]]; then
+    if ! cmp -s "$EXTRACTED_DIR/tools/updater.sh" "$TARGET_TOOLS_DIR/updater.sh" 2>/dev/null; then
+        cp -f "$EXTRACTED_DIR/tools/updater.sh" "$TARGET_TOOLS_DIR/updater.sh"
+        chmod +x "$TARGET_TOOLS_DIR/updater.sh"
+        dos2unix "$TARGET_TOOLS_DIR/updater.sh" 2>/dev/null
+        log "updater.sh wurde aktualisiert. Starte updater.sh neu..."
+        whiptail --title "1002xTOOLS Updater" --msgbox "updater.sh wurde aktualisiert und wird neu gestartet." 10 50
+        exec bash "$TARGET_TOOLS_DIR/updater.sh"
+    else
+        log "updater.sh ist bereits aktuell."
+    fi
+else
+    log "updater.sh nicht im Repo-Ordner gefunden."
 fi
 
 if [[ -f "$EXTRACTED_DIR/tools/1002xCMD-ver.txt" ]]; then
