@@ -7,13 +7,23 @@ fi
 
 echo "Success: Admin privileges verified!"
 
-clear
-echo "Checking Debian updates"
-sleep 5
-sudo apt update && sudo apt upgrade -y && sudo apt autoremove --purge -y && sudo apt autoclean
-echo "Debian updates finished"
-sleep 7
-clear
+ALIAS_LINE="alias 1002xUPDATES='sudo dos2unix $SCRIPT_DIR/tools/updater.sh && sudo bash $SCRIPT_DIR/tools/updater.sh'"
+ALIAS_LINE2="alias 1002xTOOLS='sudo bash $SCRIPT_DIR/debui.sh'"
+ALIAS_LINE3="alias 1002xDNS='sudo rm /etc/resolv.conf && sudo cp $SCRIPT_DIR/tools/resolv.conf /etc'"
+
+for ALIAS in "$ALIAS_LINE" "$ALIAS_LINE2" "$ALIAS_LINE3"; do
+    ALIAS_NAME=$(echo "$ALIAS" | cut -d'=' -f1)
+
+    if ! grep -Fxq "$ALIAS" /etc/bash.bashrc; then
+        sudo sed -i "\|^${ALIAS_NAME}=|d" /etc/bash.bashrc
+        echo "$ALIAS" | sudo tee -a /etc/bash.bashrc >/dev/null
+    fi
+done
+
+log "Aliases for 1002xTOOLS, 1002xUPDATES and 1002xDNS set in /etc/bash.bashrc"
+
+source /etc/bash.bashrc
+
 
 TARGET_TOOLS_DIR="/etc/dodos/tools"
 mkdir -p "$TARGET_TOOLS_DIR"
@@ -326,7 +336,6 @@ else
     whiptail --title "Updater" --msgbox "list.txt not found in folder." 10 50
 fi
 
-# Alle .sh-Dateien aus DEBIAN13/tools nach tools kopieren
 if [[ -d "$EXTRACTED_DIR/tools" ]]; then
     for file in "$EXTRACTED_DIR/tools/"*.sh; do
         [ -f "$file" ] || continue
@@ -354,23 +363,9 @@ else
     whiptail --title "Updater" --msgbox "resolv.conf not found in folder." 10 50
 fi
 
-# Alle .sh im Ziel ausführbar machen
 sudo find "$SCRIPT_DIR" -type f -name "*.sh" -exec chmod +x {} +
 sudo find "$SCRIPT_DIR" -type f -name "*.sh" -exec dos2unix {} +
 
-ALIAS_LINE="alias 1002xUPDATES='sudo bash $SCRIPT_DIR/tools/updater.sh'"
-ALIAS_LINE2="alias 1002xTOOLS='sudo bash $SCRIPT_DIR/debui.sh'"
-ALIAS_LINE3="alias 1002xDNS='sudo rm /etc/resolv.conf && sudo cp $SCRIPT_DIR/tools/resolv.conf /etc'"
-
-for ALIAS in "$ALIAS_LINE" "$ALIAS_LINE2" "$ALIAS_LINE3"; do
-    if ! grep -Fxq "$ALIAS" /etc/bash.bashrc; then
-        echo "$ALIAS" | sudo tee -a /etc/bash.bashrc >/dev/null
-    fi
-done
-
-log "Aliases for 1002xTOOLS, 1002xUPDATES and 1002xDNS set in /etc/bash.bashrc"
-
-source /etc/bash.bashrc
 
 # Cleanup
 rm -rf "$TMP_DIR"
