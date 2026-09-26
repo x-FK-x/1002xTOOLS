@@ -1,10 +1,5 @@
 #!/bin/bash
 
-
-
-
-
-
 clear
 echo "Checking Debian updates"
 sleep 5
