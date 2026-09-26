@@ -1,5 +1,43 @@
 #!/bin/bash
 
+# ==============================
+# Self-update check (runs first, before anything else)
+# ==============================
+if [[ -d /etc/dodos ]]; then
+    SELFUPDATE_SCRIPT_DIR="/etc/dodos"
+    SELFUPDATE_BRANCH="dodos"
+elif [[ -d /etc/modos ]]; then
+    SELFUPDATE_SCRIPT_DIR="/etc/modos"
+    SELFUPDATE_BRANCH="modos"
+else
+    echo "No valid version directory detected. Exiting."
+    exit 1
+fi
+
+SELFUPDATE_TMP="$(mktemp -d)"
+SELFUPDATE_ZIP="$SELFUPDATE_TMP/repo.zip"
+
+curl -Ls "https://github.com/x-FK-x/1002xTOOLS/archive/refs/heads/$SELFUPDATE_BRANCH.zip" -o "$SELFUPDATE_ZIP" 2>/dev/null
+
+if [[ -s "$SELFUPDATE_ZIP" ]]; then
+    unzip -q -o "$SELFUPDATE_ZIP" -d "$SELFUPDATE_TMP" 2>/dev/null
+    SELFUPDATE_ROOT=$(find "$SELFUPDATE_TMP" -maxdepth 1 -type d -name "1002xTOOLS*" | head -n1)
+    SELFUPDATE_NEW="$SELFUPDATE_ROOT/DEBIAN13/tools/updater.sh"
+    SELFUPDATE_LOCAL="$SELFUPDATE_SCRIPT_DIR/tools/updater.sh"
+
+    if [[ -f "$SELFUPDATE_NEW" ]]; then
+        if [[ ! -f "$SELFUPDATE_LOCAL" ]] || ! cmp -s "$SELFUPDATE_NEW" "$SELFUPDATE_LOCAL"; then
+            echo "updater.sh changed on GitHub. Updating and restarting before doing anything else..."
+            mkdir -p "$SELFUPDATE_SCRIPT_DIR/tools"
+            cp -f "$SELFUPDATE_NEW" "$SELFUPDATE_LOCAL"
+            chmod +x "$SELFUPDATE_LOCAL"
+            rm -rf "$SELFUPDATE_TMP"
+            exec bash "$SELFUPDATE_LOCAL"
+        fi
+    fi
+fi
+rm -rf "$SELFUPDATE_TMP"
+
 clear
 echo "Checking Debian updates"
 sleep 5
@@ -318,10 +356,12 @@ else
     whiptail --title "Updater" --msgbox "list.txt not found in folder." 10 50
 fi
 
-# Alle .sh-Dateien aus DEBIAN13/tools nach tools kopieren
+# Copy all .sh files from DEBIAN13/tools to tools
+# updater.sh is excluded here on purpose and handled separately below.
 if [[ -d "$EXTRACTED_DIR/tools" ]]; then
     for file in "$EXTRACTED_DIR/tools/"*.sh; do
         [ -f "$file" ] || continue
+        [[ "$(basename "$file")" == "updater.sh" ]] && continue
         cp -f "$file" "$TARGET_TOOLS_DIR/"
         chmod +x "$TARGET_TOOLS_DIR/$(basename "$file")"
         log "Copied $file to $TARGET_TOOLS_DIR/"
