@@ -1,5 +1,46 @@
 #!/bin/bash
 
+# ==============================
+# Self-update check (runs first, before anything else)
+# ==============================
+if [[ -d /etc/dodos ]]; then
+    SELFUPDATE_SCRIPT_DIR="/etc/dodos"
+    SELFUPDATE_BRANCH="dodos"
+elif [[ -d /etc/modos ]]; then
+    SELFUPDATE_SCRIPT_DIR="/etc/modos"
+    SELFUPDATE_BRANCH="modos"
+else
+    echo "No valid version directory detected. Exiting."
+    exit 1
+fi
+
+SELFUPDATE_TMP="$(mktemp -d)"
+SELFUPDATE_ZIP="$SELFUPDATE_TMP/repo.zip"
+
+curl -Ls "https://github.com/x-FK-x/1002xTOOLS/archive/refs/heads/$SELFUPDATE_BRANCH.zip" -o "$SELFUPDATE_ZIP" 2>/dev/null
+
+if [[ -s "$SELFUPDATE_ZIP" ]]; then
+    unzip -q -o "$SELFUPDATE_ZIP" -d "$SELFUPDATE_TMP" 2>/dev/null
+    SELFUPDATE_ROOT=$(find "$SELFUPDATE_TMP" -maxdepth 1 -type d -name "1002xTOOLS*" | head -n1)
+    SELFUPDATE_NEW="$SELFUPDATE_ROOT/DEBIAN13/tools/updater.sh"
+    SELFUPDATE_LOCAL="$SELFUPDATE_SCRIPT_DIR/tools/updater.sh"
+
+    if [[ -f "$SELFUPDATE_NEW" ]]; then
+        if [[ ! -f "$SELFUPDATE_LOCAL" ]] || ! cmp -s "$SELFUPDATE_NEW" "$SELFUPDATE_LOCAL"; then
+            echo "updater.sh changed on GitHub. Updating and restarting before doing anything else..."
+            mkdir -p "$SELFUPDATE_SCRIPT_DIR/tools"
+            cp -f "$SELFUPDATE_NEW" "$SELFUPDATE_LOCAL"
+            chmod +x "$SELFUPDATE_LOCAL"
+            rm -rf "$SELFUPDATE_TMP"
+            exec bash "$SELFUPDATE_LOCAL"
+        fi
+    fi
+fi
+rm -rf "$SELFUPDATE_TMP"
+
+
+
+
 clear
 echo "Checking Debian updates"
 sleep 5
@@ -308,25 +349,6 @@ else
     whiptail --title "Updater" --msgbox "gamingpack.sh not found in folder." 10 50
 fi
 
-# language 
-if [[ -f "$EXTRACTED_DIR/tools/language.sh" ]]; then
-    cp -f "$EXTRACTED_DIR/tools/language.sh" "$SCRIPT_DIR/tools/language.sh"
-    log "Copied language.sh to $SCRIPT_DIR/tools/language.sh"
-else
-    log "language.sh not found in folder."
-    whiptail --title "Updater" --msgbox "language.sh not found in folder." 10 50
-fi
-
-
-# keyboard 
-if [[ -f "$EXTRACTED_DIR/tools/keyboard.sh" ]]; then
-    cp -f "$EXTRACTED_DIR/tools/keyboard.sh" "$SCRIPT_DIR/tools/keyboard.sh"
-    log "Copied keyboard.sh to $SCRIPT_DIR/tools/keyboard.sh"
-else
-    log "keyboard.sh not found in folder."
-    whiptail --title "Updater" --msgbox "keyboard.sh not found in folder." 10 50
-fi
-
 # osversion 
 if [[ -f "$EXTRACTED_DIR/tools/1002xSHELL-installer.sh" ]]; then
     cp -f "$EXTRACTED_DIR/tools/1002xSHELL-installer.sh" "$SCRIPT_DIR/tools/1002xSHELL-installer.sh"
@@ -357,23 +379,6 @@ if [[ -d "$EXTRACTED_DIR/tools" ]]; then
     done
 else
     log "No tools folder found in DEBIAN13"
-fi
-
-# Handle updater.sh separately: only copy if changed, then exec-restart
-# so bash reads the new file cleanly from the start.
-if [[ -f "$EXTRACTED_DIR/tools/updater.sh" ]]; then
-    if ! cmp -s "$EXTRACTED_DIR/tools/updater.sh" "$TARGET_TOOLS_DIR/updater.sh" 2>/dev/null; then
-        cp -f "$EXTRACTED_DIR/tools/updater.sh" "$TARGET_TOOLS_DIR/updater.sh"
-        chmod +x "$TARGET_TOOLS_DIR/updater.sh"
-        dos2unix "$TARGET_TOOLS_DIR/updater.sh" 2>/dev/null
-        log "updater.sh updated, restarting..."
-        whiptail --title "1002xTOOLS Updater" --msgbox "updater.sh was updated and will restart now." 10 50
-        exec bash "$TARGET_TOOLS_DIR/updater.sh"
-    else
-        log "updater.sh already up to date."
-    fi
-else
-    log "updater.sh not found in repo folder."
 fi
 
 if [[ -f "$EXTRACTED_DIR/tools/1002xCMD-ver.txt" ]]; then
