@@ -10,3 +10,5 @@ keepass2
 kdenlive
 pluma
 gpicview
+mpv
+pcmanfm
