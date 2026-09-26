@@ -1,21 +1,5 @@
 #!/bin/bash
 
-ALIAS_LINE="alias 1002xUPDATES='sudo dos2unix $SCRIPT_DIR/tools/updater.sh && sudo bash $SCRIPT_DIR/tools/updater.sh'"
-ALIAS_LINE2="alias 1002xTOOLS='sudo bash $SCRIPT_DIR/debui.sh'"
-ALIAS_LINE3="alias 1002xDNS='sudo rm /etc/resolv.conf && sudo cp $SCRIPT_DIR/tools/resolv.conf /etc'"
-
-for ALIAS in "$ALIAS_LINE" "$ALIAS_LINE2" "$ALIAS_LINE3"; do
-    ALIAS_NAME=$(echo "$ALIAS" | cut -d'=' -f1)
-
-    if ! grep -Fxq "$ALIAS" /etc/bash.bashrc; then
-        sudo sed -i "\|^${ALIAS_NAME}=|d" /etc/bash.bashrc
-        echo "$ALIAS" | sudo tee -a /etc/bash.bashrc >/dev/null
-    fi
-done
-
-log "Aliases for 1002xTOOLS, 1002xUPDATES and 1002xDNS set in /etc/bash.bashrc"
-source /etc/bash.bashrc
-
 clear
 echo "Checking Debian updates"
 sleep 5
@@ -187,8 +171,23 @@ else
     exit 0
 fi
 
+ALIAS_LINE="alias 1002xUPDATES='sudo dos2unix \$SCRIPT_DIR/tools/updater.sh && sudo bash \$SCRIPT_DIR/tools/updater.sh'"
+ALIAS_LINE2="alias 1002xTOOLS='sudo bash \$SCRIPT_DIR/debui.sh'"
+ALIAS_LINE3="alias 1002xDNS='sudo rm /etc/resolv.conf && sudo cp \$SCRIPT_DIR/tools/resolv.conf /etc'"
 
-# === Versionsnormalisierung (Kommazahlen-kompatibel) ===
+for ALIAS in "$ALIAS_LINE" "$ALIAS_LINE2" "$ALIAS_LINE3"; do
+    ALIAS_NAME=$(echo "$ALIAS" | sed -E 's/^alias ([^=]+)=.*/\1/')
+
+    if ! grep -Fxq "$ALIAS" /etc/bash.bashrc; then
+        sudo sed -i "/^alias ${ALIAS_NAME}=/d" /etc/bash.bashrc
+        echo "$ALIAS" | sudo tee -a /etc/bash.bashrc >/dev/null
+    fi
+done
+
+log "Aliases for 1002xTOOLS, 1002xUPDATES and 1002xDNS set in /etc/bash.bashrc"
+source /etc/bash.bashrc
+
+
 normalize_version() {
     echo "$1" | tr -d '[:space:]' | tr ',' '.' | grep -oE '[0-9]+(\.[0-9]+)?'
 }
