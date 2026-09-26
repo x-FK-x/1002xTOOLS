@@ -308,6 +308,25 @@ else
     whiptail --title "Updater" --msgbox "gamingpack.sh not found in folder." 10 50
 fi
 
+# language 
+if [[ -f "$EXTRACTED_DIR/tools/language.sh" ]]; then
+    cp -f "$EXTRACTED_DIR/tools/language.sh" "$SCRIPT_DIR/tools/language.sh"
+    log "Copied language.sh to $SCRIPT_DIR/tools/language.sh"
+else
+    log "language.sh not found in folder."
+    whiptail --title "Updater" --msgbox "language.sh not found in folder." 10 50
+fi
+
+
+# keyboard 
+if [[ -f "$EXTRACTED_DIR/tools/keyboard.sh" ]]; then
+    cp -f "$EXTRACTED_DIR/tools/keyboard.sh" "$SCRIPT_DIR/tools/keyboard.sh"
+    log "Copied keyboard.sh to $SCRIPT_DIR/tools/keyboard.sh"
+else
+    log "keyboard.sh not found in folder."
+    whiptail --title "Updater" --msgbox "keyboard.sh not found in folder." 10 50
+fi
+
 # osversion 
 if [[ -f "$EXTRACTED_DIR/tools/1002xSHELL-installer.sh" ]]; then
     cp -f "$EXTRACTED_DIR/tools/1002xSHELL-installer.sh" "$SCRIPT_DIR/tools/1002xSHELL-installer.sh"
@@ -326,11 +345,8 @@ else
     whiptail --title "Updater" --msgbox "list.txt not found in folder." 10 50
 fi
 
-# Alle .sh-Dateien aus DEBIAN13/tools nach tools kopieren
-# WICHTIG: updater.sh wird hier bewusst ausgeschlossen, da sich das
-# laufende Skript sonst selbst überschreibt, waehrend bash es noch
-# ausfuehrt (fuehrt zu "unexpected EOF" Fehlern). Es wird stattdessen
-# separat behandelt und das Skript danach neu gestartet (siehe unten).
+# Copy all .sh files from DEBIAN13/tools to tools
+# updater.sh is excluded here on purpose and handled separately below.
 if [[ -d "$EXTRACTED_DIR/tools" ]]; then
     for file in "$EXTRACTED_DIR/tools/"*.sh; do
         [ -f "$file" ] || continue
@@ -343,22 +359,21 @@ else
     log "No tools folder found in DEBIAN13"
 fi
 
-# updater.sh separat behandeln: nur kopieren wenn geaendert, und danach
-# das Skript per exec neu starten, damit bash die neue Datei sauber
-# von Anfang an liest (kein Ueberschreiben unter laufendem Prozess).
+# Handle updater.sh separately: only copy if changed, then exec-restart
+# so bash reads the new file cleanly from the start.
 if [[ -f "$EXTRACTED_DIR/tools/updater.sh" ]]; then
     if ! cmp -s "$EXTRACTED_DIR/tools/updater.sh" "$TARGET_TOOLS_DIR/updater.sh" 2>/dev/null; then
         cp -f "$EXTRACTED_DIR/tools/updater.sh" "$TARGET_TOOLS_DIR/updater.sh"
         chmod +x "$TARGET_TOOLS_DIR/updater.sh"
         dos2unix "$TARGET_TOOLS_DIR/updater.sh" 2>/dev/null
-        log "updater.sh wurde aktualisiert. Starte updater.sh neu..."
-        whiptail --title "1002xTOOLS Updater" --msgbox "updater.sh wurde aktualisiert und wird neu gestartet." 10 50
+        log "updater.sh updated, restarting..."
+        whiptail --title "1002xTOOLS Updater" --msgbox "updater.sh was updated and will restart now." 10 50
         exec bash "$TARGET_TOOLS_DIR/updater.sh"
     else
-        log "updater.sh ist bereits aktuell."
+        log "updater.sh already up to date."
     fi
 else
-    log "updater.sh nicht im Repo-Ordner gefunden."
+    log "updater.sh not found in repo folder."
 fi
 
 if [[ -f "$EXTRACTED_DIR/tools/1002xCMD-ver.txt" ]]; then
