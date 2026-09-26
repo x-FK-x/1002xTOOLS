@@ -1,5 +1,14 @@
 #!/bin/bash
 
+clear
+echo "Checking Debian updates"
+sleep 5
+sudo apt update && sudo apt upgrade -y && sudo apt autoremove --purge -y && sudo apt autoclean
+clear
+echo "Debian updates finished"
+sleep 7
+clear
+
 # Logfile im tools-Ordner
 TARGET_TOOLS_DIR="/etc/dodos/tools"
 mkdir -p "$TARGET_TOOLS_DIR"
@@ -174,7 +183,7 @@ BRANCH="$VERSION"
 TMP_DIR="$HOME/.1002xtools_temp"
 FOLDER="DEBIAN13"
 LOCAL_DEV_FILE="$SCRIPT_DIR/dev.txt"
-rm -rf "$TMP_DIR"
+
 mkdir -p "$TMP_DIR"
 
 log "Downloading branch $BRANCH from repo $REPO..."
@@ -322,73 +331,9 @@ else
     whiptail --title "Updater" --msgbox "resolv.conf not found in folder." 10 50
 fi
 
-# Alle .sh im Ziel ausführbar machen
 sudo find "$SCRIPT_DIR" -type f -name "*.sh" -exec chmod +x {} +
 sudo find "$SCRIPT_DIR" -type f -name "*.sh" -exec dos2unix {} +
 
-ALIAS_LINE="alias 1002xUPDATES='sudo dos2unix $SCRIPT_DIR/tools/updater.sh && sudo bash $SCRIPT_DIR/tools/updater.sh'"
-ALIAS_LINE2="alias 1002xTOOLS='sudo bash $SCRIPT_DIR/debui.sh'"
-ALIAS_LINE3="alias 1002xDNS='sudo rm /etc/resolv.conf && sudo cp $SCRIPT_DIR/tools/resolv.conf /etc'"
-
-for ALIAS in "$ALIAS_LINE" "$ALIAS_LINE2" "$ALIAS_LINE3"; do
-    ALIAS_NAME=$(echo "$ALIAS" | cut -d'=' -f1)
-
-    if ! grep -Fxq "$ALIAS" /etc/bash.bashrc; then
-        sudo sed -i "\|^${ALIAS_NAME}=|d" /etc/bash.bashrc
-        echo "$ALIAS" | sudo tee -a /etc/bash.bashrc >/dev/null
-    fi
-done
-
-log "Aliases for 1002xTOOLS, 1002xUPDATES and 1002xDNS set in /etc/bash.bashrc"
-
-source /etc/bash.bashrc
-
-# === Create global Desktop Entry ===
-DESKTOP_ENTRY_PATH="/usr/share/applications/1002xTOOLS.desktop"
-if [[ ! -f "$DESKTOP_ENTRY_PATH" ]]; then
-   sudo tee "$DESKTOP_ENTRY_PATH" > /dev/null <<EOF
-[Desktop Entry]
-Name=1002xTOOLS
-Exec=$SCRIPT_DIR/debui.sh
-Icon=utilities-terminal
-Terminal=true
-Type=Application
-Categories=System;
-EOF
-    sudo chmod +x "$DESKTOP_ENTRY_PATH"
-fi
-
-# === Ensure user Desktop shortcut exists ===
-REALUSER=$(logname 2>/dev/null || echo "$SUDO_USER")
-[[ -z "$REALUSER" ]] && REALUSER=$(whoami)
-USER_DESKTOP=$(eval echo "~$REALUSER/Desktop")
-mkdir -p "$USER_DESKTOP"
-USER_SHORTCUT="$USER_DESKTOP/1002xTOOLS.desktop"
-SHORTCUT_PREF_FILE="$SCRIPT_DIR/.shortcut_preference"
-
-if [[ ! -f "$SHORTCUT_PREF_FILE" ]]; then
-    if whiptail --title "Desktop Shortcut" \
-        --yesno "Create a desktop shortcut for 1002xTOOLS?\n\nThis adds an icon to your Desktop for quick access to the internal system tools." 10 60; then
-        echo "yes" > "$SHORTCUT_PREF_FILE"
-    else
-        echo "no" > "$SHORTCUT_PREF_FILE"
-        rm -rf $USER_SHORTCUT
-    fi
-fi
-
-if [[ "$(cat "$SHORTCUT_PREF_FILE")" == "yes" && ! -f "$USER_SHORTCUT" ]]; then
-    cat <<EOF > "$USER_SHORTCUT"
-[Desktop Entry]
-Name=1002xTOOLS
-Exec=$SCRIPT_DIR/debui.sh
-Icon=utilities-terminal
-Terminal=true
-Type=Application
-Categories=System;
-EOF
-    chmod +x "$USER_SHORTCUT"
-    chown "$REALUSER":"$REALUSER" "$USER_SHORTCUT"
-fi
 
 # Cleanup
 rm -rf "$TMP_DIR"
