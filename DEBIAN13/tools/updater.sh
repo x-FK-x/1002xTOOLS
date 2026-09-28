@@ -64,7 +64,7 @@ log() {
 
 if [ -f /etc/modos/source/user-dir.conf ]; then
     sudo rm /etc/xdg/user-dir.conf
-    sudo mv /etc/modos/source/user-dir.conf /etc/xdg/
+    cat /etc/modos/source/user-dir.conf > /etc/xdg/user-dir.conf
     echo "xdg conf moved" >> "$LOG_FILE"
 fi
 
