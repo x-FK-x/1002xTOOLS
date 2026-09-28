@@ -62,11 +62,16 @@ log() {
     echo "$1" | tee -a "$LOG_FILE"
 }
 
-if [ -f /etc/modos/source/user-dirs.conf ]; then
-    sudo rm /etc/xdg/user-dirs.conf
-    sudo mv /etc/modos/source/user-dirs.conf /etc/xdg/
-    echo "xdg conf moved" >> "$LOG_FILE"
+if ! grep -q "^enabled=False" /etc/xdg/user-dirs.conf; then
+    sudo sed -i 's/^enabled=.*/enabled=False/I' /etc/xdg/user-dirs.conf
+    xdg-user-dirs-update --force
 fi
+
+if ! grep -q "^managed=true" /etc/NetworkManager/NetworkManager.conf; then
+    sudo sed -i 's/^managed=.*/managed=true/I' /etc/NetworkManager/NetworkManager.conf
+    sudo systemctl restart NetworkManager
+fi
+
 
 # ==============================
 # 1002xOPERATOR Update (autonom)
