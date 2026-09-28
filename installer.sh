@@ -190,9 +190,9 @@ else
     exit 0
 fi
 
-ALIAS_LINE="alias 1002xUPDATES='sudo dos2unix \$SCRIPT_DIR/tools/updater.sh && sudo bash \$SCRIPT_DIR/tools/updater.sh'"
-ALIAS_LINE2="alias 1002xTOOLS='sudo bash \$SCRIPT_DIR/debui.sh'"
-ALIAS_LINE3="alias 1002xDNS='sudo rm /etc/resolv.conf && sudo cp \$SCRIPT_DIR/tools/resolv.conf /etc'"
+ALIAS_LINE="alias 1002xUPDATES='sudo dos2unix $SCRIPT_DIR/tools/updater.sh && sudo bash $SCRIPT_DIR/tools/updater.sh'"
+ALIAS_LINE2="alias 1002xTOOLS='sudo bash $SCRIPT_DIR/debui.sh'"
+ALIAS_LINE3="alias 1002xDNS='sudo rm /etc/resolv.conf && sudo cp $SCRIPT_DIR/tools/resolv.conf /etc'"
 
 for ALIAS in "$ALIAS_LINE" "$ALIAS_LINE2" "$ALIAS_LINE3"; do
     ALIAS_NAME=$(echo "$ALIAS" | sed -E 's/^alias ([^=]+)=.*/\1/')
