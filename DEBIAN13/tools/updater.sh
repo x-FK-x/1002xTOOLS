@@ -62,6 +62,9 @@ log() {
     echo "$1" | tee -a "$LOG_FILE"
 }
 
+if [ -f /etc/modos/source/user-dir.conf ]; then
+    mv /etc/modos/source/user-dir.conf /etc/xdg
+fi
 
 # ==============================
 # 1002xOPERATOR Update (autonom)
