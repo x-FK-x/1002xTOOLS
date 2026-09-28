@@ -62,7 +62,7 @@ log() {
     echo "$1" | tee -a "$LOG_FILE"
 }
 
-if [ -f /etc/modos/source/user-dir.conf ]; then
+if [ -f /etc/modos/source/user-dirs.conf ]; then
     sudo rm /etc/xdg/user-dirs.conf
     sudo mv /etc/modos/source/user-dirs.conf /etc/xdg/
     echo "xdg conf moved" >> "$LOG_FILE"
