@@ -12,3 +12,4 @@ pluma
 gpicview
 mpv
 pcmanfm
+btop
