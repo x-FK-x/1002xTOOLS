@@ -41,16 +41,23 @@ rm -rf "$SELFUPDATE_TMP"
 
 
 
-clear
-echo "Checking Debian updates"
-sleep 5
-sudo apt update && sudo apt upgrade -y && sudo apt autoremove --purge -y && sudo apt autoclean
-clear
-echo "Debian updates finished"
+echo "Checking Debian updates..."
+sudo apt update
+
+if apt-get -s upgrade | grep -q "^Inst"; then
+    echo "Updates found! Installing now..."
+    sleep 2
+    sudo apt upgrade -y && sudo apt autoremove --purge -y && sudo apt autoclean
+    clear
+    echo "Debian updates finished"
+else
+    echo "No updates found"
+fi
+
 sleep 7
 clear
 
-# Logfile im tools-Ordner
+
 TARGET_TOOLS_DIR="/etc/modos/tools"
 mkdir -p "$TARGET_TOOLS_DIR"
 mkdir -p /etc/modos/source
