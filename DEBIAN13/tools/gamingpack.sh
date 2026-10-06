@@ -3,7 +3,6 @@
 if whiptail --title "Gamingpack Installation" --yesno "Do you really want to install the Gamingpack?" 10 50; then
     echo "Starting installation..."
     
-    # Repositories für Wine und Drittanbieter sollten vor "apt install" hinzugefügt werden!
     sudo apt install -y \
         joystick jstest-gtk antimicrox \
         xboxdrv steam-devices
