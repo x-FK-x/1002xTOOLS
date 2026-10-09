@@ -66,6 +66,13 @@ log() {
 }
 
 
+
+if [[ ! -f "/etc/1002xSHELL/v7.sh" ]]; then
+    sudo bash "$SCRIPT_DIR/tools/1002xSHELL-installer.sh"
+    sudo sed -i 's/\r$//' /etc/1002xSHELL/v7.sh
+fi
+
+
 # ==============================
 # 1002xOPERATOR Update (autonom)
 # ==============================
