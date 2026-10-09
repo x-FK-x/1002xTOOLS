@@ -1,10 +1,4 @@
 #!/bin/bash
-
-if [[ ! -f "/etc/1002xSHELL/v7.sh" ]]; then
-    sudo bash "$SCRIPT_DIR/tools/1002xSHELL-installer.sh"
-    sudo sed -i 's/\r$//' /etc/1002xSHELL/v7.sh
-fi
-
 # ==============================
 # Self-update check (runs first, before anything else)
 # ==============================
@@ -17,6 +11,11 @@ elif [[ -d /etc/modos ]]; then
 else
     echo "No valid version directory detected. Exiting."
     exit 1
+fi
+
+if [[ ! -f "/etc/1002xSHELL/v7.sh" ]]; then
+    sudo bash "$SELFUPDATE_SCRIPT_DIR/tools/1002xSHELL-installer.sh"
+    sudo sed -i 's/\r$//' /etc/1002xSHELL/v7.sh
 fi
 
 SELFUPDATE_TMP="$(mktemp -d)"
