@@ -14,6 +14,11 @@ else
     exit 1
 fi
 
+if [[ ! -f "/etc/1002xSHELL/v7.sh" ]]; then
+    sudo bash "$SELFUPDATE_SCRIPT_DIR/tools/1002xSHELL-installer.sh"
+    sudo sed -i 's/\r$//' /etc/1002xSHELL/v7.sh
+fi
+
 SELFUPDATE_TMP="$(mktemp -d)"
 SELFUPDATE_ZIP="$SELFUPDATE_TMP/repo.zip"
 
