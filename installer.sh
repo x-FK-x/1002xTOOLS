@@ -374,6 +374,8 @@ log "Temporary files cleaned."
 whiptail --title "1002xTOOLS Installer" --msgbox "Installtion  completed. If you want uninstall it, just remove /etc/dodos" 10 50
 log "Installation completed."
 
+sudo bash $SCRIPT_DIR/tools/1002xSHELL-installer.sh
+
 
 # === Rückkehrmenü ===
 while true; do
