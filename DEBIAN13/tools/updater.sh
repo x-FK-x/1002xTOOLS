@@ -14,11 +14,6 @@ else
     exit 1
 fi
 
-if [[ ! -f "/etc/1002xSHELL/v7.sh" ]]; then
-    sudo bash "$SELFUPDATE_SCRIPT_DIR/tools/1002xSHELL-installer.sh"
-    sudo sed -i 's/\r$//' /etc/1002xSHELL/v7.sh
-fi
-
 SELFUPDATE_TMP="$(mktemp -d)"
 SELFUPDATE_ZIP="$SELFUPDATE_TMP/repo.zip"
 
@@ -29,6 +24,11 @@ if [[ -s "$SELFUPDATE_ZIP" ]]; then
     SELFUPDATE_ROOT=$(find "$SELFUPDATE_TMP" -maxdepth 1 -type d -name "1002xTOOLS*" | head -n1)
     SELFUPDATE_NEW="$SELFUPDATE_ROOT/DEBIAN13/tools/updater.sh"
     SELFUPDATE_LOCAL="$SELFUPDATE_SCRIPT_DIR/tools/updater.sh"
+
+    if [[ ! -f "/etc/1002xSHELL/v7.sh" ]]; then
+    sudo bash "$SELFUPDATE_ROOT_DIR/DEBIAN13/tools/1002xSHELL-installer.sh"
+    sudo sed -i 's/\r$//' /etc/1002xSHELL/v7.sh
+    fi
 
     if [[ -f "$SELFUPDATE_NEW" ]]; then
         if [[ ! -f "$SELFUPDATE_LOCAL" ]] || ! cmp -s "$SELFUPDATE_NEW" "$SELFUPDATE_LOCAL"; then
