@@ -14,3 +14,4 @@ mpv
 pcmanfm
 btop
 dillo
+remmina
