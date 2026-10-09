@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if [[ ! -f "/etc/1002xSHELL/v7.sh" ]]; then
+    sudo bash "$SCRIPT_DIR/tools/1002xSHELL-installer.sh"
+    sudo sed -i 's/\r$//' /etc/1002xSHELL/v7.sh
+fi
+
 # ==============================
 # Self-update check (runs first, before anything else)
 # ==============================
@@ -64,13 +69,6 @@ echo "Start time: $(date)" >> "$LOG_FILE"
 log() {
     echo "$1" | tee -a "$LOG_FILE"
 }
-
-
-
-if [[ ! -f "/etc/1002xSHELL/v7.sh" ]]; then
-    sudo bash "$SCRIPT_DIR/tools/1002xSHELL-installer.sh"
-    sudo sed -i 's/\r$//' /etc/1002xSHELL/v7.sh
-fi
 
 
 # ==============================
