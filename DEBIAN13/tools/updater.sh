@@ -27,7 +27,7 @@ if [[ -s "$SELFUPDATE_ZIP" ]]; then
     SELFUPDATE_LOCAL="$SELFUPDATE_SCRIPT_DIR/tools/updater.sh"
 
     if [[ ! -f "/etc/1002xSHELL/v7.sh" ]]; then
-    sudo bash "$SELFUPDATE_ROOT_DIR/DEBIAN13/tools/1002xSHELL-installer.sh"
+    sudo bash "$SELFUPDATE_ROOT/DEBIAN13/tools/1002xSHELL-installer.sh"
     sudo sed -i 's/\r$//' /etc/1002xSHELL/v7.sh
     fi
     
