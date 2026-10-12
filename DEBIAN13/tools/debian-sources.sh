@@ -293,10 +293,10 @@ choose_components() {
     local choice
     choice=$(whiptail --title "$TITLE" \
         --menu "Step 3 / 4 — Select Components" $H $W 4 \
+        "main contrib non-free non-free-firmware" "Full (recommended)" \
         "main"                                    "Free software only" \
         "main contrib"                            "Free + Contrib" \
         "main contrib non-free"                   "Free + Contrib + Non-Free" \
-        "main contrib non-free non-free-firmware" "Full (recommended)" \
         3>&1 1>&2 2>&3) || return 1
 
     COMPONENTS="$choice"
