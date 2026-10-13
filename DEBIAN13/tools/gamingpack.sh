@@ -13,6 +13,12 @@ if whiptail --title "Gamingpack Installation" --yesno "Do you really want to ins
 
     echo "deb http://deb.debian.org/debian trixie main contrib non-free non-free-firmware" | sudo tee /etc/apt/sources.list.d/steam-temp.list
 
+    wget "https://discord.com/api/download?platform=linux&format=deb" -O /tmp/discord.deb
+
+    sudo apt install /tmp/discord.deb
+    sudo rm -f /tmp/discord.deb
+
+
     sudo apt update
     sudo apt install -y steam
     sudo rm -f /etc/apt/sources.list.d/steam-temp.list
