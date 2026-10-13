@@ -113,7 +113,7 @@ while true; do
     "2" "Exit 1002xTOOLS" 3>&1 1>&2 2>&3)
   case "$ACTION" in
     "1")
-      bash /etc/dodos/debui.sh
+      bash /etc/modos/debui.sh
       ;;
     "2")
       exit 0
