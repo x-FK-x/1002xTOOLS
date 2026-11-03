@@ -234,8 +234,7 @@ normalize_version() {
 offer_migration() {
     MIGRATE_SCRIPT="$SCRIPT_DIR/tools/migrate.sh"
     if [[ ! -f "$MIGRATE_SCRIPT" ]]; then
-        log "migrate.sh not found at $MIGRATE_SCRIPT"
-        whiptail --title "Migration" --msgbox "migrate.sh not found.\nMigration is not possible." 10 50
+        whiptail --title "Notice" --msgbox "$1" 12 60
         return 1
     fi
     if whiptail --title "Migration" --yesno "$1\n\nRun migrate.sh now?" 12 60; then
@@ -335,6 +334,13 @@ LOCAL_VERSION=$(normalize_version "$( [[ -f "$LOCAL_DEV_FILE" ]] && head -n1 "$L
 
 log "Local version: $LOCAL_VERSION"
 log "Repo version: $REPO_VERSION"
+
+if [[ -f "$EXTRACTED_DIR/tools/migrate.sh" ]]; then
+    cp -f "$EXTRACTED_DIR/tools/migrate.sh" "$SCRIPT_DIR/tools/migrate.sh"
+    chmod +x "$SCRIPT_DIR/tools/migrate.sh"
+    dos2unix "$SCRIPT_DIR/tools/migrate.sh" 2>/dev/null
+    log "Copied migrate.sh to $SCRIPT_DIR/tools/migrate.sh"
+fi
 
 check_lifecycle
 if [[ "$PHASE" == "LTS" ]]; then
