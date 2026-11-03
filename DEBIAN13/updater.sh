@@ -386,7 +386,9 @@ else
     whiptail --title "Updater" --msgbox "motd not found in folder." 10 50
 fi
 
-if [[ -f "$EXTRACTED_DIR/tools/gamingpack.sh" ]]; then
+if [[ "$VERSION" == "dodos" ]]; then
+    log "gamingpack.sh skipped on dodos"
+elif [[ -f "$EXTRACTED_DIR/tools/gamingpack.sh" ]]; then
     cp -f "$EXTRACTED_DIR/tools/gamingpack.sh" "$SCRIPT_DIR/tools/gamingpack.sh"
     log "Copied gamingpack.sh to $SCRIPT_DIR/tools/gamingpack.sh"
 else
@@ -414,6 +416,7 @@ if [[ -d "$EXTRACTED_DIR/tools" ]]; then
     for file in "$EXTRACTED_DIR/tools/"*.sh; do
         [ -f "$file" ] || continue
         [[ "$(basename "$file")" == "updater.sh" ]] && continue
+        [[ "$(basename "$file")" == "gamingpack.sh" && "$VERSION" == "dodos" ]] && continue
         cp -f "$file" "$TARGET_TOOLS_DIR/"
         chmod +x "$TARGET_TOOLS_DIR/$(basename "$file")"
         log "Copied $file to $TARGET_TOOLS_DIR/"
