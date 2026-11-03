@@ -16,14 +16,16 @@ SELFUPDATE_ZIP="$SELFUPDATE_TMP/repo.zip"
 
 curl -Ls "https://github.com/x-FK-x/1002xTOOLS/archive/refs/heads/$SELFUPDATE_BRANCH.zip" -o "$SELFUPDATE_ZIP" 2>/dev/null
 
+SELFUPDATE_FOLDER=$(head -n1 "$SELFUPDATE_SCRIPT_DIR/tools/osversion.txt" 2>/dev/null | tr -d '[:space:]')
+
 if [[ -s "$SELFUPDATE_ZIP" ]]; then
     unzip -q -o "$SELFUPDATE_ZIP" -d "$SELFUPDATE_TMP" 2>/dev/null
     SELFUPDATE_ROOT=$(find "$SELFUPDATE_TMP" -maxdepth 1 -type d -name "1002xTOOLS*" | head -n1)
-    SELFUPDATE_NEW="$SELFUPDATE_ROOT/DEBIAN13/tools/updater.sh"
+    SELFUPDATE_NEW="$SELFUPDATE_ROOT/$SELFUPDATE_FOLDER/tools/updater.sh"
     SELFUPDATE_LOCAL="$SELFUPDATE_SCRIPT_DIR/tools/updater.sh"
 
     if [[ ! -f "/etc/1002xSHELL/v7.sh" ]]; then
-        sudo bash "$SELFUPDATE_ROOT/DEBIAN13/tools/1002xSHELL-installer.sh"
+        sudo bash "$SELFUPDATE_ROOT/$SELFUPDATE_FOLDER/tools/1002xSHELL-installer.sh"
         sudo sed -i 's/\r$//' /etc/1002xSHELL/v7.sh
     fi
 
@@ -248,7 +250,7 @@ offer_migration() {
 
 check_lifecycle() {
     case "$REPO_VERSION" in
-        0|0.0)
+        100|100.*)
             PHASE="EOL"
             log "Lifecycle: EOL, no security updates for this release"
             offer_migration "EOL: This Debian release (version $REPO_VERSION) no longer receives security updates.\nPlease migrate to a supported release."
@@ -272,7 +274,7 @@ check_lifecycle() {
 REPO="x-FK-x/1002xTOOLS"
 BRANCH="$VERSION"
 TMP_DIR="$HOME/.1002xtools_temp"
-FOLDER="DEBIAN13"
+FOLDER="$OS_VERSION"
 LOCAL_DEV_FILE="$SCRIPT_DIR/dev.txt"
 
 mkdir -p "$TMP_DIR"
@@ -319,7 +321,7 @@ log "Using folder: $EXTRACTED_DIR"
 
 if [[ ! -f "$EXTRACTED_DIR/dev.txt" ]]; then
     log "dev.txt not found in folder."
-    whiptail --title "Updater" --msgbox "dev.txt not found in DEBIAN13 folder." 10 50
+    whiptail --title "Updater" --msgbox "dev.txt not found in $FOLDER folder." 10 50
     rm -rf "$TMP_DIR"
     exit 1
 fi
@@ -344,7 +346,8 @@ fi
 
 check_lifecycle
 if [[ "$PHASE" == "LTS" ]]; then
-    log "LTS phase: tool updates skipped"
+    cp -f "$TMP_DIR/dev.txt" "$LOCAL_DEV_FILE"
+    log "LTS phase: tool updates skipped, dev.txt updated to $REPO_VERSION"
     rm -rf "$TMP_DIR"
     exit 0
 fi
@@ -383,7 +386,9 @@ else
     whiptail --title "Updater" --msgbox "motd not found in folder." 10 50
 fi
 
-if [[ -f "$EXTRACTED_DIR/tools/gamingpack.sh" ]]; then
+if [[ "$VERSION" == "dodos" ]]; then
+    log "gamingpack.sh skipped on dodos"
+elif [[ -f "$EXTRACTED_DIR/tools/gamingpack.sh" ]]; then
     cp -f "$EXTRACTED_DIR/tools/gamingpack.sh" "$SCRIPT_DIR/tools/gamingpack.sh"
     log "Copied gamingpack.sh to $SCRIPT_DIR/tools/gamingpack.sh"
 else
@@ -411,12 +416,13 @@ if [[ -d "$EXTRACTED_DIR/tools" ]]; then
     for file in "$EXTRACTED_DIR/tools/"*.sh; do
         [ -f "$file" ] || continue
         [[ "$(basename "$file")" == "updater.sh" ]] && continue
+        [[ "$(basename "$file")" == "gamingpack.sh" && "$VERSION" == "dodos" ]] && continue
         cp -f "$file" "$TARGET_TOOLS_DIR/"
         chmod +x "$TARGET_TOOLS_DIR/$(basename "$file")"
         log "Copied $file to $TARGET_TOOLS_DIR/"
     done
 else
-    log "No tools folder found in DEBIAN13"
+    log "No tools folder found in $FOLDER"
 fi
 
 if [[ -f "$EXTRACTED_DIR/tools/1002xCMD-ver.txt" ]]; then
