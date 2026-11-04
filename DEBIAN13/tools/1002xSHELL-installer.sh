@@ -60,21 +60,21 @@ fi
 EOF
 
 
-sudo sed -i 's/\r$//' /etc/1002xSHELL/v6.sh
+sudo sed -i 's/\r$//' /etc/1002xSHELL/v7.sh
 if grep -q "# 1002xSHELL AUTOLOAD" /etc/bash.bashrc; then
     sudo sed -i '
     /# 1002xSHELL AUTOLOAD/{
         n
-        s|/etc/1002xSHELL/v[0-9]\+\.sh|/etc/1002xSHELL/v7.sh|
+        s|/etc/1002xSHELL/v[0-9]\+\.sh|/etc/1002xSHELL/v8.sh|
         n
-        s|/etc/1002xSHELL/v[0-9]\+\.sh|/etc/1002xSHELL/v7.sh|
+        s|/etc/1002xSHELL/v[0-9]\+\.sh|/etc/1002xSHELL/v8.sh|
     }' /etc/bash.bashrc
 else
     sudo tee -a /etc/bash.bashrc > /dev/null <<'EOF'
 
 # 1002xSHELL AUTOLOAD
-if [[ -f /etc/1002xSHELL/v7.sh ]]; then
-    source /etc/1002xSHELL/v7.sh
+if [[ -f /etc/1002xSHELL/v8.sh ]]; then
+    source /etc/1002xSHELL/v8.sh
 fi
 EOF
 fi
