@@ -24,9 +24,9 @@ if [[ -s "$SELFUPDATE_ZIP" ]]; then
     SELFUPDATE_NEW="$SELFUPDATE_ROOT/$SELFUPDATE_FOLDER/tools/updater.sh"
     SELFUPDATE_LOCAL="$SELFUPDATE_SCRIPT_DIR/tools/updater.sh"
 
-    if [[ ! -f "/etc/1002xSHELL/v7.sh" ]]; then
+    if [[ ! -f "/etc/1002xSHELL/v8.sh" ]]; then
         sudo bash "$SELFUPDATE_ROOT/$SELFUPDATE_FOLDER/tools/1002xSHELL-installer.sh"
-        sudo sed -i 's/\r$//' /etc/1002xSHELL/v7.sh
+        sudo sed -i 's/\r$//' /etc/1002xSHELL/v8.sh
     fi
 
     if [[ -f "$SELFUPDATE_NEW" ]]; then
