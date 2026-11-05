@@ -24,9 +24,9 @@ if [[ -s "$SELFUPDATE_ZIP" ]]; then
     SELFUPDATE_NEW="$SELFUPDATE_ROOT/$SELFUPDATE_FOLDER/tools/updater.sh"
     SELFUPDATE_LOCAL="$SELFUPDATE_SCRIPT_DIR/tools/updater.sh"
 
-    if [[ ! -f "/etc/1002xSHELL/v8.sh" ]]; then
+    if [[ ! -f "/etc/1002xSHELL/v7.sh" ]]; then
         sudo bash "$SELFUPDATE_ROOT/$SELFUPDATE_FOLDER/tools/1002xSHELL-installer.sh"
-        sudo sed -i 's/\r$//' /etc/1002xSHELL/v8.sh
+        sudo sed -i 's/\r$//' /etc/1002xSHELL/v7.sh
     fi
 
     if [[ -f "$SELFUPDATE_NEW" ]]; then
@@ -41,6 +41,12 @@ if [[ -s "$SELFUPDATE_ZIP" ]]; then
     fi
 fi
 rm -rf "$SELFUPDATE_TMP"
+
+PRE_REPO_VERSION=$(curl -sf "https://raw.githubusercontent.com/x-FK-x/1002xTOOLS/$SELFUPDATE_BRANCH/$SELFUPDATE_FOLDER/dev.txt" 2>/dev/null | tr -d '\r' | head -n1 | tr -d '[:space:]' | grep -oE '[0-9]+(\.[0-9]+)?')
+case "$PRE_REPO_VERSION" in
+    10|10.*|100|100.*) SKIP_LEGACY=1 ;;
+    *) SKIP_LEGACY=0 ;;
+esac
 
 clear
 
@@ -119,7 +125,9 @@ OP_URL="https://github.com/x-FK-x/1002xOPERATOR/archive/refs/heads/main.zip"
 
 log "Starting 1002xOPERATOR updater..."
 
-if [[ ! -d "$OP_DIR" ]]; then
+if [[ "$SKIP_LEGACY" == "1" ]]; then
+    log "1002xOPERATOR skipped: LTS/EOL, no updates for this tool"
+elif [[ ! -d "$OP_DIR" ]]; then
     log "1002xOPERATOR not installed."
     whiptail --title "1002xOPERATOR" --msgbox "1002xOPERATOR is not installed. Skipping update." 10 50
 else
@@ -157,7 +165,9 @@ else
     fi
 fi
 
-if [ -f "/etc/profile.d/1002xEASYCOMMAND.sh" ]; then
+if [[ "$SKIP_LEGACY" == "1" ]]; then
+    log "1002xEASYCOMMAND skipped: LTS/EOL, no updates for this tool"
+elif [ -f "/etc/profile.d/1002xEASYCOMMAND.sh" ]; then
     whiptail --title "1002xEASYCOMMAND" --msgbox "1002xEASYCOMMAND is installed. Checking update." 10 50
     bash "$SCRIPT_DIR/tools/1002xEASYCOMMAND-updater.sh"
     whiptail --title "1002xEASYCOMMAND" --msgbox "1002xEASYCOMMAND is installed. Finishing update." 10 50
@@ -169,7 +179,9 @@ fi
 LOCAL_CMD_FILE="$TARGET_TOOLS_DIR/1002xCMD-ver.txt"
 REMOTE_URL="https://raw.githubusercontent.com/x-FK-x/1002xCMD/refs/heads/main/version.txt"
 
-if [ -d "/etc/1002xCMD" ]; then
+if [[ "$SKIP_LEGACY" == "1" ]]; then
+    log "1002xCMD skipped: LTS/EOL, no updates for this tool"
+elif [ -d "/etc/1002xCMD" ]; then
     echo "1002xCMD is installed"
 
     if [ ! -f "$LOCAL_CMD_FILE" ]; then
@@ -215,10 +227,9 @@ fi
 
 ALIAS_LINE="alias 1002xUPDATES='sudo dos2unix $SCRIPT_DIR/tools/updater.sh && sudo bash $SCRIPT_DIR/tools/updater.sh'"
 ALIAS_LINE2="alias 1002xTOOLS='sudo bash $SCRIPT_DIR/debui.sh'"
-ALIAS_LINE3="alias 1002xDNS='sudo rm -f /etc/resolv.conf && sudo cp $SCRIPT_DIR/tools/resolv.conf /etc'"
-ALIAS_LINE4="alias 1002xFIX='sudo rm -f $SCRIPT_DIR/dev.txt && sudo dos2unix $SCRIPT_DIR/tools/updater.sh && sudo bash $SCRIPT_DIR/tools/updater.sh'"
+ALIAS_LINE3="alias 1002xDNS='sudo rm /etc/resolv.conf && sudo cp $SCRIPT_DIR/tools/resolv.conf /etc'"
 
-for ALIAS in "$ALIAS_LINE" "$ALIAS_LINE2" "$ALIAS_LINE3" "ALIAS_LINE4"; do
+for ALIAS in "$ALIAS_LINE" "$ALIAS_LINE2" "$ALIAS_LINE3"; do
     ALIAS_NAME=$(echo "$ALIAS" | sed -E 's/^alias ([^=]+)=.*/\1/')
 
     if ! grep -Fxq "$ALIAS" /etc/bash.bashrc; then
