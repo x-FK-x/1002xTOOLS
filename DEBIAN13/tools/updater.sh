@@ -260,6 +260,12 @@ offer_migration() {
     return 1
 }
 
+is_migration_release() {
+    local v="$1" n=0
+    [[ "$v" == *.* ]] && n="${v#*.}"
+    [[ "$n" =~ ^[0-9]+$ ]] && (( 10#$n >= 10 ))
+}
+
 check_lifecycle() {
     case "$REPO_VERSION" in
         100|100.*)
@@ -270,7 +276,9 @@ check_lifecycle() {
         10|10.*)
             PHASE="LTS"
             log "Lifecycle: LTS, only Debian updates are applied"
-            offer_migration "LTS: A new Debian release is available.\nYou can upgrade to it."
+            if is_migration_release "$REPO_VERSION"; then
+                offer_migration "LTS: A new Debian release is available.\nYou can upgrade to it."
+            fi
             ;;
         9|9.*)
             PHASE="FIX"
