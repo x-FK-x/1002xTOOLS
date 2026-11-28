@@ -212,7 +212,7 @@ normalize_version() {
 }
 
 # === Repo & Temp ===
-REPO="x-FK-x/1002xTOOLScollection"
+REPO="x-FK-x/1002xTOOLS"
 BRANCH="$VERSION"
 TMP_DIR="$HOME/.1002xtools_temp"
 FOLDER="DEBIAN13"
